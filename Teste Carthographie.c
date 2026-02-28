@@ -91,6 +91,10 @@ int calcStoneSideQuest(FeuilleCarte f);
 int nextForestStep(FeuilleCarte f);
 int isForestAllProcessed(FeuilleCarte f);
 
+
+int calcCanalLake(FeuilleCarte f);
+int pointAdjacensce(FeuilleCarte f, int materia1, int material2);
+
 /*****************************************CONSTANTES PIECES**************************************************/
 
 
@@ -120,13 +124,14 @@ int main()
     FeuilleCarte f;
     initCarte(f, TRUE);
 
-    for (int i = 0; i < 11; i++) {
+    /*for (int i = 0; i < 11; i++) {
         for (int j = 0; j < 11; j++) {
             if (f[i][j]==0)f[i][j] = FORET;
         }
-    }
+    }*/
     
-    placementShape(f, L, FORET);
+    placementShape(f, L, CHAMPS);
+    placementShape(f, L, EAU);
 
     printf("\n nombre of montagnes :%d\n", getOccurencesOf(f, MONTAGNE));
 
@@ -135,8 +140,8 @@ int main()
    
     
   
-    printf("\n\n\n\n%d\n", calcStoneSideQuest(f));
-    displayCarte(f);
+    printf("\n\n\n\n canal Lake value : %d\n", calcCanalLake(f));
+    
 
     
 }
@@ -746,3 +751,54 @@ int isForestAllProcessed(FeuilleCarte f) {
     }
     return 1;
 }
+
+/************aquatiques**********/
+
+int calcCanalLake(FeuilleCarte f) {
+    int somme = 0;
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            if (f[i][j] == EAU) {
+
+                for (int k = -1; k < 2; k ++) {
+                    if (isInCarte(i + k, j)) if (f[i + k][j] == CHAMPS) somme++;
+                }
+                for (int k = -1; k < 2; k ++) {
+                    if (isInCarte(i, j + k)) if (f[i][j + k] == CHAMPS) somme++;
+                }
+
+            }
+            if (f[i][j] == CHAMPS) {
+
+                for (int k = -1; k < 2; k ++) {
+                    if (isInCarte(i + k, j)) if (f[i + k][j] == EAU) somme++;
+                }
+                for (int k = -1; k < 2; k ++) {
+                    if (isInCarte(i, j + k)) if (f[i][j + k] == EAU) somme++;
+                }
+
+
+            }
+        }
+        
+    }
+    return somme;
+}
+
+int pointAdjacensce(FeuilleCarte f, int materia1, int material2) {
+    int somme = 0;
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            if (f[i][j] == materia1) {
+                for (int k = -1; k < 2; k++) {
+                    if (isInCarte(i + k, j)) if (f[i + k][j] == material2) somme++;
+                }
+                for (int k = -1; k < 2; k++) {
+                    if (isInCarte(i, j + k)) if (f[i][j + k] == material2) somme++;
+                }
+            }
+        }
+    }
+    return somme;
+}
+
