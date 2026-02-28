@@ -8,10 +8,9 @@
 
 
 /*****************************************CONSTANTES**************************************************/
-#define LONGUEUR 11
-#define LARGEUR 11
-#define LARGEURPIECE 3
-#define HAUTEURPIECE 3
+#define SIZE 11
+#define PIECESIZE 3
+#define PIECESIZE 3
 #define NOMBREMONTAGNE 5
 #define TRUE 1
 #define FALSE 0
@@ -19,7 +18,7 @@
 #define OUTOFBOUND -1
 
 
-#define  FORET 2
+#define FORET 2
 #define VILLAGE 3
 #define CHAMPS 4
 #define EAU 5
@@ -33,8 +32,8 @@
 
 
 /*****************************************TYPEDEFS**************************************************/
-typedef int FeuilleCarte[LONGUEUR][LARGEUR];
-typedef int Piece[LARGEURPIECE][HAUTEURPIECE];
+typedef int FeuilleCarte[SIZE][SIZE];
+typedef int Piece[PIECESIZE][PIECESIZE];
 
 
 
@@ -121,18 +120,19 @@ int main()
     FeuilleCarte f, fuilleVide, temp;
     initCarte(f, TRUE);
 
-    /*for (int i = 0; i < 11; i++) {
+    for (int i = 0; i < 11; i++) {
         for (int j = 0; j < 11; j++) {
-
-            f[i][j] = 1;
+            if (f[i][j]==0)f[i][j] = FORET;
         }
-    }*/
+    }
     
-   
+    placementShape(f, L, FORET);
+
+    printf("\n nombre of montagnes :%d\n", getOccurencesOf(f, MONTAGNE));
 
     displayCarte(f);
 
-    printf("\n\n");
+   
     
   
     printf("\n\n\n\n%d\n", calcStoneSideQuest(f));
@@ -143,8 +143,8 @@ int main()
 /******************************FONCTIONS SOUS PROGRAMMES************************/
 void initCarte(FeuilleCarte f, int montagneActive) {
    
-    for (int i = 0; i < LONGUEUR; i++) {
-        for (int j = 0; j < LARGEUR; j++) {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
             f[i][j] = 0;
         }
 
@@ -168,15 +168,15 @@ void setupMontagnePosition(int posMontage[NOMBREMONTAGNE][2]) {
 
     for (int i = 0; i < NOMBREMONTAGNE; i++) {
         Position np;
-        np.x = randInt(0, LARGEUR);
-        np.y = randInt(0, LONGUEUR);
+        np.x = randInt(0, SIZE-1);
+        np.y = randInt(0, SIZE-1);
         
         
 
         int validPos = 1;
         for (int j = 0; j < NOMBREMONTAGNE; j++) {
             
-            if (distPos(np, op[j]) < 2.0) validPos = 0;
+            if (distPos(np, op[j]) < 2.0 && isInCarte(np.x, np.y)) validPos = 0;
         }
         if (validPos) {
             posMontage[i][0] = np.x;
@@ -189,8 +189,8 @@ void setupMontagnePosition(int posMontage[NOMBREMONTAGNE][2]) {
 }
 
 void displayCarte(FeuilleCarte f) {
-    for (int i = 0; i < LONGUEUR; i++) {
-        for (int j = 0; j < LARGEUR; j++) {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
             printf("%d ", f[j][i]);
 
         }
@@ -210,19 +210,19 @@ float distPos(Position a, Position b) {
 
 
 int isPositionInCarte(Position pos) {
-    if ((pos.x < LONGUEUR) && (pos.x >= 0) && (pos.y < LARGEUR) && (pos.y >= 0)) return 1;
+    if ((pos.x < SIZE) && (pos.x >= 0) && (pos.y < SIZE) && (pos.y >= 0)) return 1;
     return 0;
 }
 
 int isInCarte(int x, int y) {
-    if ((x < LONGUEUR) && (x >= 0) && (y < LARGEUR) && (y >= 0)) return 1;
+    if ((x < SIZE) && (x >= 0) && (y < SIZE) && (y >= 0)) return 1;
     return 0;
 }
 
 void copyPiece(Piece pieceFrom, Piece pieceTo) {
 
-    for (int i = 0; i < LARGEURPIECE; i++) {
-        for (int j = 0; j < HAUTEURPIECE; j++) {
+    for (int i = 0; i < PIECESIZE; i++) {
+        for (int j = 0; j < PIECESIZE; j++) {
             pieceTo[i][j] = pieceFrom[i][j];
 
         }
@@ -261,8 +261,8 @@ void getVoisinMaterialPos(FeuilleCarte f, Position pos, int material, Position l
 
 int getEmptySpots(FeuilleCarte f) {
     int count = 0;
-    for (int i = 0; i < LARGEUR; i++) {
-        for (int j = 0; j < LARGEUR; j++) {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
             if (f[i][j] == 0)count++;
         }
     }
@@ -271,8 +271,8 @@ int getEmptySpots(FeuilleCarte f) {
 
 int getOccurencesOf(FeuilleCarte f, int material) {
     int count = 0;
-    for (int i = 0; i < LARGEUR; i++) {
-        for (int j = 0; j < LARGEUR; j++) {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
             if (f[i][j] == material)count++;
         }
     }
@@ -282,8 +282,8 @@ int getOccurencesOf(FeuilleCarte f, int material) {
 Position *getPositionsOfMaterial(FeuilleCarte f, int material){
     Position* positions = malloc(sizeof(Position) * getOccurencesOf(f, material));
     int k = 0;
-    for (int i = 0; i < LARGEUR; i++) {
-        for (int j = 0; j < LARGEUR; j++) {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
             if (f[i][j] == material) {
                 positions[k].x = i;
                 positions[k].y = j;
@@ -296,8 +296,8 @@ Position *getPositionsOfMaterial(FeuilleCarte f, int material){
 
 void copyFeuilleCarte(FeuilleCarte Ffrom, FeuilleCarte Fto) {
 
-    for (int i = 0; i < LARGEUR; i++) {
-        for (int j = 0; j < LARGEUR; j++) {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
             Fto[i][j] = Ffrom[i][j];
         }
     }
@@ -318,8 +318,8 @@ Position* emptyPositionList(int size) {
 /*********************************FONCTIONS DE DESSIN DE FEUILLE********************************/
 
 int isDrawable(FeuilleCarte f, FeuilleCarte feuilleVide) {
-    for (int i = 0; i < LONGUEUR; i++) {
-        for (int j = 0; j < LARGEUR; j++) {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
             if ((feuilleVide[i][j] != 0) && (f[i][j] != 0)) return 0;
 
         }
@@ -331,8 +331,8 @@ int isDrawable(FeuilleCarte f, FeuilleCarte feuilleVide) {
 
 
 void draw(FeuilleCarte f, FeuilleCarte feuilleVide) {
-    for (int i = 0; i < LONGUEUR; i++) {
-        for (int j = 0; j < LARGEUR; j++) {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
             if (feuilleVide[i][j] != 0) {
                 f[i][j] = feuilleVide[i][j];
             }
@@ -348,8 +348,8 @@ void draw(FeuilleCarte f, FeuilleCarte feuilleVide) {
 
 void tryDraw(FeuilleCarte f, FeuilleCarte feuilleVide, FeuilleCarte sortie) {
     initCarte(sortie, FALSE);
-    for (int i = 0; i < LONGUEUR; i++) {
-        for (int j = 0; j < LARGEUR; j++) {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
             if ((feuilleVide[i][j] != 0) && (f[i][j] != 0)) sortie[i][j] = CONFLICTVALUE;
             else sortie[i][j] = max(feuilleVide[i][j], f[i][j]);
 
@@ -420,16 +420,16 @@ int drawShape(FeuilleCarte f, Piece piece, Position pos, int rotation, int mater
     rotateShape(pieceOrientee, rotation);
     
     initCarte(buff, FALSE);
-    for (int i = -1; i < LARGEURPIECE-1; i++) {
-        for (int j = -1; j < HAUTEURPIECE-1; j++) {
+    for (int i = -1; i < PIECESIZE-1; i++) {
+        for (int j = -1; j < PIECESIZE-1; j++) {
             if (pieceOrientee[i+1][j+1]==1) {
                 if (!isInCarte(pos.x + i, pos.y + j)) return 0;
                 buff[pos.x + i][pos.y + j] = material;
             }
         }
     }
-    for (int i = 0; i < LARGEUR; i++) {
-        for (int j = 0; j < LARGEUR; j++) {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
             if (buff[i][j]!=0) f[i][j] = buff[i][j];
         }
     }
@@ -439,11 +439,11 @@ int drawShape(FeuilleCarte f, Piece piece, Position pos, int rotation, int mater
 
 void rotateShape(Piece piece, int rotation) {
     for (int k = 0; k < rotation%4; k++) {
-    int buff[LARGEUR][HAUTEURPIECE] = { {0,0} };
+    int buff[SIZE][PIECESIZE] = { {0,0} };
 
-    for (int i = 0; i < LARGEURPIECE; i++) {
-        for (int j = 0; j < HAUTEURPIECE; j++) {
-            buff[j][i] = piece[i][LARGEURPIECE - j-1];
+    for (int i = 0; i < PIECESIZE; i++) {
+        for (int j = 0; j < PIECESIZE; j++) {
+            buff[j][i] = piece[i][PIECESIZE - j-1];
 
         }
 
@@ -452,8 +452,8 @@ void rotateShape(Piece piece, int rotation) {
     
       
     
-    for (int i = 0; i < LARGEURPIECE; i++) {
-        for (int j = 0; j < HAUTEURPIECE; j++) {
+    for (int i = 0; i < PIECESIZE; i++) {
+        for (int j = 0; j < PIECESIZE; j++) {
             piece[j][i] = buff[j][i];
             
         }    
@@ -482,7 +482,7 @@ int placementU(FeuilleCarte f, int material) {
             drawable = drawU(feuilleVide, pos, rotation, material);
             tryDraw(f, feuilleVide, temp);
             displayCarte(temp);
-            drawable = min(drawable, isDrawable(f, feuilleVide));
+            drawable = drawable && isDrawable(f, feuilleVide);
             printf(" position actuelle : (%d , %d , %d ) valide : %d \n  entrez la nouvelle position (X Y ROTATION) : ", pos.x, pos.y, rotation, drawable);
             scanf("%d %d %d", &pos.x, &pos.y, &rotation);
             printf("\n");
@@ -524,7 +524,7 @@ int placementShape(FeuilleCarte f, Piece shape, int material) {
             drawable = drawShape(feuilleVide, shape, pos, rotation, material);
             tryDraw(f, feuilleVide, temp);
             displayCarte(temp);
-            drawable = min(drawable, isDrawable(f, feuilleVide));
+            drawable = drawable && isDrawable(f, feuilleVide);
             printf(" position actuelle : (%d , %d , %d ) valide : %d \n  entrez la nouvelle position (X Y ROTATION) : ", pos.x, pos.y, rotation, drawable);
             scanf("%d %d %d", &pos.x, &pos.y, &rotation);
             printf("\n");
@@ -549,8 +549,8 @@ int checkU(FeuilleCarte f) {
     FeuilleCarte feuilleVide, temp;
     int drawable = 0;
     Position pos;
-    for (int i = 0; i < LONGUEUR; i++) {
-        for (int j = 0; j < LARGEUR; j++) {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
             for (int r = 0; r < 4; r++) {
                 initCarte(feuilleVide, FALSE);
                 pos.x = i;
@@ -579,8 +579,8 @@ int checkShape(FeuilleCarte f, Piece shape) {
     FeuilleCarte feuilleVide, temp;
     int drawable = 0;
     Position pos;
-    for (int i = 0; i < LONGUEUR; i++) {
-        for (int j = 0; j < LARGEUR; j++) {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
             for (int r = 0; r < 4; r++) {
                 initCarte(feuilleVide, FALSE);
                 pos.x = i;
@@ -616,22 +616,22 @@ int checkShape(FeuilleCarte f, Piece shape) {
 /*************************FORESTIERE********/
 int calcSentinelWood(FeuilleCarte f) {
     int somme = 0;
-    for (int i = 0; i < LONGUEUR; i++) if (f[0][i] == FORET) somme++;
-    for (int i = 0; i < LONGUEUR; i++) if (f[LONGUEUR-1][i] == FORET) somme++;
-    for (int i = 0; i < LONGUEUR; i++) if (f[i][0] == FORET) somme++;
-    for (int i = 0; i < LONGUEUR; i++) if (f[i][LONGUEUR-1] == FORET) somme++;
+    for (int i = 0; i < SIZE; i++) if (f[0][i] == FORET) somme++;
+    for (int i = 0; i < SIZE; i++) if (f[SIZE-1][i] == FORET) somme++;
+    for (int i = 0; i < SIZE; i++) if (f[i][0] == FORET) somme++;
+    for (int i = 0; i < SIZE; i++) if (f[i][SIZE-1] == FORET) somme++;
     if (f[0][0] == FORET) somme--;
-    if (f[0][LONGUEUR - 1] == FORET) somme--;
-    if (f[LONGUEUR - 1][0] == FORET) somme--;
-    if (f[LONGUEUR - 1][LONGUEUR - 1] == FORET) somme--;
+    if (f[0][SIZE - 1] == FORET) somme--;
+    if (f[SIZE - 1][0] == FORET) somme--;
+    if (f[SIZE - 1][SIZE - 1] == FORET) somme--;
     return somme;
 
 }
 
 int calcTreeTower(FeuilleCarte f) {
     int somme = 0;
-    for (int i = 0; i < LARGEUR; i++) {
-        for (int j = 0; j < LARGEUR; j++) {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
             if (f[i][j] == FORET) {
                 int count = 0;
                 for (int k = -1; k < 2; k++) {
@@ -653,19 +653,19 @@ int calcTreeTower(FeuilleCarte f) {
 
 int calcGreenBough(FeuilleCarte f) {
     int somme = 0;
-    for (int i = 0; i < LARGEUR; i++) {
-        for (int j = 0; j < LARGEUR; j++) {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
             if (f[i][j] == FORET) {
                 somme++;
-                j = LARGEUR;
+                j = SIZE;
             }
         }
     }
-    for (int i = 0; i < LARGEUR; i++) {
-        for (int j = 0; j < LARGEUR; j++) {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
             if (f[j][i] == FORET) {
                 somme++;
-                j = LARGEUR;
+                j = SIZE;
             }
         }
     }
@@ -705,12 +705,13 @@ int calcStoneSideQuest(FeuilleCarte f) {
 int nextForestStep(FeuilleCarte f) {
     int total = 0;
     int nbO = 0;
-    for (int i = 0; i < LARGEUR; i++) {
-        for (int j = 0; j < LARGEUR; j++) {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
             if (f[i][j] == ACTUALFOREST) {
                 f[i][j] = 0;
                 for (int k = -1; k < 2; k++) {
                     for (int l = -1; l < 2; l++) {
+						if (isInCarte(i + k, j + l)) {
                        
                         if (f[i + k][j + l] == FORET) {
                             f[i + k][j + l] = NEXTFOREST;
@@ -718,6 +719,7 @@ int nextForestStep(FeuilleCarte f) {
                         else if (f[i + k][j + l] == MONTAGNE) {
                             f[i + k][j + l] = 0;
                             total++;
+                            }
                         }
                     }
                 }
@@ -725,8 +727,8 @@ int nextForestStep(FeuilleCarte f) {
             else if (f[i][j] == 0) nbO++;
         }
     }
-    for (int i = 0; i < LARGEUR; i++) {
-        for (int j = 0; j < LARGEUR; j++) {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
             if (f[i][j] == NEXTFOREST)f[i][j] = ACTUALFOREST;
         }
     }
@@ -738,8 +740,8 @@ int nextForestStep(FeuilleCarte f) {
 }
 
 int isForestAllProcessed(FeuilleCarte f) {
-    for (int i = 0; i < LARGEUR; i++) {
-        for (int j = 0; j < LARGEUR; j++) {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
             if (f[i][j] == ACTUALFOREST) return 0;
         }
     }
