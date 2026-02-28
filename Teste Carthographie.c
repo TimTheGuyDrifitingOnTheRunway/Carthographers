@@ -802,3 +802,14 @@ int pointAdjacensce(FeuilleCarte f, int materia1, int material2) {
     return somme;
 }
 
+int calcMageValey(FeuilleCarte f) {
+
+    int somme;
+    somme = pointAdjacensce(f, EAU, MONTAGNE) * 2;
+	somme += pointAdjacensce(f, CHAMPS, MONTAGNE);
+
+}
+
+
+
+
