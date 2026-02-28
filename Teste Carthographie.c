@@ -117,7 +117,7 @@ int main()
     srand(time(NULL));
 
 
-    FeuilleCarte f, fuilleVide, temp;
+    FeuilleCarte f;
     initCarte(f, TRUE);
 
     for (int i = 0; i < 11; i++) {
@@ -161,7 +161,6 @@ void initCarte(FeuilleCarte f, int montagneActive) {
 }
 
 void setupMontagnePosition(int posMontage[NOMBREMONTAGNE][2]) {
-    int prevPosX, prevPosY, newPosX, newPosY;
     Position *op = emptyPositionList(NOMBREMONTAGNE);
     
     
