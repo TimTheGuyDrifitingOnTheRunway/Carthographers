@@ -66,7 +66,7 @@ Position* emptyPositionList(int size);
 int drawU(FeuilleCarte f, Position pos, int rotation, int material);//DEPRECIé
 int drawShape(FeuilleCarte f, Piece piec, Position pos, int rotation, int material);//fonction Universelle
 
-
+//coin
 
 
 //placement des formes/////////////////////////////////////////////////
