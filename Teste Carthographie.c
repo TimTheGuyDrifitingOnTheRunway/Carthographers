@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-
+// what if i wanted to have fun
 /*****************************************CONSTANTES**************************************************/
 #define SIZE 11
 #define PIECESIZE 3
