@@ -67,7 +67,7 @@ int drawU(FeuilleCarte f, Position pos, int rotation, int material);//DEPRECIé
 int drawShape(FeuilleCarte f, Piece piec, Position pos, int rotation, int material);//fonction Universelle
 
 
-//foazihfi
+//focacie   
 
 //placement des formes/////////////////////////////////////////////////
 int placementU(FeuilleCarte f, int material);//DEPRECIée
