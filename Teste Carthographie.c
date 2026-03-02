@@ -43,7 +43,7 @@ typedef struct {
 } Position;
 
 /*****************************************PROTOTYPES**************************************************/
-void initCarte(FeuilleCarte* f, int montagne);
+void initCarte(FeuilleCarte f, int montagne);
 void displayCarte(FeuilleCarte f);
 int randInt(int min, int max);
 void setupMontagnePosition(int posMontage[NOMBREMONTAGNE][2]);
