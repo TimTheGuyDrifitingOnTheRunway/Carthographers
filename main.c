@@ -25,13 +25,19 @@ int main()
     }*/
 
 
-    placementShape(f, L, CHAMPS);
+    /*placementShape(f, L, CHAMPS);
     placementShape(f, L, CHAMPS);
     placementShape(f, L, EAU);
+	placementShape(f, U, EAU);*/
+    placementShape(f, L, FORET);     printf("\n\n stoneSideQuest points = %d\n", calcStoneSideQuest(f));
+    placementShape(f, U, FORET);     printf("\n\n stoneSideQuest points = %d\n", calcStoneSideQuest(f));
+    placementShape(f, L, FORET);     printf("\n\n stoneSideQuest points = %d\n", calcStoneSideQuest(f));
+	placementShape(f, POINT, FORET); printf("\n\n stoneSideQuest points = %d\n", calcStoneSideQuest(f));
 
     printf("\n nombre of montagnes :%d\n", getOccurencesOf(f, MONTAGNE));
+    printf("\n nombre of forest :%d\n", getOccurencesOf(f, FORET));
 
-
+    printf("\n\n stoneSideQuest points = %d\n", calcStoneSideQuest(f));
 
 
 

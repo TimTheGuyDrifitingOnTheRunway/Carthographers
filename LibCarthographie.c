@@ -531,14 +531,10 @@ int checkShape(FeuilleCarte f, Piece shape) {
 /*************************FORESTIERE********/
 int calcSentinelWood(FeuilleCarte f) {
     int somme = 0;
-    for (int i = 0; i < SIZE; i++) if (f[0][i] == FORET) somme++;
-    for (int i = 0; i < SIZE; i++) if (f[SIZE - 1][i] == FORET) somme++;
-    for (int i = 0; i < SIZE; i++) if (f[i][0] == FORET) somme++;
+    for (int i = 0; i < SIZE - 1; i++) if (f[0][i] == FORET) somme++;
+    for (int i = 0; i < SIZE - 1; i++) if (f[SIZE - 1][i] == FORET) somme++;
+    for (int i = 1; i < SIZE - 1; i++) if (f[i][0] == FORET) somme++;
     for (int i = 0; i < SIZE; i++) if (f[i][SIZE - 1] == FORET) somme++;
-    if (f[0][0] == FORET) somme--;
-    if (f[0][SIZE - 1] == FORET) somme--;
-    if (f[SIZE - 1][0] == FORET) somme--;
-    if (f[SIZE - 1][SIZE - 1] == FORET) somme--;
     return somme;
 
 }
@@ -613,7 +609,7 @@ int calcStoneSideQuest(FeuilleCarte f) {
 
     }
 
-    return somme / 2;
+    return somme / 2; 
 }
 
 
