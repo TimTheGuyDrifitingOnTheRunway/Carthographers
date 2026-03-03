@@ -1,5 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "LibCarthographie.h"
+#include "Lib3d.h"
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
@@ -28,7 +29,7 @@ int main()
 
     // Define the camera to look into our 3d world
     Camera3D camera = { 0 };
-    camera.position = (Vector3){ 0.0f, 10.0f, 10.0f };  // Camera position
+    camera.position = (Vector3){ 0.0f, 10.0f, 8.0f };  // Camera position
     camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };      // Camera looking at point
     camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
     camera.fovy = 45.0f;                                // Camera field-of-view Y
@@ -47,15 +48,8 @@ int main()
         ClearBackground(RAYWHITE);
 
         BeginMode3D(camera);
-
-		for (int i = 0; i < SIZE; i++) {
-            for(int j = 0; j < SIZE; j++){
-                if(f[i][j] != 0){
-                    DrawCube((Vector3){ (float)i- (float)SIZE/2,0 -1, (float)j- (float)SIZE/2-1}, 1.0f, 1.0f, 1.0f, GREEN);
-                    DrawCubeWires((Vector3) { (float)i - (float)SIZE / 2, 0 - 1, (float)j - (float)SIZE / 2 - 1 }, 1.0f, 1.0f, 1.0f, MAROON);
-                }
-            }
-        }
+		GUIDrawFeuille(f);
+		
         
         
 

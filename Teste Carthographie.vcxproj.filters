@@ -21,5 +21,16 @@
     <ClCompile Include="LibCarthographie.c">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
+    <ClCompile Include="Lib3d.c">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="LibCarthographie.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib3d.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
