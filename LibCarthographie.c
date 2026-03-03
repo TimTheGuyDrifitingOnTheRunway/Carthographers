@@ -454,9 +454,11 @@ int placementShape(FeuilleCarte f, Piece shape, int material) {
 }
 
 
+
 /**************************FONCTIONS DE VERIFICATION DE SOLUTION***************************/
 
 int checkU(FeuilleCarte f) {
+	/// vérifie si il y a la place de placer un u quelque part sur la carte, et retourne 1 si c'est le cas, 0 sinon
     FeuilleCarte feuilleVide, temp;
     int drawable = 0;
     Position pos;
@@ -486,12 +488,12 @@ int checkU(FeuilleCarte f) {
     return 0;
 }
 
-int checkShape(FeuilleCarte f, Piece shape) {
+int checkShape(FeuilleCarte f, Piece shape) {/// vérifie si il y a la place de placer une piece quelque part sur la carte, et retourne 1 si c'est le cas, 0 sinon
     FeuilleCarte feuilleVide, temp;
     int drawable = 0;
     Position pos;
-    for (int i = 0; i < SIZE; i++) {
-        for (int j = 0; j < SIZE; j++) {
+    for (int i = -1; i < SIZE+1; i++) {
+        for (int j = -1; j < SIZE+1; j++) {
             for (int r = 0; r < 4; r++) {
                 initCarte(feuilleVide, FALSE);
                 pos.x = i;
