@@ -1,6 +1,6 @@
 #pragma once
 #define _CRT_SECURE_NO_WARNINGS
-#include <raylib.h>
+//#include <raylib.h>
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
