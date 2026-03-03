@@ -1,11 +1,13 @@
-// Teste Carthographie.cpp : Ce fichier contient la fonction 'main'. L'exécution du programme commence et se termine à cet endroit.
+// Teste Carthographie.cpp : Ce fichier contient la fonction 'main'. L'ex�cution du programme commence et se termine � cet endroit.
 //
 #define _CRT_SECURE_NO_WARNINGS
+#include <raylib.h>
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
 #include <math.h>
-
+#include "LibCarthographie.h"
+#pragma once
 
 /*****************************************CONSTANTES**************************************************/
 #define SIZE 11
@@ -32,83 +34,12 @@
 #define ACTUAL 12
 #define NEXT 13
 
-
-
-/*****************************************TYPEDEFS**************************************************/
-typedef int FeuilleCarte[SIZE][SIZE];
-typedef int Piece[PIECESIZE][PIECESIZE];
-
-
-
-typedef struct {
-    int x;
-    int y;
-} Position;
-
-/*****************************************PROTOTYPES**************************************************/
-void initCarte(FeuilleCarte f, int montagne);
-void displayCarte(FeuilleCarte f);
-int randInt(int min, int max);
-void setupMontagnePosition(int posMontage[NOMBREMONTAGNE][2]);
-int isPositionInCarte(Position pos);
-int isInCarte(int x, int y);
-void draw(FeuilleCarte f, FeuilleCarte feuilleVide);
-int isDrawable(FeuilleCarte f, FeuilleCarte feuilleVide);
-void tryDraw(FeuilleCarte f, FeuilleCarte feuilleVide, FeuilleCarte sortie);
-void rotateShape(Piece piece, int rotation);
-int getEmptySpots(FeuilleCarte f);
-int isPosmaterial(FeuilleCarte f, Position pos, int material);
-void getVoisinMaterialPos(FeuilleCarte f, Position pos, int material, Position listeVoisins[8]);
-int getOccurencesOf(FeuilleCarte f, int material);
-Position* getPositionsOfMaterial(FeuilleCarte f, int material);
-float distPos(Position a, Position b);
-Position* emptyPositionList(int size);
-
-//dessins de formes//////////////////////////////
-
-int drawU(FeuilleCarte f, Position pos, int rotation, int material);//DEPRECIé
-int drawShape(FeuilleCarte f, Piece piec, Position pos, int rotation, int material);//fonction Universelle
-
-
- 
-
-//placement des formes/////////////////////////////////////////////////
-int placementU(FeuilleCarte f, int material);//DEPRECIée
-int placementDefault(FeuilleCarte f, int material);
-
-int placementShape(FeuilleCarte f, Piece shape, int material);//SP à utiliser pour placer une forme sur une feuilleCarte
-
-
-
-
-// vérification de la placabilité
-int checkU(FeuilleCarte f);//DEPRECIé
-int checkShape(FeuilleCarte f, Piece shape);
-
-//Calcul des points :
-int calcSentinelWood(FeuilleCarte f);
-int calcTreeTower(FeuilleCarte f);
-int calcGreenBough(FeuilleCarte f);
-
-int calcStoneSideQuest(FeuilleCarte f);
-int nextForestStep(FeuilleCarte f);
-int isForestAllProcessed(FeuilleCarte f);
-
-
-int calcCanalLake(FeuilleCarte f);
-int pointAdjacensce(FeuilleCarte f, int materia1, int material2);
-
-int calcShoreSideExpanse(FeuilleCarte f);
-int CalcShoreSidePart1(FeuilleCarte f, int material);
-void nextStepShoreside(FeuilleCarte temp);
-
-/*****************************************CONSTANTES PIECES**************************************************/
-
+/*****************************************CONSTANTES PIECES*************************************************/
 
 const Piece POINT = { {0,0,0},{0,1,0}, {0,0,0} };
-const Piece U = { 
-    {1, 0, 1}, 
-    {1, 1, 1}, 
+const Piece U = {
+    {1, 0, 1},
+    {1, 1, 1},
     {0, 0 ,0} };
 
 const Piece L = {
@@ -118,43 +49,12 @@ const Piece L = {
 };
 
 
-/*****************************************CODE MAIN**************************************************/
 
 
 
-
-int main()
-{
-    srand(time(NULL));
-
-
-    FeuilleCarte f;
-    initCarte(f, TRUE);
-
-    /*for (int i = 0; i < 11; i++) {
-        for (int j = 0; j < 11; j++) {
-            if (f[i][j]==0)f[i][j] = FORET;
-        }
-    }*/
-    
-    placementShape(f, L, CHAMPS);
-    placementShape(f, L, CHAMPS);
-    placementShape(f, L, EAU);
-
-    printf("\n nombre of montagnes :%d\n", getOccurencesOf(f, MONTAGNE));
-
-    
-   
-    
-  
-    printf("\n\n\n\n canal shoreside expanse : %d\n", calcShoreSideExpanse(f));
-    
-
-    
-}
 /******************************FONCTIONS SOUS PROGRAMMES************************/
 void initCarte(FeuilleCarte f, int montagneActive) {
-   
+
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
             f[i][j] = 0;
@@ -162,31 +62,31 @@ void initCarte(FeuilleCarte f, int montagneActive) {
 
     }
 
-    if (montagneActive){
+    if (montagneActive) {
         int posMontagne[NOMBREMONTAGNE][2];
         setupMontagnePosition(posMontagne);
         for (int i = 0; i < NOMBREMONTAGNE; i++) {
             f[posMontagne[i][0]][posMontagne[i][1]] = MONTAGNE;
         }
     }
-    
+
 }
 
 void setupMontagnePosition(int posMontage[NOMBREMONTAGNE][2]) {
-    Position *op = emptyPositionList(NOMBREMONTAGNE);
-    
-    
+    Position* op = emptyPositionList(NOMBREMONTAGNE);
+
+
 
     for (int i = 0; i < NOMBREMONTAGNE; i++) {
         Position np;
-        np.x = randInt(0, SIZE-1);
-        np.y = randInt(0, SIZE-1);
-        
-        
+        np.x = randInt(0, SIZE - 1);
+        np.y = randInt(0, SIZE - 1);
+
+
 
         int validPos = 1;
         for (int j = 0; j < NOMBREMONTAGNE; j++) {
-            
+
             if (distPos(np, op[j]) < 2.0 && isInCarte(np.x, np.y)) validPos = 0;
         }
         if (validPos) {
@@ -210,11 +110,11 @@ void displayCarte(FeuilleCarte f) {
 }
 
 int randInt(int min, int max) {
-    return (rand() % (max+1 - min)) + min;
+    return (rand() % (max + 1 - min)) + min;
 }
 
 float distPos(Position a, Position b) {
-    
+
     float val = (float)((a.x - b.x) * (a.x - b.x)) + ((a.y - b.y) * (a.y - b.y));
     return sqrtf(val);
 }
@@ -244,7 +144,7 @@ void copyPiece(Piece pieceFrom, Piece pieceTo) {
 }
 
 int isPosmaterial(FeuilleCarte f, Position pos, int material) {
-    if(isInCarte(pos.x, pos.y))return f[pos.x][pos.y] == material;
+    if (isInCarte(pos.x, pos.y))return f[pos.x][pos.y] == material;
     return 0;
 }
 
@@ -256,7 +156,7 @@ void getVoisinMaterialPos(FeuilleCarte f, Position pos, int material, Position l
 
     int k = 0;
     for (int i = -1; i < 2; i++) {
-        for(int j=-1; j<2; j++){
+        for (int j = -1; j < 2; j++) {
             if ((i != 0) && (j != 0)) {
                 posCible.x = pos.x + i;
                 posCible.y = pos.y + j;
@@ -290,7 +190,7 @@ int getOccurencesOf(FeuilleCarte f, int material) {
     return count;
 }
 
-Position *getPositionsOfMaterial(FeuilleCarte f, int material){
+Position* getPositionsOfMaterial(FeuilleCarte f, int material) {
     Position* positions = malloc(sizeof(Position) * getOccurencesOf(f, material));
     int k = 0;
     for (int i = 0; i < SIZE; i++) {
@@ -315,7 +215,7 @@ void copyFeuilleCarte(FeuilleCarte Ffrom, FeuilleCarte Fto) {
 }
 
 Position* emptyPositionList(int size) {
-    Position *pos = malloc(sizeof(Position)*size);
+    Position* pos = malloc(sizeof(Position) * size);
     Position p;
     p.x = -10;
     p.y = -10;
@@ -334,8 +234,8 @@ int isDrawable(FeuilleCarte f, FeuilleCarte feuilleVide) {
             if ((feuilleVide[i][j] != 0) && (f[i][j] != 0)) return 0;
 
         }
-        
-        
+
+
     }
     return 1;
 }
@@ -349,7 +249,7 @@ void draw(FeuilleCarte f, FeuilleCarte feuilleVide) {
             }
 
         }
-        
+
 
     }
 
@@ -365,7 +265,7 @@ void tryDraw(FeuilleCarte f, FeuilleCarte feuilleVide, FeuilleCarte sortie) {
             else sortie[i][j] = max(feuilleVide[i][j], f[i][j]);
 
         }
-        
+
 
     }
 }
@@ -379,33 +279,33 @@ void tryDraw(FeuilleCarte f, FeuilleCarte feuilleVide, FeuilleCarte sortie) {
 
 int drawU(FeuilleCarte f, Position pos, int rotation, int material) {
     int rot = rotation % 4;
-    if(!(isInCarte(pos.x , pos.y))) return 0;
+    if (!(isInCarte(pos.x, pos.y))) return 0;
     f[pos.x][pos.y] = material;
 
-    switch (rot){
+    switch (rot) {
     case(0):
-        
 
-        if (!(isInCarte(pos.x - 1, pos.y)&isInCarte(pos.x + 1, pos.y)&isInCarte(pos.x + 1, pos.y + 1)&isInCarte(pos.x - 1, pos.y +1))) return 0;
-        f[pos.x-1][pos.y] = material;
+
+        if (!(isInCarte(pos.x - 1, pos.y) & isInCarte(pos.x + 1, pos.y) & isInCarte(pos.x + 1, pos.y + 1) & isInCarte(pos.x - 1, pos.y + 1))) return 0;
+        f[pos.x - 1][pos.y] = material;
         f[pos.x + 1][pos.y] = material;
-        f[pos.x + 1][pos.y+1] = material;
+        f[pos.x + 1][pos.y + 1] = material;
         f[pos.x - 1][pos.y + 1] = material;
         return 1;
 
     case(2):
         if (!(isInCarte(pos.x - 1, pos.y) & isInCarte(pos.x + 1, pos.y) & isInCarte(pos.x + 1, pos.y - 1) & isInCarte(pos.x - 1, pos.y - 1))) return 0;
         f[pos.x - 1][pos.y] = material;
-        f[pos.x + 1][pos.y] = material; 
+        f[pos.x + 1][pos.y] = material;
         f[pos.x + 1][pos.y - 1] = material;
         f[pos.x - 1][pos.y - 1] = material;
         return 1;
 
     case(1):
-        if (!(isInCarte(pos.x , pos.y+1) & isInCarte(pos.x  , pos.y-1) & isInCarte(pos.x + 1, pos.y + 1) & isInCarte(pos.x + 1, pos.y - 1))) return 0;
+        if (!(isInCarte(pos.x, pos.y + 1) & isInCarte(pos.x, pos.y - 1) & isInCarte(pos.x + 1, pos.y + 1) & isInCarte(pos.x + 1, pos.y - 1))) return 0;
         f[pos.x][pos.y + 1] = material;
         f[pos.x][pos.y - 1] = material;
-        f[pos.x+1][pos.y + 1] = material;
+        f[pos.x + 1][pos.y + 1] = material;
         f[pos.x + 1][pos.y - 1] = material;
         return 1;
 
@@ -420,7 +320,7 @@ int drawU(FeuilleCarte f, Position pos, int rotation, int material) {
 
 
     }
-    
+
     return 0;
 }
 
@@ -429,11 +329,11 @@ int drawShape(FeuilleCarte f, Piece piece, Position pos, int rotation, int mater
     Piece pieceOrientee;
     copyPiece(piece, pieceOrientee);
     rotateShape(pieceOrientee, rotation);
-    
+
     initCarte(buff, FALSE);
-    for (int i = -1; i < PIECESIZE-1; i++) {
-        for (int j = -1; j < PIECESIZE-1; j++) {
-            if (pieceOrientee[i+1][j+1]==1) {
+    for (int i = -1; i < PIECESIZE - 1; i++) {
+        for (int j = -1; j < PIECESIZE - 1; j++) {
+            if (pieceOrientee[i + 1][j + 1] == 1) {
                 if (!isInCarte(pos.x + i, pos.y + j)) return 0;
                 buff[pos.x + i][pos.y + j] = material;
             }
@@ -441,7 +341,7 @@ int drawShape(FeuilleCarte f, Piece piece, Position pos, int rotation, int mater
     }
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
-            if (buff[i][j]!=0) f[i][j] = buff[i][j];
+            if (buff[i][j] != 0) f[i][j] = buff[i][j];
         }
     }
     return 1;
@@ -449,26 +349,26 @@ int drawShape(FeuilleCarte f, Piece piece, Position pos, int rotation, int mater
 }
 
 void rotateShape(Piece piece, int rotation) {
-    for (int k = 0; k < rotation%4; k++) {
-    int buff[SIZE][PIECESIZE] = { {0,0} };
+    for (int k = 0; k < rotation % 4; k++) {
+        int buff[SIZE][PIECESIZE] = { {0,0} };
 
-    for (int i = 0; i < PIECESIZE; i++) {
-        for (int j = 0; j < PIECESIZE; j++) {
-            buff[j][i] = piece[i][PIECESIZE - j-1];
+        for (int i = 0; i < PIECESIZE; i++) {
+            for (int j = 0; j < PIECESIZE; j++) {
+                buff[j][i] = piece[i][PIECESIZE - j - 1];
+
+            }
 
         }
 
-    }
 
-    
-      
-    
-    for (int i = 0; i < PIECESIZE; i++) {
-        for (int j = 0; j < PIECESIZE; j++) {
-            piece[j][i] = buff[j][i];
-            
-        }    
-    }
+
+
+        for (int i = 0; i < PIECESIZE; i++) {
+            for (int j = 0; j < PIECESIZE; j++) {
+                piece[j][i] = buff[j][i];
+
+            }
+        }
     }
 }
 
@@ -511,7 +411,7 @@ int placementU(FeuilleCarte f, int material) {
 }
 
 
-int placementDefault(FeuilleCarte f,int  material) {
+int placementDefault(FeuilleCarte f, int  material) {
     if (getEmptySpots(f) == 0) return 0;
     placementShape(f, POINT, material);
     return 1;
@@ -566,7 +466,7 @@ int checkU(FeuilleCarte f) {
                 initCarte(feuilleVide, FALSE);
                 pos.x = i;
                 pos.y = j;
-                
+
 
                 drawable = drawU(feuilleVide, pos, r, 4);
                 tryDraw(f, feuilleVide, temp);
@@ -598,11 +498,11 @@ int checkShape(FeuilleCarte f, Piece shape) {
                 pos.y = j;
 
 
-                drawable = drawShape(feuilleVide,shape, pos, r, 4);
+                drawable = drawShape(feuilleVide, shape, pos, r, 4);
                 tryDraw(f, feuilleVide, temp);
-                
+
                 drawable = min(drawable, isDrawable(f, feuilleVide));
-                
+
                 if (drawable == 1) return 1;
 
 
@@ -628,9 +528,9 @@ int checkShape(FeuilleCarte f, Piece shape) {
 int calcSentinelWood(FeuilleCarte f) {
     int somme = 0;
     for (int i = 0; i < SIZE; i++) if (f[0][i] == FORET) somme++;
-    for (int i = 0; i < SIZE; i++) if (f[SIZE-1][i] == FORET) somme++;
+    for (int i = 0; i < SIZE; i++) if (f[SIZE - 1][i] == FORET) somme++;
     for (int i = 0; i < SIZE; i++) if (f[i][0] == FORET) somme++;
-    for (int i = 0; i < SIZE; i++) if (f[i][SIZE-1] == FORET) somme++;
+    for (int i = 0; i < SIZE; i++) if (f[i][SIZE - 1] == FORET) somme++;
     if (f[0][0] == FORET) somme--;
     if (f[0][SIZE - 1] == FORET) somme--;
     if (f[SIZE - 1][0] == FORET) somme--;
@@ -704,12 +604,12 @@ int calcStoneSideQuest(FeuilleCarte f) {
             printf("\n\n%d\n", buff);
             if (buff > -1)somme += buff;
             step++;
-        } while ((buff > -1) && (step < 200) &&!(isForestAllProcessed(temp)));
+        } while ((buff > -1) && (step < 200) && !(isForestAllProcessed(temp)));
 
 
     }
 
-    return somme/2;
+    return somme / 2;
 }
 
 
@@ -722,14 +622,14 @@ int nextForestStep(FeuilleCarte f) {
                 f[i][j] = 0;
                 for (int k = -1; k < 2; k++) {
                     for (int l = -1; l < 2; l++) {
-						if (isInCarte(i + k, j + l)) {
-                       
-                        if (f[i + k][j + l] == FORET) {
-                            f[i + k][j + l] = NEXTFOREST;
-                        }
-                        else if (f[i + k][j + l] == MONTAGNE) {
-                            f[i + k][j + l] = 0;
-                            total++;
+                        if (isInCarte(i + k, j + l)) {
+
+                            if (f[i + k][j + l] == FORET) {
+                                f[i + k][j + l] = NEXTFOREST;
+                            }
+                            else if (f[i + k][j + l] == MONTAGNE) {
+                                f[i + k][j + l] = 0;
+                                total++;
                             }
                         }
                     }
@@ -746,7 +646,7 @@ int nextForestStep(FeuilleCarte f) {
 
     if (nbO == 11 * 11) return -1;
     return total;
-    
+
 
 }
 
@@ -767,27 +667,27 @@ int calcCanalLake(FeuilleCarte f) {
         for (int j = 0; j < SIZE; j++) {
             if (f[i][j] == EAU) {
 
-                for (int k = -1; k < 2; k ++) {
+                for (int k = -1; k < 2; k++) {
                     if (isInCarte(i + k, j)) if (f[i + k][j] == CHAMPS) somme++;
                 }
-                for (int k = -1; k < 2; k ++) {
+                for (int k = -1; k < 2; k++) {
                     if (isInCarte(i, j + k)) if (f[i][j + k] == CHAMPS) somme++;
                 }
 
             }
             if (f[i][j] == CHAMPS) {
 
-                for (int k = -1; k < 2; k ++) {
+                for (int k = -1; k < 2; k++) {
                     if (isInCarte(i + k, j)) if (f[i + k][j] == EAU) somme++;
                 }
-                for (int k = -1; k < 2; k ++) {
+                for (int k = -1; k < 2; k++) {
                     if (isInCarte(i, j + k)) if (f[i][j + k] == EAU) somme++;
                 }
 
 
             }
         }
-        
+
     }
     return somme;
 }
@@ -813,7 +713,7 @@ int calcMageValey(FeuilleCarte f) {
 
     int somme;
     somme = pointAdjacensce(f, EAU, MONTAGNE) * 2;
-	somme += pointAdjacensce(f, CHAMPS, MONTAGNE);
+    somme += pointAdjacensce(f, CHAMPS, MONTAGNE);
 
 }
 
@@ -828,21 +728,21 @@ int calcShoreSideExpanse(FeuilleCarte f) {
 
 
 int CalcShoreSidePart1(FeuilleCarte f, int material) {
-    Position *posOfMaterial = getPositionsOfMaterial(f, material);
-    Position *alreadyChecked = emptyPositionList(getOccurencesOf(f,material));
-    
+    Position* posOfMaterial = getPositionsOfMaterial(f, material);
+    Position* alreadyChecked = emptyPositionList(getOccurencesOf(f, material));
+
     int occurences = getOccurencesOf(f, material);
     int somme = 0;
-    
+
 
     for (int i = 0; i < occurences; i++) {
         int retour = 1;
-        
+
         FeuilleCarte temp;
         copyFeuilleCarte(f, temp);
-        temp[posOfMaterial[i].x][posOfMaterial[i].y]=ACTUAL;
+        temp[posOfMaterial[i].x][posOfMaterial[i].y] = ACTUAL;
         int fullprocess = 0;
-        while (retour&&!fullprocess) {
+        while (retour && !fullprocess) {
             retour = ShoreSide1NextStep(temp, material, alreadyChecked, occurences);
             fullprocess = isAllProcessed(temp);
             displayCarte(temp);
@@ -861,20 +761,20 @@ int CalcShoreSidePart1(FeuilleCarte f, int material) {
 
 }
 
-int ShoreSide1NextStep(FeuilleCarte temp, int material, Position *alreadyChecked, int occurences) {
+int ShoreSide1NextStep(FeuilleCarte temp, int material, Position* alreadyChecked, int occurences) {
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
             if (temp[i][j] == ACTUAL) {
-                
+
                 temp[i][j] = 0;
                 for (int k = -1; k < 2; k++) {
                     for (int l = -1; l < 2; l++) {
                         if (isInCarte(i + k, j + l)) {
                             if (temp[i + k][j + l] == material) {
-                                
+
                                 for (int m = 0; m < occurences; m++) {
                                     if ((alreadyChecked[m].x == i + k) && (alreadyChecked[m].y == j + l)) {
-                                        
+
                                         return 0;
                                     }
                                 }
@@ -915,7 +815,7 @@ int isAllProcessed(FeuilleCarte f) {
     return 1;
 }
 
-void nextStepShoreside(FeuilleCarte temp){
+void nextStepShoreside(FeuilleCarte temp) {
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
             if (temp[i][j] == NEXT) temp[i][j] = ACTUAL;

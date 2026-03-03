@@ -15,7 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Teste Carthographie.c">
+    <ClCompile Include="main.c">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="LibCarthographie.c">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>
