@@ -1,5 +1,3 @@
-// Teste Carthographie.cpp : Ce fichier contient la fonction 'main'. L'exécution du programme commence et se termine à cet endroit.
-//
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <stdio.h>
@@ -131,16 +129,12 @@ int isInCarte(int x, int y) {
 }
 
 void copyPiece(Piece pieceFrom, Piece pieceTo) {
-
     for (int i = 0; i < PIECESIZE; i++) {
         for (int j = 0; j < PIECESIZE; j++) {
             pieceTo[i][j] = pieceFrom[i][j];
-
+            
         }
-
     }
-
-
 }
 
 int isPosmaterial(FeuilleCarte f, Position pos, int material) {
@@ -152,10 +146,10 @@ void getVoisinMaterialPos(FeuilleCarte f, Position pos, int material, Position l
     Position posCible;
     posCible.x = -1;
     posCible.y = -1;
-    for (int a = 0; a < 8; a++) { listeVoisins[a] = posCible; }
+	for (int a = 0; a < 4; a++) { listeVoisins[a] = posCible; } // 8 -> 4 Les diagonales ne sont pas considérées comme des voisins, voir page 9 du livret de regles
 
     int k = 0;
-    for (int i = -1; i < 2; i++) {
+    /*for (int i = -1; i < 2; i++) {
         for (int j = -1; j < 2; j++) {
             if ((i != 0) && (j != 0)) {
                 posCible.x = pos.x + i;
@@ -166,7 +160,17 @@ void getVoisinMaterialPos(FeuilleCarte f, Position pos, int material, Position l
                 }
             }
         }
-    }
+    }*/
+
+	Position d[4] = { {0,1}, {0,-1}, {1,0}, {-1,0} };
+    for (int i = 0; i < 4; i++) {
+        posCible.x = pos.x + d[i].x;
+        posCible.y = pos.y + d[i].y;
+        if (isPosmaterial(f, posCible, material)) {
+            listeVoisins[k] = posCible;
+            k++;
+        }
+	}
 
 }
 

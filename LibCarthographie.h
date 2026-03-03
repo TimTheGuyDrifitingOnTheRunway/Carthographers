@@ -31,8 +31,6 @@
 #define ACTUAL 12
 #define NEXT 13
 
-
-
 /*****************************************TYPEDEFS**************************************************/
 typedef int FeuilleCarte[SIZE][SIZE];
 typedef int Piece[PIECESIZE][PIECESIZE];
