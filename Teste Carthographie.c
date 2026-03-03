@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-// yeeees
+
 /*****************************************CONSTANTES**************************************************/
 #define SIZE 11
 #define PIECESIZE 3
@@ -28,6 +28,9 @@
 
 #define ACTUALFOREST 10
 #define NEXTFOREST 11
+
+#define ACTUAL 12
+#define NEXT 13
 
 
 
@@ -95,6 +98,10 @@ int isForestAllProcessed(FeuilleCarte f);
 int calcCanalLake(FeuilleCarte f);
 int pointAdjacensce(FeuilleCarte f, int materia1, int material2);
 
+int calcShoreSideExpanse(FeuilleCarte f);
+int CalcShoreSidePart1(FeuilleCarte f, int material);
+void nextStepShoreside(FeuilleCarte temp);
+
 /*****************************************CONSTANTES PIECES**************************************************/
 
 
@@ -131,16 +138,16 @@ int main()
     }*/
     
     placementShape(f, L, CHAMPS);
+    placementShape(f, L, CHAMPS);
     placementShape(f, L, EAU);
 
     printf("\n nombre of montagnes :%d\n", getOccurencesOf(f, MONTAGNE));
 
-    displayCarte(f);
-
+    
    
     
   
-    printf("\n\n\n\n canal Lake value : %d\n", calcCanalLake(f));
+    printf("\n\n\n\n canal shoreside expanse : %d\n", calcShoreSideExpanse(f));
     
 
     
@@ -811,5 +818,107 @@ int calcMageValey(FeuilleCarte f) {
 }
 
 
+int calcShoreSideExpanse(FeuilleCarte f) {
+    int somme = 0;
+    somme += CalcShoreSidePart1(f, CHAMPS);
 
 
+    return somme;
+}
+
+
+int CalcShoreSidePart1(FeuilleCarte f, int material) {
+    Position *posOfMaterial = getPositionsOfMaterial(f, material);
+    Position *alreadyChecked = emptyPositionList(getOccurencesOf(f,material));
+    
+    int occurences = getOccurencesOf(f, material);
+    int somme = 0;
+    
+
+    for (int i = 0; i < occurences; i++) {
+        int retour = 1;
+        
+        FeuilleCarte temp;
+        copyFeuilleCarte(f, temp);
+        temp[posOfMaterial[i].x][posOfMaterial[i].y]=ACTUAL;
+        int fullprocess = 0;
+        while (retour&&!fullprocess) {
+            retour = ShoreSide1NextStep(temp, material, alreadyChecked, occurences);
+            fullprocess = isAllProcessed(temp);
+            displayCarte(temp);
+            printf("\n");
+            for (int i = 0; i < occurences; i++)printf("(%d, %d) ", alreadyChecked[i].x, alreadyChecked[i].y);
+
+        }
+        if (retour) {
+            somme += 3;
+
+            printf("\n\n valeur de somme actuelle : %d \n\n", somme);
+        }
+    }
+
+    return somme;
+
+}
+
+int ShoreSide1NextStep(FeuilleCarte temp, int material, Position *alreadyChecked, int occurences) {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            if (temp[i][j] == ACTUAL) {
+                
+                temp[i][j] = 0;
+                for (int k = -1; k < 2; k++) {
+                    for (int l = -1; l < 2; l++) {
+                        if (isInCarte(i + k, j + l)) {
+                            if (temp[i + k][j + l] == material) {
+                                
+                                for (int m = 0; m < occurences; m++) {
+                                    if ((alreadyChecked[m].x == i + k) && (alreadyChecked[m].y == j + l)) {
+                                        
+                                        return 0;
+                                    }
+                                }
+
+                                temp[i + k][j + l] = NEXT;
+                                printf(" debug : \n ");
+                                displayCarte(temp);
+                                printf("\n");
+                                int n = 0;
+                                while (alreadyChecked[n].x > -1)n++;
+                                alreadyChecked[n].x = i + k;
+                                alreadyChecked[n].y = j + l;
+
+
+                            }
+                            else if (temp[i + k][j + l] == EAU) return 0;
+                        }
+                        else {
+                            return 0;
+                        }
+                    }
+                }
+            }
+        }
+        nextStepShoreside(temp);
+    }
+    return 1;
+
+}
+
+
+int isAllProcessed(FeuilleCarte f) {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            if (f[i][j] == ACTUAL) return 0;
+        }
+    }
+    return 1;
+}
+
+void nextStepShoreside(FeuilleCarte temp){
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            if (temp[i][j] == NEXT) temp[i][j] = ACTUAL;
+        }
+    }
+}
