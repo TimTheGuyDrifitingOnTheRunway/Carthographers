@@ -218,6 +218,7 @@ void copyFeuilleCarte(FeuilleCarte Ffrom, FeuilleCarte Fto) {
     }
 }
 
+
 Position* emptyPositionList(int size) {
     Position* pos = malloc(sizeof(Position) * size);
     Position p;
@@ -229,6 +230,88 @@ Position* emptyPositionList(int size) {
     }
     return pos;
 }
+
+int isGroupAtPosNeighborWithMaterial(FeuilleCarte f, Position pos, int material, int includeBorder) {/// revoit 1 si le groupe à la position pos est voisin avec un groupe de meteriau material ou la bordure (si include border est actif)
+    FeuilleCarte temp;
+    int groupMaterial = f[pos.x][pos.y];
+    printf("metirial cible : %d \n", groupMaterial);
+    copyFeuilleCarte(f, temp);
+    temp[pos.x][pos.y] = ACTUAL;
+    if (temp[pos.x][pos.y] == 0) return 0;
+    int finish = 0;
+    int result = 1;
+    while (result && !finish) {
+        displayCarte(temp);
+        printf("\n");
+
+        result = GroupNextStep(temp, groupMaterial, material, includeBorder);
+        finish = isAllProcessed(temp);
+        displayCarte(temp);
+        printf("\n");
+
+    }
+    return !result;
+
+}
+
+int GroupNextStep(FeuilleCarte temp, int material, int materialToAvoid, int includeBorder) {//fonction recurrente du calcul de voisinage
+    int retour = 0;
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            if (temp[i][j] == ACTUAL) {
+                retour = 1;
+                temp[i][j] = 0;
+                for (int k = -1; k < 2; k++) {
+ 
+                        if (isInCarte(i + k, j)) {
+                            if (temp[i + k][j] == material) {
+                                temp[i + k][j] = NEXT;
+                            }
+                            else if (temp[i + k][j] == materialToAvoid) {
+                                return 0;
+
+                            }
+
+                        }
+                        else if (includeBorder) return 0;
+
+                        if (isInCarte(i, j+k)) {
+                            if (temp[i][j+k] == material) {
+                                temp[i][j+k] = NEXT;
+                            }
+                            else if (temp[i][j+k] == materialToAvoid) {
+                                return 0;
+
+                            }
+
+                        }
+                        else if (includeBorder) return 0;
+
+
+                    
+                }
+            }
+        }
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                if (temp[i][j] == NEXT) temp[i][j] = ACTUAL;
+            }
+        }
+
+    }
+    return 1;
+}
+
+int isAllProcessed(FeuilleCarte f) {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            if (f[i][j] == ACTUAL) return 0;
+        }
+    }
+    return 1;
+}
+
+
 
 /*********************************FONCTIONS DE DESSIN DE FEUILLE********************************/
 
@@ -261,7 +344,7 @@ void draw(FeuilleCarte f, FeuilleCarte feuilleVide) {
 }
 
 
-void tryDraw(FeuilleCarte f, FeuilleCarte feuilleVide, FeuilleCarte sortie) {
+void tryDraw(FeuilleCarte f, FeuilleCarte feuilleVide, FeuilleCarte sortie) {// remplie la grille sortie en fusionant les valeurs de f et feuillevide. si 2 valeurs sont au même endroit : ecrit COnflictValue à la place
     initCarte(sortie, FALSE);
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
@@ -615,7 +698,7 @@ int calcStoneSideQuest(FeuilleCarte f) {
 
     }
 
-    return somme / 2;
+    return somme*3 ;
 }
 
 
@@ -720,6 +803,7 @@ int calcMageValey(FeuilleCarte f) {
     int somme;
     somme = pointAdjacensce(f, EAU, MONTAGNE) * 2;
     somme += pointAdjacensce(f, CHAMPS, MONTAGNE);
+    return somme;
 
 }
 
@@ -812,14 +896,7 @@ int ShoreSide1NextStep(FeuilleCarte temp, int material, Position* alreadyChecked
 }
 
 
-int isAllProcessed(FeuilleCarte f) {
-    for (int i = 0; i < SIZE; i++) {
-        for (int j = 0; j < SIZE; j++) {
-            if (f[i][j] == ACTUAL) return 0;
-        }
-    }
-    return 1;
-}
+
 
 void nextStepShoreside(FeuilleCarte temp) {
     for (int i = 0; i < SIZE; i++) {
@@ -828,3 +905,5 @@ void nextStepShoreside(FeuilleCarte temp) {
         }
     }
 }
+
+

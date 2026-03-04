@@ -90,6 +90,7 @@ int GUIplacementShape(FeuilleCarte f, Piece shape, int material, Camera3D camera
             CloseWindow();
             exit(1);
         }
+        
         draw(f, feuilleVide);
         return 1;
     }

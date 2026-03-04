@@ -31,6 +31,7 @@
 #define ACTUAL 12
 #define NEXT 13
 
+
 /*****************************************TYPEDEFS**************************************************/
 typedef int FeuilleCarte[SIZE][SIZE];
 typedef int Piece[PIECESIZE][PIECESIZE];
@@ -61,6 +62,9 @@ Position* getPositionsOfMaterial(FeuilleCarte f, int material);
 float distPos(Position a, Position b);
 Position* emptyPositionList(int size);
 
+
+int GroupNextStep(FeuilleCarte temp, int material, int materialToAvoid, int includeBorder);
+int isGroupAtPosNeighborWithMaterial(FeuilleCarte f, Position pos, int material, int includeBorder);
 //dessins de formes//////////////////////////////
 
 int drawU(FeuilleCarte f, Position pos, int rotation, int material);//DEPRECIé

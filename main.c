@@ -43,11 +43,12 @@ int main()
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
 
+    GUIplacementShape(f, U, FORET, camera);
+    GUIplacementShape(f, L, FORET, camera);
 
-
-    while(1) GUIplacementShape(f, U, FORET, camera);
+    while(0) GUIplacementShape(f, U, FORET, camera);
  
-    
+    printf("%d", isGroupAtPosNeighborWithMaterial(f, (Position) { 1, 1 }, MONTAGNE, FALSE));
 
     // De-Initialization
     //--------------------------------------------------------------------------------------
