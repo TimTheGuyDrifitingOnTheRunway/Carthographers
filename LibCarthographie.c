@@ -142,7 +142,7 @@ int isPosmaterial(FeuilleCarte f, Position pos, int material) {
     return 0;
 }
 
-void getVoisinMaterialPos(FeuilleCarte f, Position pos, int material, Position listeVoisins[8]) {
+void getVoisinMaterialPos(FeuilleCarte f, Position pos, int material, Position listeVoisins[8]) {// retourne dans listeVoisins les positions des voisins de pos qui sont du material
     Position posCible;
     posCible.x = -1;
     posCible.y = -1;
