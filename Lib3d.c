@@ -80,7 +80,7 @@ int GUIplacementShape(FeuilleCarte f, Piece shape, int material, Camera3D camera
             if (IsKeyPressed(KEY_R)) {
                 rotation = (rotation + 1);
             }
-            printf("rotation %d(%d, %d) \n", rotation, pos.x, pos.y);
+            //printf("rotation %d(%d, %d) \n", rotation, pos.x, pos.y);
             if (IsKeyPressed(KEY_SPACE) && drawable) {
                 done = 1;
             }

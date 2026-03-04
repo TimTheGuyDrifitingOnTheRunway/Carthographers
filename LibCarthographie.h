@@ -61,6 +61,7 @@ int getOccurencesOf(FeuilleCarte f, int material);
 Position* getPositionsOfMaterial(FeuilleCarte f, int material);
 float distPos(Position a, Position b);
 Position* emptyPositionList(int size);
+void copyPiece(Piece pieceFrom, Piece pieceTo);
 
 
 int GroupNextStep(FeuilleCarte temp, int material, int materialToAvoid, int includeBorder);
