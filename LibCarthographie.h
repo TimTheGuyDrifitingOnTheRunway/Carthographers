@@ -100,12 +100,37 @@ int CalcShoreSidePart1(FeuilleCarte f, int material);
 void nextStepShoreside(FeuilleCarte temp);
 
 /*****************************************CONSTANTES PIECES**************************************************/
+// Notaion : L_XXX = petit XXX ; B_XXX = GRAND XXX
 
+extern const Piece POINT;
 
-extern const Piece POINT ;
 extern const Piece U;
 
 extern const Piece L;
+extern const Piece L_L;
+extern const Piece B_L;
+
+extern const Piece LINE;
+extern const Piece L_LINE;
+
+extern const Piece T;
+extern const Piece L_T;
+
+extern const Piece CUBE;
+extern const Piece RECT;
+extern const Piece RECT_WITH_HOLE;
+
+extern const Piece DIAG;
+extern const Piece L_DIAG;
+
+extern const Piece CROSS;
+extern const Piece STAIRS;
+
+extern const Piece Z;
+extern const Piece B_Z;
+
+
+
 
 
 

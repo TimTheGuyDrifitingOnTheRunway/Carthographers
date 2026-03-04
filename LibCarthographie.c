@@ -7,44 +7,38 @@
 #include "LibCarthographie.h"
 #pragma once
 
-/*****************************************CONSTANTES**************************************************/
-#define SIZE 11
-#define PIECESIZE 3
-#define PIECESIZE 3
-#define NOMBREMONTAGNE 5
-#define TRUE 1
-#define FALSE 0
-#define CONFLICTVALUE 9
-#define OUTOFBOUND -1
-
-
-#define FORET 2
-#define VILLAGE 3
-#define CHAMPS 4
-#define EAU 5
-#define MONSTRE 6
-#define HEROS 7
-#define MONTAGNE 8
-
-#define ACTUALFOREST 10
-#define NEXTFOREST 11
-
-#define ACTUAL 12
-#define NEXT 13
-
 /*****************************************CONSTANTES PIECES*************************************************/
 
-const Piece POINT = { {0,0,0},{0,1,0}, {0,0,0} };
-const Piece U = {
-    {1, 0, 1},
-    {1, 1, 1},
-    {0, 0 ,0} };
+const Piece POINT = { {0,0,0},{0,1,0},{0,0,0} };
 
-const Piece L = {
-    {0, 1, 0},
-    {0, 1, 0},
-    {0, 1, 1}
-};
+const Piece U = { {1, 0, 1},{1, 1, 1},{0, 0 ,0} };
+
+const Piece L = { {0, 1, 0},{0, 1, 0},{0, 1, 1} };
+const Piece L_L = { {1,0,0},{1,1,0},{0,0,0} };
+const Piece B_L = { {1,0,0},{1,0,0},{1,1,1} };
+
+const Piece LINE = { {0,0,0},{1,1,1},{0,0,0} };
+const Piece L_LINE = { {0,0,0},{1,1,0},{0,0,0} };
+
+const Piece CUBE = { {1,1,0},{1,1,0},{0,0,0} };
+
+const Piece T = { {1,1,1},{0,1,0},{0,1,0} };
+const Piece L_T = { {0,0,0},{1,1,1},{0,1,0} };
+
+const Piece RECT = { {1,1,1},{1,1,1},{0,0,0} };
+const Piece RECT_WITH_HOLE = { {1,0,1},{1,0,1},{0,0,0} };
+
+const Piece DIAG = { {1,0,0},{0,1,0},{0,0,1} };
+const Piece L_DIAG = { {1,0,0},{0,1,0},{0,0,0} };
+
+const Piece CROSS = { {0,1,0},{1,1,1},{0,1,0} };
+
+const Piece STAIRS = { {1,1,0},{0,1,1},{0,0,1} };
+
+const Piece Z = { {0,0,1},{0,1,1},{0,1,0} };
+const Piece B_Z = { {0,0,1},{1,1,1},{1,0,0} };
+
+
 
 
 

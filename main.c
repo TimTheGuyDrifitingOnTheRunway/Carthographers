@@ -43,9 +43,9 @@ int main()
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
 
+	Piece pieceTab[] = { POINT, U, L, L_L, B_L, LINE, L_LINE, CUBE, T, L_T, RECT, RECT_WITH_HOLE, DIAG, L_DIAG, CROSS, STAIRS, Z, B_Z };
 
-
-    while(1) GUIplacementShape(f, U, FORET, camera);
+    for (int i = 0; i < 2; i++) { GUIplacementShape(f, pieceTab[randInt(0, 16)], randInt(2,7), camera); }
  
     
 
