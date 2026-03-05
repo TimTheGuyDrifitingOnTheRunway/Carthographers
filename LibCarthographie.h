@@ -67,32 +67,35 @@ Position* getPositionsOfMaterial(FeuilleCarte f, int material);
 float distPos(Position a, Position b);
 Position* emptyPositionList(int size);
 void copyPiece(Piece pieceFrom, Piece pieceTo);
+void flipShape(Piece shape);
 
 
 int GroupNextStep(FeuilleCarte temp, int material, int materialToAvoid, int includeBorder);
 int isGroupAtPosNeighborWithMaterial(FeuilleCarte f, Position pos, int material, int includeBorder);
 //dessins de formes//////////////////////////////
 
-int drawU(FeuilleCarte f, Position pos, int rotation, int material);//DEPRECIé
+int drawU(FeuilleCarte f, Position pos, int rotation, int material);//DEPRECIÃ©
 int drawShape(FeuilleCarte f, Piece piec, Position pos, int rotation, int material);//fonction Universelle
 
 
 
 
 //placement des formes/////////////////////////////////////////////////
-int placementU(FeuilleCarte f, int material);//DEPRECIée
+int placementU(FeuilleCarte f, int material);//DEPRECIÃ©e
 int placementDefault(FeuilleCarte f, int material);
 
-int placementShape(FeuilleCarte f, Piece shape, int material);//SP à utiliser pour placer une forme sur une feuilleCarte
+int placementShape(FeuilleCarte f, Piece shape, int material);//SP Ã  utiliser pour placer une forme sur une feuilleCarte
 
 
 
 
-// vérification de la placabilité
-int checkU(FeuilleCarte f);//DEPRECIé
+// vÃ©rification de la placabilitÃ©
+int checkU(FeuilleCarte f);//DEPRECIÃ©
 int checkShape(FeuilleCarte f, Piece shape);
 
 //Calcul des points :
+int CalcPoints(FeuilleCarte f);
+
 int calcSentinelWood(FeuilleCarte f);
 int calcTreeTower(FeuilleCarte f);
 int calcGreenBough(FeuilleCarte f);

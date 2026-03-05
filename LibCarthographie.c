@@ -47,7 +47,7 @@ const Piece B_Z = { {0,0,1},{1,1,1},{1,0,0} };
 
 
 /******************************FONCTIONS SOUS PROGRAMMES************************/
-void initCarte(FeuilleCarte f, int montagneActive) {  // Dépréciée
+void initCarte(FeuilleCarte f, int montagneActive) {  // DÃ©prÃ©ciÃ©e
 
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
@@ -124,6 +124,16 @@ void setupMontagnePosition(int posMontage[NOMBREMONTAGNE][2]) {
     }
 }
 
+void flipShape(Piece shape){
+    for (int i = 0; i < PIECESIZE; i++) {
+        for (int j = 0; j < PIECESIZE / 2; j++) {
+            int temp = shape[i][j];
+            shape[i][j] = shape[i][PIECESIZE - 1 - j];
+            shape[i][PIECESIZE - 1 - j] = temp;
+        }
+    }
+	
+}
 
 void setupRuinsPosition(FeuilleCarte f, int posRuins[NOMBRERUINE][2]) {
     Position* op = emptyPositionList(NOMBRERUINE);
@@ -207,7 +217,7 @@ void getVoisinMaterialPos(FeuilleCarte f, Position pos, int material, Position l
     Position posCible;
     posCible.x = -1;
     posCible.y = -1;
-	for (int a = 0; a < 4; a++) { listeVoisins[a] = posCible; } // 8 -> 4 Les diagonales ne sont pas considérées comme des voisins, voir page 9 du livret de regles
+	for (int a = 0; a < 4; a++) { listeVoisins[a] = posCible; } // 8 -> 4 Les diagonales ne sont pas considÃ©rÃ©es comme des voisins, voir page 9 du livret de regles
 
     int k = 0;
     /*for (int i = -1; i < 2; i++) {
@@ -292,7 +302,7 @@ Position* emptyPositionList(int size) {
     return pos;
 }
 
-int isGroupAtPosNeighborWithMaterial(FeuilleCarte f, Position pos, int material, int includeBorder) {/// revoit 1 si le groupe à la position pos est voisin avec un groupe de meteriau material ou la bordure (si include border est actif)
+int isGroupAtPosNeighborWithMaterial(FeuilleCarte f, Position pos, int material, int includeBorder) {/// revoit 1 si le groupe Ã  la position pos est voisin avec un groupe de meteriau material ou la bordure (si include border est actif)
     FeuilleCarte temp;
     int groupMaterial = f[pos.x][pos.y];
     printf("metirial cible : %d \n", groupMaterial);
@@ -402,7 +412,7 @@ void draw(FeuilleCarte f, FeuilleCarte feuilleVide) {
 }
 
 
-void tryDraw(FeuilleCarte f, FeuilleCarte feuilleVide, FeuilleCarte sortie) {// remplie la grille sortie en fusionant les valeurs de f et feuillevide. si 2 valeurs sont au même endroit : ecrit COnflictValue à la place
+void tryDraw(FeuilleCarte f, FeuilleCarte feuilleVide, FeuilleCarte sortie) {// remplie la grille sortie en fusionant les valeurs de f et feuillevide. si 2 valeurs sont au mÃªme endroit : ecrit COnflictValue Ã  la place
     initCarte(sortie, FALSE);
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
@@ -568,6 +578,8 @@ int placementDefault(FeuilleCarte f, int  material) {
 
 int placementShape(FeuilleCarte f, Piece shape, int material) {
     if (checkShape(f, shape)) {
+		Piece shapeCopy;
+		copyPiece(shape, shapeCopy);
         Position pos;
         int rotation = 0;
         pos.x = 6;
@@ -580,12 +592,14 @@ int placementShape(FeuilleCarte f, Piece shape, int material) {
             initCarte(feuilleVide, FALSE);
             displayCarte(f);
             printf("\n");
-            drawable = drawShape(feuilleVide, shape, pos, rotation, material);
+            drawable = drawShape(feuilleVide, shapeCopy, pos, rotation, material);
             tryDraw(f, feuilleVide, temp);
             displayCarte(temp);
             drawable = drawable && isDrawable(f, feuilleVide);
-            printf(" position actuelle : (%d , %d , %d ) valide : %d \n  entrez la nouvelle position (X Y ROTATION) : ", pos.x, pos.y, rotation, drawable);
-            scanf("%d %d %d", &pos.x, &pos.y, &rotation);
+            int flip = 0;
+            printf(" position actuelle : (%d , %d , %d ) valide : %d \n  entrez la nouvelle position (X Y ROTATION FLIP) : ", pos.x, pos.y, rotation, drawable);
+            scanf("%d %d %d", &pos.x, &pos.y, &rotation, &flip);
+			if (flip) flipShape(shapeCopy);
             printf("\n");
 
 
@@ -606,7 +620,7 @@ int placementShape(FeuilleCarte f, Piece shape, int material) {
 /**************************FONCTIONS DE VERIFICATION DE SOLUTION***************************/
 
 int checkU(FeuilleCarte f) {
-	/// vérifie si il y a la place de placer un u quelque part sur la carte, et retourne 1 si c'est le cas, 0 sinon
+	/// vÃ©rifie si il y a la place de placer un u quelque part sur la carte, et retourne 1 si c'est le cas, 0 sinon
     FeuilleCarte feuilleVide, temp;
     int drawable = 0;
     Position pos;
@@ -636,24 +650,29 @@ int checkU(FeuilleCarte f) {
     return 0;
 }
 
-int checkShape(FeuilleCarte f, Piece shape) {/// vérifie si il y a la place de placer une piece quelque part sur la carte, et retourne 1 si c'est le cas, 0 sinon
+int checkShape(FeuilleCarte f, Piece shape) {/// vÃ©rifie si il y a la place de placer une piece quelque part sur la carte, et retourne 1 si c'est le cas, 0 sinon
     FeuilleCarte feuilleVide, temp;
     int drawable = 0;
     Position pos;
     for (int i = -1; i < SIZE+1; i++) {
         for (int j = -1; j < SIZE+1; j++) {
             for (int r = 0; r < 4; r++) {
-                initCarte(feuilleVide, FALSE);
-                pos.x = i;
-                pos.y = j;
+                for (int flip = 0; flip < 2; flip++) {
+                    Piece shapeCopy;
+                    copyPiece(shape, shapeCopy);
+                    if (flip) flipShape(shapeCopy);
+                    initCarte(feuilleVide, FALSE);
+                    pos.x = i;
+                    pos.y = j;
 
 
-                drawable = drawShape(feuilleVide, shape, pos, r, 4);
-                tryDraw(f, feuilleVide, temp);
+                    drawable = drawShape(feuilleVide, shapeCopy, pos, r, 4);
+                    tryDraw(f, feuilleVide, temp);
 
-                drawable = min(drawable, isDrawable(f, feuilleVide));
+                    drawable = min(drawable, isDrawable(f, feuilleVide));
 
-                if (drawable == 1) return 1;
+                    if (drawable == 1) return 1;
+                }
 
 
 
@@ -673,18 +692,23 @@ int checkShape(FeuilleCarte f, Piece shape) {/// vérifie si il y a la place de p
 
 /************************FONCTIONS de points*******************/
 
+int CalcPoints(FeuilleCarte f) {/// calcule le nombre de points que rapporte la carte f
+    int somme = 0;
+    somme += calcSentinelWood(f);
+    somme += calcTreeTower(f);
+    somme += calcGreenBough(f);
+    somme += calcStoneSideQuest(f);
+    return somme;
+}
+
 
 /*******FORESTIERE********/
 int calcSentinelWood(FeuilleCarte f) {
     int somme = 0;
-    for (int i = 0; i < SIZE; i++) if (f[0][i] == FORET) somme++;
-    for (int i = 0; i < SIZE; i++) if (f[SIZE - 1][i] == FORET) somme++;
-    for (int i = 0; i < SIZE; i++) if (f[i][0] == FORET) somme++;
+    for (int i = 0; i < SIZE - 1; i++) if (f[0][i] == FORET) somme++;
+    for (int i = 0; i < SIZE - 1; i++) if (f[SIZE - 1][i] == FORET) somme++;
+    for (int i = 1; i < SIZE - 1; i++) if (f[i][0] == FORET) somme++;
     for (int i = 0; i < SIZE; i++) if (f[i][SIZE - 1] == FORET) somme++;
-    if (f[0][0] == FORET) somme--;
-    if (f[0][SIZE - 1] == FORET) somme--;
-    if (f[SIZE - 1][0] == FORET) somme--;
-    if (f[SIZE - 1][SIZE - 1] == FORET) somme--;
     return somme;
 
 }
@@ -759,7 +783,7 @@ int calcStoneSideQuest(FeuilleCarte f) {
 
     }
 
-    return somme*3 ;
+    return somme / 2; 
 }
 
 
