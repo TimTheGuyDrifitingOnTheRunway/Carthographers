@@ -56,7 +56,7 @@ int main()
 	Piece* pieceTab[] = {POINT, NOTHING, U, L, L_L, B_L, LINE, L_LINE, CUBE, T, L_T, RECT, RECT_WITH_HOLE, DIAG, L_DIAG, CROSS, STAIRS, Z, B_Z};
     Piece radompiece;
 	copyPiece(pieceTab[3], radompiece);
-    for (int i = 0; i < 5; i++) {GUIplacementShape(f, radompiece, FORET, camera); }
+    for (int i = 0; i < 5; i++) {GUIplacementShape(f, pieceTab[3], FORET, camera); }
     GUIplacementDefault(f, 5, camera);
 	WaitTime(1.0f);
 	printf("\n\n\n\n\n\n\n Debug de fin de partie \n\n\n\n\n\n\n");

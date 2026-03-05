@@ -94,6 +94,8 @@ int checkU(FeuilleCarte f);//DEPRECIé
 int checkShape(FeuilleCarte f, Piece shape);
 
 //Calcul des points :
+int CalcPoints(FeuilleCarte f);
+
 int calcSentinelWood(FeuilleCarte f);
 int calcTreeTower(FeuilleCarte f);
 int calcGreenBough(FeuilleCarte f);
