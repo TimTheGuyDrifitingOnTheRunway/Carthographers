@@ -43,7 +43,7 @@ void GUIDrawFeuille(FeuilleCarte f) {
 					color = WHITE;
                 }
                 DrawCube((Vector3) { x, y, z }, 1.0f, 1.0f, 1.0f, color);
-                DrawCubeWires((Vector3) { x, y, z }, 1.0f, 1.0f, 1.0f, MAROON);
+                //DrawCubeWires((Vector3) { x, y, z }, 1.0f, 1.0f, 1.0f, MAROON);
             }
         }
     }
@@ -71,7 +71,11 @@ int GUIplacementShape(FeuilleCarte f, Piece shape, int material, Camera3D camera
             ClearBackground(RAYWHITE);
             BeginMode3D(camera);
             GUIDrawFeuille(temp);
-            DrawCarteGrid(SIZE, 1.0f);
+
+            for (int i = 0; i < SIZE; i++) for (int j = 0; j < SIZE; j++) if (temp[i][j] !=f[i][j])DrawCubeWires((Vector3) { i-SIZE/2, 0, j-SIZE/2 }, 1.0f, 1.0f, 1.0f, BORDERCOLOR);
+                
+            GUIdrawGrille();
+            // DrawCarteGrid(SIZE, 1.0f);
             EndMode3D();
             EndDrawing();
             drawable = drawable && isDrawable(f, feuilleVide);
@@ -124,4 +128,11 @@ int GUIplacementDefault(FeuilleCarte f, int  material, Camera3D camera) {
     GUIplacementShape(f, POINT, material, camera);
     return 1;
 
+}
+
+void GUIdrawGrille() {
+	for (int i = -SIZE / 2-1; i <= SIZE / 2; i++) {
+        DrawLine3D((Vector3){(float)i+0.5f, 0.0f, (float)-SIZE/2}, (Vector3){(float)i+0.5f, 0.0f, (float)SIZE/2}, GRIDCOLOR);
+        DrawLine3D((Vector3){(float)-SIZE/2, 0.0f, (float)i+0.5f}, (Vector3){(float)SIZE/2, 0.0f, (float)i + 0.5f}, GRIDCOLOR);
+    }
 }

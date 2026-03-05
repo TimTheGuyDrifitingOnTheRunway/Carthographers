@@ -9,10 +9,14 @@
 #include <raylib.h>
 
 
+/*****************************************CONSTANTES d'affichage*************************************************/
 
+#define GRIDCOLOR GRAY
+#define BORDERCOLOR MAROON
 
 
 void DrawCarteGrid(int slices, float spacing);
 void GUIDrawFeuille(FeuilleCarte f);
 int GUIplacementShape(FeuilleCarte f, Piece shape, int material, Camera3D camera);
 int GUIplacementDefault(FeuilleCarte f, int  material, Camera3D camera);
+void GUIdrawGrille();
