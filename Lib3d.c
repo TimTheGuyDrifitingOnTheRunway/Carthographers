@@ -53,6 +53,8 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp) {
 
 int GUIplacementShape(FeuilleCarte f, Piece shape, int material, Camera3D camera) {
     if (checkShape(f, shape)) {
+		Piece shapeCopy;
+		copyPiece(shape, shapeCopy);
         Position pos;
         int rotation = 0;
         pos.x = 6;
@@ -65,7 +67,7 @@ int GUIplacementShape(FeuilleCarte f, Piece shape, int material, Camera3D camera
         int done = 0;
         while (!done && !WindowShouldClose()) {
             initCarte(feuilleVide, FALSE);
-            drawable = drawShape(feuilleVide, shape, pos, rotation, material);
+            drawable = drawShape(feuilleVide, shapeCopy, pos, rotation, material);
             tryDraw(f, feuilleVide, temp);
 
             BeginDrawing();
@@ -94,6 +96,9 @@ int GUIplacementShape(FeuilleCarte f, Piece shape, int material, Camera3D camera
 
             if (IsKeyPressed(KEY_R)) {
                 rotation = (rotation + 1);
+            }
+			if (IsKeyPressed(KEY_F)) {
+                flipShape(shapeCopy);
             }
             //printf("rotation %d(%d, %d) \n", rotation, pos.x, pos.y);
             if (IsKeyPressed(KEY_SPACE) && drawable) {

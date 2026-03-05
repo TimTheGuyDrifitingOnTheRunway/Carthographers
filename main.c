@@ -23,6 +23,8 @@ int main()
     FeuilleCarte f;
     initCarte2(f, TRUE, TRUE);
 
+
+
     // Initialization
     //--------------------------------------------------------------------------------------
     const int screenWidth = 1600;
@@ -53,7 +55,8 @@ int main()
 
 	Piece* pieceTab[] = {POINT, NOTHING, U, L, L_L, B_L, LINE, L_LINE, CUBE, T, L_T, RECT, RECT_WITH_HOLE, DIAG, L_DIAG, CROSS, STAIRS, Z, B_Z};
     Piece radompiece;
-    for (int i = 0; i < 5; i++) {GUIplacementShape(f, pieceTab[randInt(0, 16)], randInt(2,4), camera); }
+	copyPiece(pieceTab[3], radompiece);
+    for (int i = 0; i < 5; i++) {GUIplacementShape(f, radompiece, FORET, camera); }
     GUIplacementDefault(f, 5, camera);
 	WaitTime(1.0f);
 	printf("\n\n\n\n\n\n\n Debug de fin de partie \n\n\n\n\n\n\n");

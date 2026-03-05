@@ -4,6 +4,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 #include "LibCarthographie.h"
 #pragma once
 
@@ -123,6 +124,16 @@ void setupMontagnePosition(int posMontage[NOMBREMONTAGNE][2]) {
     }
 }
 
+void flipShape(Piece shape){
+    for (int i = 0; i < PIECESIZE; i++) {
+        for (int j = 0; j < PIECESIZE / 2; j++) {
+            int temp = shape[i][j];
+            shape[i][j] = shape[i][PIECESIZE - 1 - j];
+            shape[i][PIECESIZE - 1 - j] = temp;
+        }
+    }
+	
+}
 
 void setupRuinsPosition(FeuilleCarte f, int posRuins[NOMBRERUINE][2]) {
     Position* op = emptyPositionList(NOMBRERUINE);
@@ -567,6 +578,8 @@ int placementDefault(FeuilleCarte f, int  material) {
 
 int placementShape(FeuilleCarte f, Piece shape, int material) {
     if (checkShape(f, shape)) {
+		Piece shapeCopy;
+		copyPiece(shape, shapeCopy);
         Position pos;
         int rotation = 0;
         pos.x = 6;
@@ -579,12 +592,14 @@ int placementShape(FeuilleCarte f, Piece shape, int material) {
             initCarte(feuilleVide, FALSE);
             displayCarte(f);
             printf("\n");
-            drawable = drawShape(feuilleVide, shape, pos, rotation, material);
+            drawable = drawShape(feuilleVide, shapeCopy, pos, rotation, material);
             tryDraw(f, feuilleVide, temp);
             displayCarte(temp);
             drawable = drawable && isDrawable(f, feuilleVide);
-            printf(" position actuelle : (%d , %d , %d ) valide : %d \n  entrez la nouvelle position (X Y ROTATION) : ", pos.x, pos.y, rotation, drawable);
-            scanf("%d %d %d", &pos.x, &pos.y, &rotation);
+            int flip = 0;
+            printf(" position actuelle : (%d , %d , %d ) valide : %d \n  entrez la nouvelle position (X Y ROTATION FLIP) : ", pos.x, pos.y, rotation, drawable);
+            scanf("%d %d %d", &pos.x, &pos.y, &rotation, &flip);
+			if (flip) flipShape(shapeCopy);
             printf("\n");
 
 
@@ -642,17 +657,22 @@ int checkShape(FeuilleCarte f, Piece shape) {/// vérifie si il y a la place de p
     for (int i = -1; i < SIZE+1; i++) {
         for (int j = -1; j < SIZE+1; j++) {
             for (int r = 0; r < 4; r++) {
-                initCarte(feuilleVide, FALSE);
-                pos.x = i;
-                pos.y = j;
+                for (int flip = 0; flip < 2; flip++) {
+                    Piece shapeCopy;
+                    copyPiece(shape, shapeCopy);
+                    if (flip) flipShape(shapeCopy);
+                    initCarte(feuilleVide, FALSE);
+                    pos.x = i;
+                    pos.y = j;
 
 
-                drawable = drawShape(feuilleVide, shape, pos, r, 4);
-                tryDraw(f, feuilleVide, temp);
+                    drawable = drawShape(feuilleVide, shapeCopy, pos, r, 4);
+                    tryDraw(f, feuilleVide, temp);
 
-                drawable = min(drawable, isDrawable(f, feuilleVide));
+                    drawable = min(drawable, isDrawable(f, feuilleVide));
 
-                if (drawable == 1) return 1;
+                    if (drawable == 1) return 1;
+                }
 
 
 

@@ -67,6 +67,7 @@ Position* getPositionsOfMaterial(FeuilleCarte f, int material);
 float distPos(Position a, Position b);
 Position* emptyPositionList(int size);
 void copyPiece(Piece pieceFrom, Piece pieceTo);
+void flipShape(Piece shape);
 
 
 int GroupNextStep(FeuilleCarte temp, int material, int materialToAvoid, int includeBorder);
