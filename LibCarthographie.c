@@ -47,7 +47,7 @@ const Piece B_Z = { {0,0,1},{1,1,1},{1,0,0} };
 
 
 /******************************FONCTIONS SOUS PROGRAMMES************************/
-void initCarte(FeuilleCarte f, int montagneActive) {  // Dépréciée
+void initCarte(FeuilleCarte f, int montagneActive) {  // DÃ©prÃ©ciÃ©e
 
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
@@ -217,7 +217,7 @@ void getVoisinMaterialPos(FeuilleCarte f, Position pos, int material, Position l
     Position posCible;
     posCible.x = -1;
     posCible.y = -1;
-	for (int a = 0; a < 4; a++) { listeVoisins[a] = posCible; } // 8 -> 4 Les diagonales ne sont pas considérées comme des voisins, voir page 9 du livret de regles
+	for (int a = 0; a < 4; a++) { listeVoisins[a] = posCible; } // 8 -> 4 Les diagonales ne sont pas considÃ©rÃ©es comme des voisins, voir page 9 du livret de regles
 
     int k = 0;
     /*for (int i = -1; i < 2; i++) {
@@ -302,7 +302,7 @@ Position* emptyPositionList(int size) {
     return pos;
 }
 
-int isGroupAtPosNeighborWithMaterial(FeuilleCarte f, Position pos, int material, int includeBorder) {/// revoit 1 si le groupe à la position pos est voisin avec un groupe de meteriau material ou la bordure (si include border est actif)
+int isGroupAtPosNeighborWithMaterial(FeuilleCarte f, Position pos, int material, int includeBorder) {/// revoit 1 si le groupe Ã  la position pos est voisin avec un groupe de meteriau material ou la bordure (si include border est actif)
     FeuilleCarte temp;
     int groupMaterial = f[pos.x][pos.y];
     printf("metirial cible : %d \n", groupMaterial);
@@ -412,7 +412,7 @@ void draw(FeuilleCarte f, FeuilleCarte feuilleVide) {
 }
 
 
-void tryDraw(FeuilleCarte f, FeuilleCarte feuilleVide, FeuilleCarte sortie) {// remplie la grille sortie en fusionant les valeurs de f et feuillevide. si 2 valeurs sont au même endroit : ecrit COnflictValue à la place
+void tryDraw(FeuilleCarte f, FeuilleCarte feuilleVide, FeuilleCarte sortie) {// remplie la grille sortie en fusionant les valeurs de f et feuillevide. si 2 valeurs sont au mÃªme endroit : ecrit COnflictValue Ã  la place
     initCarte(sortie, FALSE);
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
@@ -620,7 +620,7 @@ int placementShape(FeuilleCarte f, Piece shape, int material) {
 /**************************FONCTIONS DE VERIFICATION DE SOLUTION***************************/
 
 int checkU(FeuilleCarte f) {
-	/// vérifie si il y a la place de placer un u quelque part sur la carte, et retourne 1 si c'est le cas, 0 sinon
+	/// vÃ©rifie si il y a la place de placer un u quelque part sur la carte, et retourne 1 si c'est le cas, 0 sinon
     FeuilleCarte feuilleVide, temp;
     int drawable = 0;
     Position pos;
@@ -650,7 +650,7 @@ int checkU(FeuilleCarte f) {
     return 0;
 }
 
-int checkShape(FeuilleCarte f, Piece shape) {/// vérifie si il y a la place de placer une piece quelque part sur la carte, et retourne 1 si c'est le cas, 0 sinon
+int checkShape(FeuilleCarte f, Piece shape) {/// vÃ©rifie si il y a la place de placer une piece quelque part sur la carte, et retourne 1 si c'est le cas, 0 sinon
     FeuilleCarte feuilleVide, temp;
     int drawable = 0;
     Position pos;
@@ -705,14 +705,10 @@ int CalcPoints(FeuilleCarte f) {/// calcule le nombre de points que rapporte la 
 /*************************FORESTIERE********/
 int calcSentinelWood(FeuilleCarte f) {
     int somme = 0;
-    for (int i = 0; i < SIZE; i++) if (f[0][i] == FORET) somme++;
-    for (int i = 0; i < SIZE; i++) if (f[SIZE - 1][i] == FORET) somme++;
-    for (int i = 0; i < SIZE; i++) if (f[i][0] == FORET) somme++;
+    for (int i = 0; i < SIZE - 1; i++) if (f[0][i] == FORET) somme++;
+    for (int i = 0; i < SIZE - 1; i++) if (f[SIZE - 1][i] == FORET) somme++;
+    for (int i = 1; i < SIZE - 1; i++) if (f[i][0] == FORET) somme++;
     for (int i = 0; i < SIZE; i++) if (f[i][SIZE - 1] == FORET) somme++;
-    if (f[0][0] == FORET) somme--;
-    if (f[0][SIZE - 1] == FORET) somme--;
-    if (f[SIZE - 1][0] == FORET) somme--;
-    if (f[SIZE - 1][SIZE - 1] == FORET) somme--;
     return somme;
 
 }
@@ -787,7 +783,7 @@ int calcStoneSideQuest(FeuilleCarte f) {
 
     }
 
-    return somme*3 ;
+    return somme / 2; 
 }
 
 

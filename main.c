@@ -61,7 +61,7 @@ int main()
 	WaitTime(1.0f);
 	printf("\n\n\n\n\n\n\n Debug de fin de partie \n\n\n\n\n\n\n");
 
-
+    printf("\n\n stoneSideQuest points = %d\n", calcStoneSideQuest(f));
 
 
     // De-Initialization
