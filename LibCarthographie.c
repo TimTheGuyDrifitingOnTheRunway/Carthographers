@@ -4,6 +4,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 #include "LibCarthographie.h"
 #pragma once
 
@@ -21,11 +22,11 @@ const Piece B_L = { {1,0,0},{1,0,0},{1,1,1} };
 const Piece LINE = { {0,0,0},{1,1,1},{0,0,0} };
 const Piece L_LINE = { {0,0,0},{1,1,0},{0,0,0} };
 
-const Piece CUBE = { {1,1,0},{1,1,0},{0,0,0} };
-
 const Piece T = { {1,1,1},{0,1,0},{0,1,0} };
 const Piece L_T = { {0,0,0},{1,1,1},{0,1,0} };
 
+const Piece CUBE = { {1,1,0},{1,1,0},{0,0,0} };
+const Piece CUBE_WITH_POINT = { {1,1,0},{1,1,0},{1,0,0} };
 const Piece RECT = { {1,1,1},{1,1,1},{0,0,0} };
 const Piece RECT_WITH_HOLE = { {1,0,1},{1,0,1},{0,0,0} };
 
@@ -33,15 +34,15 @@ const Piece DIAG = { {1,0,0},{0,1,0},{0,0,1} };
 const Piece L_DIAG = { {1,0,0},{0,1,0},{0,0,0} };
 
 const Piece CROSS = { {0,1,0},{1,1,1},{0,1,0} };
-
 const Piece STAIRS = { {1,1,0},{0,1,1},{0,0,1} };
+const Piece STRANGE = {
+    {0,0,1},
+    {1,1,1},
+    {0,1,0} };
+
 
 const Piece Z = { {0,0,1},{0,1,1},{0,1,0} };
 const Piece B_Z = { {0,0,1},{1,1,1},{1,0,0} };
-
-
-
-
 
 
 
@@ -673,7 +674,7 @@ int checkShape(FeuilleCarte f, Piece shape) {/// vérifie si il y a la place de p
 /************************FONCTIONS de points*******************/
 
 
-/*************************FORESTIERE********/
+/*******FORESTIERE********/
 int calcSentinelWood(FeuilleCarte f) {
     int somme = 0;
     for (int i = 0; i < SIZE; i++) if (f[0][i] == FORET) somme++;

@@ -128,6 +128,7 @@ extern const Piece T;
 extern const Piece L_T;
 
 extern const Piece CUBE;
+extern const Piece CUBE_WITH_POINT;
 extern const Piece RECT;
 extern const Piece RECT_WITH_HOLE;
 
@@ -136,6 +137,7 @@ extern const Piece L_DIAG;
 
 extern const Piece CROSS;
 extern const Piece STAIRS;
+extern const Piece STRANGE;
 
 extern const Piece Z;
 extern const Piece B_Z;
