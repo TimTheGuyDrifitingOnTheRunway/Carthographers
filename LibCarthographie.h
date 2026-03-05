@@ -113,6 +113,7 @@ void nextStepShoreside(FeuilleCarte temp);
 // Notaion : L_XXX = petit XXX ; B_XXX = GRAND XXX
 
 extern const Piece POINT;
+extern const Piece NOTHING;
 
 extern const Piece U;
 
