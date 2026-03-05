@@ -64,7 +64,7 @@ int GUIplacementShape(FeuilleCarte f, Piece shape, int material, Camera3D camera
             ClearBackground(RAYWHITE);
             BeginMode3D(camera);
             GUIDrawFeuille(temp);
-            DrawGrid(11, 1.0f);
+            GUIdrawGrille();
             EndMode3D();
             EndDrawing();
             drawable = drawable && isDrawable(f, feuilleVide);
@@ -107,4 +107,11 @@ int GUIplacementDefault(FeuilleCarte f, int  material, Camera3D camera) {
     GUIplacementShape(f, POINT, material, camera);
     return 1;
 
+}
+
+void GUIdrawGrille() {
+	for (int i = -SIZE / 2-1; i <= SIZE / 2; i++) {
+        DrawLine3D((Vector3){(float)i+0.5f, 0.0f, (float)-SIZE/2}, (Vector3){(float)i+0.5f, 0.0f, (float)SIZE/2}, GRIDCOLOR);
+        DrawLine3D((Vector3){(float)-SIZE/2, 0.0f, (float)i+0.5f}, (Vector3){(float)SIZE/2, 0.0f, (float)i + 0.5f}, GRIDCOLOR);
+    }
 }
