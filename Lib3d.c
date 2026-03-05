@@ -7,12 +7,20 @@ void GUIDrawFeuille(FeuilleCarte f) {
 
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
-            if (f[i][j] != 0) {
-                float x = i - SIZE / 2.0f + 0.5f;
-                float z = j - SIZE / 2.0f + 0.5f;
-                float y = 0.0f;   // Half height so cube sits on grid
+            if (f[i][j] >= RUINE) {
+                float x = i - (SIZE - 1) / 2.0f;
+                float z = j - (SIZE - 1) / 2.0f;
+                float y = -0.5f;   // Half height so cube is under the grid
+                DrawCube((Vector3) { x, y, z }, 1.0f, 1.0f, 1.0f, DARKGRAY);
+				DrawCubeWires((Vector3) { x, y, z }, 1.0f, 1.0f, 1.0f, BLACK);
+            }
+                
+            if (getMaterialAt(f, (Position){ i,j } ) != 0) {
+                float x = i - (SIZE - 1) / 2.0f;
+                float z = j - (SIZE - 1) / 2.0f;
+                float y = 0.5f;   // Half height so cube sits on grid
                 Color color;
-                switch (f[i][j]) {
+                switch (getMaterialAt(f, (Position) { i, j })) {
                 case EAU:
                     color = BLUE;
                     break;
@@ -42,7 +50,6 @@ void GUIDrawFeuille(FeuilleCarte f) {
 };
 
 
-
 int GUIplacementShape(FeuilleCarte f, Piece shape, int material, Camera3D camera) {
     if (checkShape(f, shape)) {
         Position pos;
@@ -64,7 +71,7 @@ int GUIplacementShape(FeuilleCarte f, Piece shape, int material, Camera3D camera
             ClearBackground(RAYWHITE);
             BeginMode3D(camera);
             GUIDrawFeuille(temp);
-            DrawGrid(11, 1.0f);
+            DrawCarteGrid(SIZE, 1.0f);
             EndMode3D();
             EndDrawing();
             drawable = drawable && isDrawable(f, feuilleVide);
@@ -100,7 +107,17 @@ int GUIplacementShape(FeuilleCarte f, Piece shape, int material, Camera3D camera
     }
 }
 
+void DrawCarteGrid(int slices, float spacing) {
+    float halfSize = (slices * spacing) / 2.0f;
+    Color gridColor = LIGHTGRAY; // Couleur par défaut pour rester cohérent
 
+    for (int i = 0; i <= slices; i++) {
+        float pos = -halfSize + i * spacing;
+        // Lignes parallèles à l'axe X puis Z
+        DrawLine3D((Vector3) { -halfSize, 0.0f, pos }, (Vector3) { halfSize, 0.0f, pos }, gridColor);
+        DrawLine3D((Vector3) { pos, 0.0f, -halfSize }, (Vector3) { pos, 0.0f, halfSize }, gridColor);
+    }
+}
 
 int GUIplacementDefault(FeuilleCarte f, int  material, Camera3D camera) {
     if (getEmptySpots(f) == 0) return 0;

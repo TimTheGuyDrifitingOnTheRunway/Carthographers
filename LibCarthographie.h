@@ -9,8 +9,10 @@
 /*****************************************CONSTANTES**************************************************/
 #define SIZE 11
 #define PIECESIZE 3
-#define PIECESIZE 3
 #define NOMBREMONTAGNE 5
+#define MONTAGNEDIST 3.0f
+#define NOMBRERUINE 8
+#define RUINEDIST 2.7f
 #define TRUE 1
 #define FALSE 0
 #define CONFLICTVALUE 9
@@ -22,7 +24,7 @@
 #define CHAMPS 4
 #define EAU 5
 #define MONSTRE 6
-#define HEROS 7
+#define RUINE 100 //Have to be big to not interfere with the material of the pieces
 #define MONTAGNE 8
 
 #define ACTUALFOREST 10
@@ -45,9 +47,11 @@ typedef struct {
 
 /*****************************************PROTOTYPES**************************************************/
 void initCarte(FeuilleCarte f, int montagne);
+void initCarte2(FeuilleCarte f, int montagneActive, int ruinsActive);
 void displayCarte(FeuilleCarte f);
 int randInt(int min, int max);
 void setupMontagnePosition(int posMontage[NOMBREMONTAGNE][2]);
+void setupRuinsPosition(FeuilleCarte f, int posRuins[NOMBRERUINE][2]);
 int isPositionInCarte(Position pos);
 int isInCarte(int x, int y);
 void draw(FeuilleCarte f, FeuilleCarte feuilleVide);
@@ -55,6 +59,7 @@ int isDrawable(FeuilleCarte f, FeuilleCarte feuilleVide);
 void tryDraw(FeuilleCarte f, FeuilleCarte feuilleVide, FeuilleCarte sortie);
 void rotateShape(Piece piece, int rotation);
 int getEmptySpots(FeuilleCarte f);
+int getMaterialAt(FeuilleCarte f, Position pos);
 int isPosmaterial(FeuilleCarte f, Position pos, int material);
 void getVoisinMaterialPos(FeuilleCarte f, Position pos, int material, Position listeVoisins[8]);
 int getOccurencesOf(FeuilleCarte f, int material);

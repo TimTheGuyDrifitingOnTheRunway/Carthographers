@@ -10,6 +10,7 @@
 /*****************************************CONSTANTES PIECES*************************************************/
 
 const Piece POINT = { {0,0,0},{0,1,0},{0,0,0} };
+const Piece NOTHING = { {0,0,0},{0,0,0},{0,0,0} };
 
 const Piece U = { {1, 0, 1},{1, 1, 1},{0, 0 ,0} };
 
@@ -45,7 +46,7 @@ const Piece B_Z = { {0,0,1},{1,1,1},{1,0,0} };
 
 
 /******************************FONCTIONS SOUS PROGRAMMES************************/
-void initCarte(FeuilleCarte f, int montagneActive) {
+void initCarte(FeuilleCarte f, int montagneActive) {  // Dépréciée
 
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
@@ -64,6 +65,36 @@ void initCarte(FeuilleCarte f, int montagneActive) {
 
 }
 
+void initCarte2(FeuilleCarte f, int montagneActive, int ruinsActive) {
+
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            f[i][j] = 0;
+        }
+
+    }
+
+    if (montagneActive) {
+        int posMontagne[NOMBREMONTAGNE][2];
+        setupMontagnePosition(posMontagne);
+        for (int i = 0; i < NOMBREMONTAGNE; i++) {
+            f[posMontagne[i][0]][posMontagne[i][1]] = MONTAGNE;
+        }
+    }
+    
+    if (ruinsActive) {
+        int posRuins[NOMBRERUINE][2];
+        setupRuinsPosition(f, posRuins);
+
+        for (int i = 0; i < NOMBRERUINE; i++) {
+            f[posRuins[i][0]][posRuins[i][1]] = RUINE;
+        }
+	}
+
+
+}
+
+
 void setupMontagnePosition(int posMontage[NOMBREMONTAGNE][2]) {
     Position* op = emptyPositionList(NOMBREMONTAGNE);
 
@@ -71,25 +102,56 @@ void setupMontagnePosition(int posMontage[NOMBREMONTAGNE][2]) {
 
     for (int i = 0; i < NOMBREMONTAGNE; i++) {
         Position np;
-        np.x = randInt(0, SIZE - 1);
-        np.y = randInt(0, SIZE - 1);
+        np.x = randInt(1, SIZE - 2);
+        np.y = randInt(1, SIZE - 2);
 
 
 
         int validPos = 1;
         for (int j = 0; j < NOMBREMONTAGNE; j++) {
 
-            if (distPos(np, op[j]) < 2.0 && isInCarte(np.x, np.y)) validPos = 0;
+            if (distPos(np, op[j]) < MONTAGNEDIST && isInCarte(np.x, np.y)) validPos = 0;
         }
         if (validPos) {
             posMontage[i][0] = np.x;
             posMontage[i][1] = np.y;
             op[i] = np;
+            printf("Mountain %d pos : %d, %d \n", i, np.x, np.y);
         }
         else i--;
 
     }
 }
+
+
+void setupRuinsPosition(FeuilleCarte f, int posRuins[NOMBRERUINE][2]) {
+    Position* op = emptyPositionList(NOMBRERUINE);
+
+
+
+    for (int i = 0; i < NOMBRERUINE; i++) {
+        Position np;
+        do {
+            np.x = randInt(1, SIZE - 2);
+            np.y = randInt(1, SIZE - 2);
+        } while (getMaterialAt(f, np) == MONTAGNE);
+
+
+        int validPos = 1;
+
+        for (int j = 0; j < NOMBRERUINE; j++) {
+            if (distPos(np, op[j]) < RUINEDIST && isInCarte(np.x, np.y)) { validPos = 0; break; }
+        }
+        if (validPos) {
+            posRuins[i][0] = np.x;
+            posRuins[i][1] = np.y;
+            op[i] = np;
+			printf("Ruins %d pos : %d, %d \n", i, np.x, np.y);
+        }
+        else i--;
+    }
+}
+
 
 void displayCarte(FeuilleCarte f) {
     for (int i = 0; i < SIZE; i++) {
@@ -131,9 +193,13 @@ void copyPiece(Piece pieceFrom, Piece pieceTo) {
     }
 }
 
+int getMaterialAt(FeuilleCarte f, Position pos) {
+    if (isInCarte(pos.x, pos.y)) { return (f[pos.x][pos.y] % RUINE); }
+    return OUTOFBOUND; 
+}
+
 int isPosmaterial(FeuilleCarte f, Position pos, int material) {
-    if (isInCarte(pos.x, pos.y))return f[pos.x][pos.y] == material;
-    return 0;
+    return getMaterialAt(f, pos) == material;
 }
 
 void getVoisinMaterialPos(FeuilleCarte f, Position pos, int material, Position listeVoisins[8]) {// retourne dans listeVoisins les positions des voisins de pos qui sont du material
@@ -312,7 +378,7 @@ int isAllProcessed(FeuilleCarte f) {
 int isDrawable(FeuilleCarte f, FeuilleCarte feuilleVide) {
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
-            if ((feuilleVide[i][j] != 0) && (f[i][j] != 0)) return 0;
+            if ((feuilleVide[i][j] != 0) && (f[i][j] % RUINE) != 0) return 0;
 
         }
 
@@ -326,15 +392,12 @@ void draw(FeuilleCarte f, FeuilleCarte feuilleVide) {
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
             if (feuilleVide[i][j] != 0) {
+				if (f[i][j] == RUINE) f[i][j] = feuilleVide[i][j] + RUINE;
+				else
                 f[i][j] = feuilleVide[i][j];
             }
-
         }
-
-
     }
-
-
 }
 
 
@@ -342,7 +405,10 @@ void tryDraw(FeuilleCarte f, FeuilleCarte feuilleVide, FeuilleCarte sortie) {// 
     initCarte(sortie, FALSE);
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
-            if ((feuilleVide[i][j] != 0) && (f[i][j] != 0)) sortie[i][j] = CONFLICTVALUE;
+            if ((feuilleVide[i][j] != 0) && (f[i][j] != 0)) {
+                if (f[i][j] == RUINE) sortie[i][j] = feuilleVide[i][j] + RUINE;
+				else sortie[i][j] = CONFLICTVALUE;
+            }
             else sortie[i][j] = max(feuilleVide[i][j], f[i][j]);
 
         }

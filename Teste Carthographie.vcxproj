@@ -127,11 +127,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GameManager.c" />
     <ClCompile Include="Lib3d.c" />
     <ClCompile Include="LibCarthographie.c" />
     <ClCompile Include="main.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GameManager.h" />
     <ClInclude Include="Lib3d.h" />
     <ClInclude Include="LibCarthographie.h" />
   </ItemGroup>
