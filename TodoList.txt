@@ -1,0 +1,32 @@
+Vu par Math : 
+Afficher les Stats du jeu directement dans l'interface graphique
+Faire un tour de jeu fonctionnel
+Passer d'un tour à l'autre
+Faire des saisons fonctionnelles
+Passer d'une saison à l'autre
+
+
+
+Vu par Tim : 
+
+
+
+
+En cours par Math : 
+
+
+En cours par Tim : 
+
+
+
+Fini par Math (à Tim d'effacer) : 
+
+
+
+
+Fini par Tim (à Math d'effacer) : 
+
+
+
+
+

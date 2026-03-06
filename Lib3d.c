@@ -15,13 +15,13 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp) {
 				DrawCubeWires((Vector3) { x, y, z }, 1.0f, 1.0f, 1.0f, BLACK);
             }
                 
-            if (getMaterialAt(temp, (Position){ i,j } ) != 0) {
+            if (getMaterialAtPos(temp, (Position){ i,j } ) != 0) {
                 float x = i - (SIZE - 1) / 2.0f;
                 float z = j - (SIZE - 1) / 2.0f;
                 float y = 0.5;   // Half height so cube sits on grid
 				if (temp[i][j] != f[i][j]) y = PLACEMENT_HEIGHT; // Raise cube if it's part of the shape being placed
                 Color color;
-                switch (getMaterialAt(temp, (Position) { i, j })) {
+                switch (getMaterialAtPos(temp, (Position) { i, j })) {
                 case EAU:
                     color = BLUE;
                     break;

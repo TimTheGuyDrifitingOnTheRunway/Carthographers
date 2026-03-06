@@ -43,6 +43,7 @@ typedef struct {
 typedef struct {
 	int type;
 	int (*fctCaluls)(FeuilleCarte f);
+	char name[20];
 }ScoringCard;
 
 
@@ -62,7 +63,7 @@ extern const ScoringCard StoneSideQuest;
 
 extern const ScoringCard CanalLake;
 extern const ScoringCard MagesValley;
-extern const ScoringCard TheGoldenGranary;
+extern const ScoringCard GoldenGranary;
 extern const ScoringCard ShoreSideExpanse;
 
 extern const ScoringCard Wildholds;
@@ -109,7 +110,8 @@ extern const ExploreCard RiftLands;
 
 void SetupGame();
 void InitDeck(ExploreCard* exploreDeck[40]);
-
+void ShakeDeck(ExploreCard* exploreDeck[40], int size);
+void InitScoringCards(ScoringCard* edits[4]);
 
 
 

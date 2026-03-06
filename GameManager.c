@@ -19,27 +19,27 @@ const Saison Winter = { 6, 3, 0, "Winter" };
 
 // Cartes Scoring
 
-const ScoringCard SentinelWood = { 1, calcSentinelWood };
-const ScoringCard TreeTower = { 1, calcTreeTower };
-const ScoringCard GreenBough = { 1, calcGreenBough };
-const ScoringCard StoneSideQuest = { 1, calcStoneSideQuest };
+const ScoringCard SentinelWood = { 1, calcSentinelWood, "SentinelWood"};
+const ScoringCard TreeTower = { 1, calcTreeTower, "TreeTower"};
+const ScoringCard GreenBough = { 1, calcGreenBough, "GreenBough"};
+const ScoringCard StoneSideQuest = { 1, calcStoneSideQuest, "StoneSideQuest"};
 
-const ScoringCard CanalLake = { 2, calcCanalLake };
-const ScoringCard ShoreSideExpanse = { 2, calcShoreSideExpanse };
-const ScoringCard TheGoldenGranary = { 2, calcTheGoldenGranary };
-const ScoringCard MagesValley = { 2, calcMagesValley };
+const ScoringCard CanalLake = { 2, calcCanalLake, "CanalLake"};
+const ScoringCard ShoreSideExpanse = { 2, calcShoreSideExpanse, "ShoreSideExpanse"};
+const ScoringCard GoldenGranary = { 2, calcGoldenGranary, "TheGoldenGranary"};
+const ScoringCard MagesValley = { 2, calcMagesValley, "MagesValley"};
 
-const ScoringCard Wildholds = { 3, calcWildholds };
-const ScoringCard GreengoldPlains = { 3, calcGreengoldPlains };
-const ScoringCard GreatCity = { 3, calcGreatCity };
-const ScoringCard Shieldgate = { 3, calcShieldgate };
+const ScoringCard Wildholds = { 3, calcWildholds, "Wildholds"};
+const ScoringCard GreengoldPlains = { 3, calcGreengoldPlains, "GreengoldPlains"};
+const ScoringCard GreatCity = { 3, calcGreatCity, "GreatCity"};
+const ScoringCard Shieldgate = { 3, calcShieldgate, "Shieldgate"};
 
-const ScoringCard Borderlands = { 4, calcBorderlands };
-const ScoringCard BrokenRoad = { 4, calcBrokenRoad };
-const ScoringCard LostBarony = { 4, calcLostBarony };
-const ScoringCard TheCauldrons = { 4, calcTheCauldrons };
+const ScoringCard Borderlands = { 4, calcBorderlands, "Borderlands"};
+const ScoringCard BrokenRoad = { 4, calcBrokenRoad, "TheBrokenRoad"};
+const ScoringCard LostBarony = { 4, calcLostBarony, "LostBarony"};
+const ScoringCard TheCauldrons = { 4, calcTheCauldrons, "TheCauldrons"};
 
-ScoringCard* scoringCards[16] = { &SentinelWood, &TreeTower, &GreenBough, &StoneSideQuest, &CanalLake, &ShoreSideExpanse, &TheGoldenGranary, &MagesValley, &Wildholds, &GreengoldPlains, &GreatCity, &Shieldgate, &Borderlands, &BrokenRoad, &LostBarony, &TheCauldrons };
+ScoringCard* scoringCards[16] = { &SentinelWood, &TreeTower, &GreenBough, &StoneSideQuest, &CanalLake, &ShoreSideExpanse, &GoldenGranary, &MagesValley, &Wildholds, &GreengoldPlains, &GreatCity, &Shieldgate, &Borderlands, &BrokenRoad, &LostBarony, &TheCauldrons };
 // Et plus, quand les fonctions seront définies
 
 // Cartes Exploration
@@ -85,36 +85,30 @@ ExploreCard* expCards[21] = { &FarmLands, &ForgottenForest, &Hamlet, &GreatRiver
 
 void SetupGame() {
 	// Initialisation du jeu
-	// Initialiser la Map
-
+	// Initialiser la Map, actuellement dans le main
 
 	// Initialiser les cartes Scores
-
 	ScoringCard* edits[4];
-
-
-
+	InitScoringCards(edits);
 
 	// Mélange des cartes, Définition des packets, Saison, Cartes de Score, etc
 	ExploreCard* exploreDeck[40];
 	InitDeck(exploreDeck);
+	int deckSize = 37;
 
-	// Initialisation de la 
+	// Initialisation du 1er tour
 
 
 
 }
+
 int CalcPointsFromCards(FeuilleCarte f, ScoringCard *cards, int numberOfCards) {
 	int somme =0;
 	for (int i = 0; i < numberOfCards; i++) {
 		somme += cards[i].fctCaluls(f) * cards[i].type;
 	}
 	return somme;
-	
 }
-
-
-
 
 
 
@@ -135,21 +129,31 @@ void InitDeck(ExploreCard* exploreDeck[40]) {
 	exploreDeck[39] = NULL;
 
 	//Melanger le deck :
+	ShakeDeck(exploreDeck, 37);
+}
+
+void ShakeDeck(ExploreCard* exploreDeck[40], int size) {
+	ExploreCard* temp;
 	for (int k = 0; k < 100; k++) {
-		int j = randInt(0, 36);
-		int i = randInt(0, 36);
-		ExploreCard* temp = exploreDeck[i];
+		int j = randInt(0, size - 1);
+		int i = randInt(0, size - 1);
+		temp = exploreDeck[i];
 		exploreDeck[i] = exploreDeck[j];
 		exploreDeck[j] = temp;
 	}
-
-
-
 }
 
-
-
-
+void InitScoringCards(ScoringCard* edits[4]) {
+	ScoringCard* temp[4];
+	for (int i = 0; i < 4; i++) {
+		int a = 0;
+		for (int j = 0; j < 16; j++) {
+			if (scoringCards[j]->type == i + 1) { temp[i] = scoringCards[j]; a++; }
+			if (a == 4) break;
+		}
+		edits[i] = temp[randInt(0, 3)];
+	}
+}
 
 
 

@@ -145,7 +145,7 @@ void setupRuinsPosition(FeuilleCarte f, int posRuins[NOMBRERUINE][2]) {
         do {
             np.x = randInt(1, SIZE - 2);
             np.y = randInt(1, SIZE - 2);
-        } while (getMaterialAt(f, np) == MONTAGNE);
+        } while (getMaterialAtPos(f, np) == MONTAGNE);
 
 
         int validPos = 1;
@@ -204,19 +204,19 @@ void copyPiece(Piece pieceFrom, Piece pieceTo) {
     }
 }
 
-int getMaterialAt(FeuilleCarte f, Position pos) {
+int getMaterialAtPos(FeuilleCarte f, Position pos) {
     if (isInCarte(pos.x, pos.y)) { return (f[pos.x][pos.y] % RUINE); }
     return OUTOFBOUND; 
 }
 
-int getMaterialAt2(FeuilleCarte f, int x, int y) {
+int getMaterialAt(FeuilleCarte f, int x, int y) {
     if (isInCarte(x, y)) { return (f[x][y] % RUINE); }
     return OUTOFBOUND;
 }
 
 
-int isPosmaterial(FeuilleCarte f, Position pos, int material) {
-    return getMaterialAt(f, pos) == material;
+int isPosMaterial(FeuilleCarte f, Position pos, int material) {
+    return getMaterialAtPos(f, pos) == material;
 }
 
 void getVoisinMaterialPos(FeuilleCarte f, Position pos, int material, Position listeVoisins[4]) {// retourne dans listeVoisins les positions des voisins de pos qui sont du material
@@ -231,7 +231,7 @@ void getVoisinMaterialPos(FeuilleCarte f, Position pos, int material, Position l
             if ((i != 0) && (j != 0)) {
                 posCible.x = pos.x + i;
                 posCible.y = pos.y + j;
-                if (isPosmaterial(f, posCible, material)) {
+                if (isPosMaterial(f, posCible, material)) {
                     listeVoisins[k] = posCible;
                     k++;
                 }
@@ -243,7 +243,7 @@ void getVoisinMaterialPos(FeuilleCarte f, Position pos, int material, Position l
     for (int i = 0; i < 4; i++) {
         posCible.x = pos.x + d[i].x;
         posCible.y = pos.y + d[i].y;
-        if (isPosmaterial(f, posCible, material)) {
+        if (isPosMaterial(f, posCible, material)) {
             listeVoisins[k] = posCible;
             k++;
         }
@@ -390,7 +390,7 @@ int isAllProcessed(FeuilleCarte f) {
 
 
 void exploreGroup(FeuilleCarte f, int x, int y, FeuilleCarte visited, FeuilleCarte voisinsVisited, InfoGroupe* info) {
-    int material = getMaterialAt2(f, x, y);
+    int material = getMaterialAt(f, x, y);
 
     if (material == -1) {
         info->materialVoisin[1] = 1;
@@ -425,7 +425,7 @@ int RecenseEveryGroups(FeuilleCarte f, InfoGroupe listeGroupes[SIZE * SIZE]) {
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
 
-            int mat = getMaterialAt2(f, i, j);
+            int mat = getMaterialAt(f, i, j);
             if (visited[i][j] == 0 && mat != 0 && mat != -1) {
 
                 listeGroupes[nbGroupes].taille = 0;
@@ -848,16 +848,16 @@ int nextForestStep(FeuilleCarte f) {
     int nbO = 0;
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
-            if (getMaterialAt(f, (Position){i, j}) == ACTUALFOREST) {
+            if (getMaterialAtPos(f, (Position){i, j}) == ACTUALFOREST) {
                 f[i][j] = 0;
                 for (int k = -1; k < 2; k++) {
                     
                     if (isInCarte(i + k, j)) {
 
-                        if (getMaterialAt(f, (Position) { i + k, j }) == FORET) {
+                        if (getMaterialAtPos(f, (Position) { i + k, j }) == FORET) {
                             f[i + k][j] = NEXTFOREST;
                         }
-                        else if (getMaterialAt(f, (Position) { i + k, j }) == MONTAGNE) {
+                        else if (getMaterialAtPos(f, (Position) { i + k, j }) == MONTAGNE) {
                             f[i + k][j] = 0;
                             total++;
                         }
@@ -865,11 +865,11 @@ int nextForestStep(FeuilleCarte f) {
 
                     if (isInCarte(i, j + k)) {
 
-                        if (getMaterialAt(f, (Position) { i, j + k
+                        if (getMaterialAtPos(f, (Position) { i, j + k
                         }) == FORET) {
                             f[i][j + k] = NEXTFOREST;
                         }
-                        else if (getMaterialAt(f, (Position) { i, j + k
+                        else if (getMaterialAtPos(f, (Position) { i, j + k
                         }) == MONTAGNE) {
                             f[i][j + k] = 0;
                             total++;
@@ -880,7 +880,7 @@ int nextForestStep(FeuilleCarte f) {
                     }
                 }
             }
-            else if (getMaterialAt(f, (Position) {i, j}) == 0) nbO++;
+            else if (getMaterialAtPos(f, (Position) {i, j}) == 0) nbO++;
         }
     }
     for (int i = 0; i < SIZE; i++) {
@@ -941,12 +941,12 @@ int pointAdjacensce(FeuilleCarte f, int materia1, int material2) {
     int somme = 0;
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
-            if (getMaterialAt2(f, i, j) == materia1) {
+            if (getMaterialAt(f, i, j) == materia1) {
                 for (int k = -1; k < 2; k++) {
-                    if (getMaterialAt2(f, i + k, j) == material2) somme++;
+                    if (getMaterialAt(f, i + k, j) == material2) somme++;
                 }
                 for (int k = -1; k < 2; k++) {
-                    if (getMaterialAt2(f, i, j + k) == material2) somme++;
+                    if (getMaterialAt(f, i, j + k) == material2) somme++;
                 }
             }
         }
@@ -962,7 +962,7 @@ int calcGoldenGranary(FeuilleCarte f) {
             if (f[i][j] >= RUINE) {
 				Position d[] = { {0,1}, {0,-1}, {1,0}, {-1,0} };
                 for (int k = 0; k < 4; k++) {
-                    if (getMaterialAt2(f, i + d[k].x, j + d[k].y) == EAU) somme++;
+                    if (getMaterialAt(f, i + d[k].x, j + d[k].y) == EAU) somme++;
 				}
                 if (f[i][j] == RUINE + CHAMPS) {
                     somme += 3;
@@ -1036,7 +1036,7 @@ int ShoreSide1NextStep(FeuilleCarte temp, int material, Position* alreadyChecked
                 for (int k = -1; k < 2; k++) {
                     for (int l = -1; l < 2; l++) {
                         if (isInCarte(i + k, j + l)) {
-                            if (getMaterialAt(temp, (Position){ i + k , j + k}) == material) {
+                            if (getMaterialAtPos(temp, (Position){ i + k , j + k}) == material) {
 
                                 for (int m = 0; m < occurences; m++) {
                                     if ((alreadyChecked[m].x == i + k) && (alreadyChecked[m].y == j + l)) {
@@ -1158,7 +1158,7 @@ int calcBorderlands(FeuilleCarte f) {
     for (int i = 0; i < SIZE; i++) {
 		full = 1;
         for (int j = 0; j < SIZE; j++) {
-            if (getMaterialAt2(f, i, j) == 0 ) {
+            if (getMaterialAt(f, i, j) == 0 ) {
                 full = 0;
                 break;
             }
@@ -1168,7 +1168,7 @@ int calcBorderlands(FeuilleCarte f) {
     for (int i = 0; i < SIZE; i++) {
         full = 1;
         for (int j = 0; j < SIZE; j++) {
-            if (getMaterialAt2(f, j, i) == 0) {
+            if (getMaterialAt(f, j, i) == 0) {
                 full = 0;
                 break;
             }
@@ -1188,7 +1188,7 @@ int calcBrokenRoad(FeuilleCarte f) {
     for (int i = 0; i < SIZE; i++) {
 		valid = 1;
         for (int j = 0; j <= i; j++) {
-            if (getMaterialAt2(f, j, SIZE - i - 1 + j) == 0) {
+            if (getMaterialAt(f, j, SIZE - i - 1 + j) == 0) {
                 valid = 0;
 			}
         }
@@ -1214,7 +1214,7 @@ int calcLostBarony(FeuilleCarte f) {
 int IsASquare(FeuilleCarte f, int x, int y, int lenght) {
     for (int i = x; i < x + lenght; i++) {
         for (int j = y; j < y + lenght; j++) {
-            if (getMaterialAt2(f, i, j) == 0) return FALSE;
+            if (getMaterialAt(f, i, j) == 0) return FALSE;
         }
     }
     return TRUE;
@@ -1228,11 +1228,11 @@ int calcTheCauldrons(FeuilleCarte f) {
 
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
-            if (getMaterialAt2(f, i, j) == 0) {
+            if (getMaterialAt(f, i, j) == 0) {
                 valid = 1;
                 Position d[4] = { {0,1}, {0,-1}, {1,0}, {-1,0} };
                 for (int k = 0; k < 4; k++) {
-                    isVoisin = getMaterialAt2(f, i + d[k].x, j + d[k].y) != 0; // voisin ou bordure
+                    isVoisin = getMaterialAt(f, i + d[k].x, j + d[k].y) != 0; // voisin ou bordure
                     if (!isVoisin) {
                         valid = 0;
                         break;
