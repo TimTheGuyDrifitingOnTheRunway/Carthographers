@@ -1,6 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "LibCarthographie.h"
 #include "Lib3d.h"
+#include "GameManager.h"
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
@@ -52,6 +53,10 @@ int main()
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
     printf("\n\n\n\n\n\n\n Debug 3 \n\n\n\n\n\n\n");
+
+
+	SetupGame();
+
 
 	Piece* pieceTab[] = {POINT, NOTHING, U, L, L_L, B_L, LINE, L_LINE, CUBE, T, L_T, RECT, RECT_WITH_HOLE, DIAG, L_DIAG, CROSS, STAIRS, Z, B_Z};
     Piece radompiece;
