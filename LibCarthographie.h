@@ -43,7 +43,13 @@ typedef int Piece[PIECESIZE][PIECESIZE];
 typedef struct {
     int x;
     int y;
-} Position;
+}Position;
+
+typedef struct {
+    int taille;
+	int material;
+    int materialVoisin[10];
+}InfoGroupe;
 
 /*****************************************PROTOTYPES**************************************************/
 void initCarte(FeuilleCarte f, int montagne);
@@ -62,7 +68,7 @@ int getEmptySpots(FeuilleCarte f);
 int getMaterialAt(FeuilleCarte f, Position pos);
 int getMaterialAt2(FeuilleCarte f, int x, int y);
 int isPosmaterial(FeuilleCarte f, Position pos, int material);
-void getVoisinMaterialPos(FeuilleCarte f, Position pos, int material, Position listeVoisins[8]);
+void getVoisinMaterialPos(FeuilleCarte f, Position pos, int material, Position listeVoisins[4]);
 int getOccurencesOf(FeuilleCarte f, int material);
 Position* getPositionsOfMaterial(FeuilleCarte f, int material);
 float distPos(Position a, Position b);
@@ -73,6 +79,13 @@ void flipShape(Piece shape);
 
 int GroupNextStep(FeuilleCarte temp, int material, int materialToAvoid, int includeBorder);
 int isGroupAtPosNeighborWithMaterial(FeuilleCarte f, Position pos, int material, int includeBorder);
+int isAllProcessed(FeuilleCarte f);
+
+void exploreGroup(FeuilleCarte f, int x, int y, FeuilleCarte visited, FeuilleCarte voisinsVisites, InfoGroupe* info);
+int RecenseEveryGroupes(FeuilleCarte f, InfoGroupe listeGroupes[SIZE * SIZE]);
+
+
+
 //dessins de formes//////////////////////////////
 
 int drawU(FeuilleCarte f, Position pos, int rotation, int material);//DEPRECIé
@@ -108,7 +121,7 @@ int isForestAllProcessed(FeuilleCarte f);
 
 //Water & Farm
 int calcCanalLake(FeuilleCarte f);
-int calcTheGoldenGranary(FeuilleCarte f);
+int calcGoldenGranary(FeuilleCarte f);
 int calcMagesValley(FeuilleCarte f);
 int calcShoreSideExpanse(FeuilleCarte f);
 

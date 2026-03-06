@@ -389,6 +389,64 @@ int isAllProcessed(FeuilleCarte f) {
 }
 
 
+void exploreGroup(FeuilleCarte f, int x, int y, FeuilleCarte visited, FeuilleCarte voisinsVisited, InfoGroupe* info) {
+    int material = getMaterialAt2(f, x, y);
+
+    if (material == -1) {
+        info->materialVoisin[1] = 1;
+        return;
+    }
+
+    if (material != info->material) {
+        if (voisinsVisited[x][y] == 0) {
+            info->materialVoisin[material] += 1;
+            voisinsVisited[x][y] = 1;
+        }
+        return;
+    }
+
+    if (visited[x][y] == 1) return;
+
+    visited[x][y] = 1; 
+    info->taille++;
+
+    exploreGroup(f, x + 1, y, visited, voisinsVisited, info);
+    exploreGroup(f, x - 1, y, visited, voisinsVisited, info);
+    exploreGroup(f, x, y + 1, visited, voisinsVisited, info);
+    exploreGroup(f, x, y - 1, visited, voisinsVisited, info);
+}
+
+int RecenseEveryGroups(FeuilleCarte f, InfoGroupe listeGroupes[SIZE * SIZE]) {
+    FeuilleCarte visited;
+    initCarte2(visited, FALSE, FALSE);
+
+    int nbGroupes = 0;
+
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+
+            int mat = getMaterialAt2(f, i, j);
+            if (visited[i][j] == 0 && mat != 0 && mat != -1) {
+
+                listeGroupes[nbGroupes].taille = 0;
+                listeGroupes[nbGroupes].material = mat;
+                for (int k = 0; k < 10; k++) {
+                    listeGroupes[nbGroupes].materialVoisin[k] = 0;
+                }
+
+                FeuilleCarte voisinsVisited;
+                initCarte(voisinsVisited, FALSE);
+
+                exploreGroup(f, i, j, visited, voisinsVisited, &listeGroupes[nbGroupes]);
+
+                nbGroupes++;
+            }
+        }
+    }
+
+    return nbGroupes;
+}
+
 
 /*********************************FONCTIONS DE DESSIN DE FEUILLE********************************/
 
@@ -883,12 +941,12 @@ int pointAdjacensce(FeuilleCarte f, int materia1, int material2) {
     int somme = 0;
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
-            if (f[i][j] == materia1) {
+            if (getMaterialAt2(f, i, j) == materia1) {
                 for (int k = -1; k < 2; k++) {
-                    if (isInCarte(i + k, j)) if (f[i + k][j] == material2) somme++;
+                    if (getMaterialAt2(f, i + k, j) == material2) somme++;
                 }
                 for (int k = -1; k < 2; k++) {
-                    if (isInCarte(i, j + k)) if (f[i][j + k] == material2) somme++;
+                    if (getMaterialAt2(f, i, j + k) == material2) somme++;
                 }
             }
         }
@@ -896,7 +954,27 @@ int pointAdjacensce(FeuilleCarte f, int materia1, int material2) {
     return somme;
 }
 
-int calcMageValey(FeuilleCarte f) {
+
+int calcGoldenGranary(FeuilleCarte f) {
+    int somme = 0;
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            if (f[i][j] >= RUINE) {
+				Position d[] = { {0,1}, {0,-1}, {1,0}, {-1,0} };
+                for (int k = 0; k < 4; k++) {
+                    if (getMaterialAt2(f, i + d[k].x, j + d[k].y) == EAU) somme++;
+				}
+                if (f[i][j] == RUINE + CHAMPS) {
+                    somme += 3;
+                }
+            }
+        }
+    }
+    return somme;
+}
+
+
+int calcMagesValley(FeuilleCarte f) {
 
     int somme;
     somme = pointAdjacensce(f, EAU, MONTAGNE) * 2;
@@ -994,8 +1072,6 @@ int ShoreSide1NextStep(FeuilleCarte temp, int material, Position* alreadyChecked
 }
 
 
-
-
 void nextStepShoreside(FeuilleCarte temp) {
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
@@ -1004,22 +1080,74 @@ void nextStepShoreside(FeuilleCarte temp) {
     }
 }
 
+// Village
 
+int calcWildholds(FeuilleCarte f) {
+	int somme = 0;
 
+    InfoGroupe allGroups[SIZE * SIZE];
+    int total = RecenseEveryGroups(f, allGroups);
 
+    for (int i = 0; i < total; i++) {
+        if (allGroups[i].material == VILLAGE && allGroups[i].taille >= 6) somme++;
+	}
+    return somme * 8;
+}
 
+int calcGreengoldPlains(FeuilleCarte f) {
+    int somme = 0;
+    int voisins = 0;
+    InfoGroupe allGroups[SIZE * SIZE];
+    int total = RecenseEveryGroups(f, allGroups);
 
+    for (int i = 0; i < total; i++) {
+		InfoGroupe aG = allGroups[i];
+        if (aG.material == VILLAGE && aG.taille >= 6) {
+			voisins = 0;
+            for (int j = 0; j < 10; j++) {
+                if (aG.materialVoisin[j] >= 1) {
+					voisins++;
+                }
+			}
+			if (voisins >= 3) somme++;
+        }
+    }
+    return somme * 3;
+}
 
+int calcGreatCity(FeuilleCarte f) {
+    int lenght = 0;
 
+    InfoGroupe allGroups[SIZE * SIZE];
+    int total = RecenseEveryGroups(f, allGroups);
 
+    for (int i = 0; i < total; i++) {
+        InfoGroupe aG = allGroups[i];
+		if (aG.material == VILLAGE && aG.taille > lenght && aG.materialVoisin[MONTAGNE] == 0) lenght = aG.taille;
+    }
+	return lenght;
+}
 
+int calcShieldgate(FeuilleCarte f) {
+    int bigger = 0;
+	int second = 0;
 
+    InfoGroupe allGroups[SIZE * SIZE];
+    int total = RecenseEveryGroups(f, allGroups);
 
+    for (int i = 0; i < total; i++) {
+        InfoGroupe aG = allGroups[i];
+        if (aG.material == VILLAGE && aG.taille > second) {
+            if (aG.taille > bigger) {
+                second = bigger;
+                bigger = aG.taille;
+            }
+            else second = aG.taille;
+        }
+    }
+    return second * 2;
 
-
-
-
-
+}
 
 // Map
 
