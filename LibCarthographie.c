@@ -698,14 +698,6 @@ int checkShape(FeuilleCarte f, Piece shape) {/// vérifie si il y a la place de 
 
 /************************FONCTIONS de points*******************/
 
-int CalcPoints(FeuilleCarte f) {/// calcule le nombre de points que rapporte la carte f
-    int somme = 0;
-    somme += calcSentinelWood(f);
-    somme += calcTreeTower(f);
-    somme += calcGreenBough(f);
-    somme += calcStoneSideQuest(f);
-    return somme;
-}
 
 
 /*******FORESTIERE********/

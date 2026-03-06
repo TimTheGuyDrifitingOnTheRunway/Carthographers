@@ -104,6 +104,15 @@ void SetupGame() {
 
 
 }
+int CalcPointsFromCards(FeuilleCarte f, ScoringCard *cards, int numberOfCards) {
+	int somme =0;
+	for (int i = 0; i < numberOfCards; i++) {
+		somme += cards[i].fctCaluls(f) * cards[i].type;
+	}
+	return somme;
+	
+}
+
 
 
 

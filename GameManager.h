@@ -113,7 +113,8 @@ void InitDeck(ExploreCard* exploreDeck[40]);
 
 
 
-
+/******************Prototypes******************/
+int CalcPointsFromCards(FeuilleCarte f, ScoringCard* cards, int numberOfCards);
 
 
 
