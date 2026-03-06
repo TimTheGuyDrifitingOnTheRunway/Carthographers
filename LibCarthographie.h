@@ -96,21 +96,44 @@ int checkShape(FeuilleCarte f, Piece shape);
 //Calcul des points :
 int CalcPoints(FeuilleCarte f);
 
+//Wood
 int calcSentinelWood(FeuilleCarte f);
 int calcTreeTower(FeuilleCarte f);
 int calcGreenBough(FeuilleCarte f);
-
 int calcStoneSideQuest(FeuilleCarte f);
+
 int nextForestStep(FeuilleCarte f);
 int isForestAllProcessed(FeuilleCarte f);
 
-
+//Water & Farm
 int calcCanalLake(FeuilleCarte f);
+int calcTheGoldenGranary(FeuilleCarte f);
+int calcMagesValley(FeuilleCarte f);
+int calcShoreSideExpanse(FeuilleCarte f);
+
 int pointAdjacensce(FeuilleCarte f, int materia1, int material2);
 
-int calcShoreSideExpanse(FeuilleCarte f);
 int CalcShoreSidePart1(FeuilleCarte f, int material);
 void nextStepShoreside(FeuilleCarte temp);
+
+//Village
+int calcWildholds(FeuilleCarte f);
+int calcGreengoldPlains(FeuilleCarte f);
+int calcGreatCity(FeuilleCarte f);
+int calcShieldgate(FeuilleCarte f);
+
+
+
+
+//Map
+int calcBorderlands(FeuilleCarte f);
+int calcTheBrokenRoad(FeuilleCarte f);
+int calcLostBarony(FeuilleCarte f);
+int calcTheCauldrons(FeuilleCarte f);
+
+
+
+
 
 /*****************************************CONSTANTES PIECES**************************************************/
 // Notaion : L_XXX = petit XXX ; B_XXX = GRAND XXX

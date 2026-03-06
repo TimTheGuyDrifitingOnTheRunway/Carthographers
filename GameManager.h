@@ -8,6 +8,11 @@
 #include <string.h>
 #include "LibCarthographie.h"
 
+
+#define EXP_CARD_NUMBER 34
+
+
+
 int coinCount; //pr suivre le nombre de coin que le joueur a
 
 typedef struct {
@@ -88,6 +93,8 @@ extern const ExploreCard RiftLands;
 
 
 
+void SetupGame();
+void InitDeck(ExploreCard* exploreDeck[40]);
 
 
 
