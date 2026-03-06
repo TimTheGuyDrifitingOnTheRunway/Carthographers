@@ -92,7 +92,8 @@ extern const ExploreCard RiftLands;
 
 
 
-
+/******************Prototypes******************/
+int CalcPointsFromCards(FeuilleCarte f, ScoringCard* cards, int numberOfCards);
 
 
 
