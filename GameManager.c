@@ -26,11 +26,21 @@ const ScoringCard StoneSideQuest = { 1, calcStoneSideQuest };
 
 const ScoringCard CanalLake = { 2, calcCanalLake };
 const ScoringCard ShoreSideExpanse = { 2, calcShoreSideExpanse };
+const ScoringCard TheGoldenGranary = { 2, calcTheGoldenGranary };
+const ScoringCard MagesValley = { 2, calcMagesValley };
 
-ScoringCard* scoringCards[16] = { &SentinelWood, &TreeTower, &GreenBough, &StoneSideQuest, &CanalLake, &ShoreSideExpanse };
+const ScoringCard Wildholds = { 3, calcWildholds };
+const ScoringCard GreengoldPlains = { 3, calcGreengoldPlains };
+const ScoringCard GreatCity = { 3, calcGreatCity };
+const ScoringCard Shieldgate = { 3, calcShieldgate };
 
+const ScoringCard Borderlands = { 4, calcBorderlands };
+const ScoringCard BrokenRoad = { 4, calcBrokenRoad };
+const ScoringCard LostBarony = { 4, calcLostBarony };
+const ScoringCard TheCauldrons = { 4, calcTheCauldrons };
+
+ScoringCard* scoringCards[16] = { &SentinelWood, &TreeTower, &GreenBough, &StoneSideQuest, &CanalLake, &ShoreSideExpanse, &TheGoldenGranary, &MagesValley, &Wildholds, &GreengoldPlains, &GreatCity, &Shieldgate, &Borderlands, &BrokenRoad, &LostBarony, &TheCauldrons };
 // Et plus, quand les fonctions seront définies
-
 
 // Cartes Exploration
 const ExploreCard FarmLands = { .time = 1, .pieceA = L_LINE, .iscoinA = 1, .pieceB = CROSS, .terrainA = CHAMPS };
@@ -94,6 +104,7 @@ void SetupGame() {
 
 
 }
+
 
 
 

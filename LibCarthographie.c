@@ -209,11 +209,17 @@ int getMaterialAt(FeuilleCarte f, Position pos) {
     return OUTOFBOUND; 
 }
 
+int getMaterialAt2(FeuilleCarte f, int x, int y) {
+    if (isInCarte(x, y)) { return (f[x][y] % RUINE); }
+    return OUTOFBOUND;
+}
+
+
 int isPosmaterial(FeuilleCarte f, Position pos, int material) {
     return getMaterialAt(f, pos) == material;
 }
 
-void getVoisinMaterialPos(FeuilleCarte f, Position pos, int material, Position listeVoisins[8]) {// retourne dans listeVoisins les positions des voisins de pos qui sont du material
+void getVoisinMaterialPos(FeuilleCarte f, Position pos, int material, Position listeVoisins[4]) {// retourne dans listeVoisins les positions des voisins de pos qui sont du material
     Position posCible;
     posCible.x = -1;
     posCible.y = -1;
@@ -598,7 +604,7 @@ int placementShape(FeuilleCarte f, Piece shape, int material) {
             drawable = drawable && isDrawable(f, feuilleVide);
             int flip = 0;
             printf(" position actuelle : (%d , %d , %d ) valide : %d \n  entrez la nouvelle position (X Y ROTATION FLIP) : ", pos.x, pos.y, rotation, drawable);
-            scanf("%d %d %d", &pos.x, &pos.y, &rotation, &flip);
+            scanf("%d %d %d %d", &pos.x, &pos.y, &rotation, &flip);
 			if (flip) flipShape(shapeCopy);
             printf("\n");
 
@@ -960,7 +966,7 @@ int ShoreSide1NextStep(FeuilleCarte temp, int material, Position* alreadyChecked
                 for (int k = -1; k < 2; k++) {
                     for (int l = -1; l < 2; l++) {
                         if (isInCarte(i + k, j + l)) {
-                            if (temp[i + k][j + l] == material) {
+                            if (getMaterialAt(temp, (Position){ i + k , j + k}) == material) {
 
                                 for (int m = 0; m < occurences; m++) {
                                     if ((alreadyChecked[m].x == i + k) && (alreadyChecked[m].y == j + l)) {
@@ -1005,5 +1011,125 @@ void nextStepShoreside(FeuilleCarte temp) {
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Map
+
+int calcBorderlands(FeuilleCarte f) {
+    int somme = 0;
+    int full = 1;
+
+    for (int i = 0; i < SIZE; i++) {
+		full = 1;
+        for (int j = 0; j < SIZE; j++) {
+            if (getMaterialAt2(f, i, j) == 0 ) {
+                full = 0;
+                break;
+            }
+        }
+		if (full) somme++;
+    }
+    for (int i = 0; i < SIZE; i++) {
+        full = 1;
+        for (int j = 0; j < SIZE; j++) {
+            if (getMaterialAt2(f, j, i) == 0) {
+                full = 0;
+                break;
+            }
+        }
+        if (full) somme++;
+    }
+
+
+    return somme * 6;
+}
+
+
+int calcBrokenRoad(FeuilleCarte f) {
+    int somme = 0;
+    int valid;
+
+    for (int i = 0; i < SIZE; i++) {
+		valid = 1;
+        for (int j = 0; j <= i; j++) {
+            if (getMaterialAt2(f, j, SIZE - i - 1 + j) == 0) {
+                valid = 0;
+			}
+        }
+		if (valid) somme++;
+    }
+    return somme * 3;
+}
+
+
+int calcLostBarony(FeuilleCarte f) {
+    int lenght = 2;
+	for (int i = 0; i <= SIZE - lenght; i++) {
+        for (int j = 0; j <= SIZE - lenght; j++) {
+			if (IsASquare(f, i, j, lenght)) {
+				lenght++;
+                j--;
+            }
+        }
+    }
+    return lenght * 3;
+}
+
+int IsASquare(FeuilleCarte f, int x, int y, int lenght) {
+    for (int i = x; i < x + lenght; i++) {
+        for (int j = y; j < y + lenght; j++) {
+            if (getMaterialAt2(f, i, j) == 0) return FALSE;
+        }
+    }
+    return TRUE;
+}
+
+
+int calcTheCauldrons(FeuilleCarte f) {
+	int somme = 0;
+	int isVoisin = 1;
+	int valid = 1;
+
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            if (getMaterialAt2(f, i, j) == 0) {
+                valid = 1;
+                Position d[4] = { {0,1}, {0,-1}, {1,0}, {-1,0} };
+                for (int k = 0; k < 4; k++) {
+                    isVoisin = getMaterialAt2(f, i + d[k].x, j + d[k].y) != 0; // voisin ou bordure
+                    if (!isVoisin) {
+                        valid = 0;
+                        break;
+                    }
+                }
+                if (valid) somme++;
+            }
+        }
+	}
+	return somme;
+}
+
+
+
+
+
+
+
 
 

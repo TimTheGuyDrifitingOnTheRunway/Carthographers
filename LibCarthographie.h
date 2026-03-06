@@ -60,6 +60,7 @@ void tryDraw(FeuilleCarte f, FeuilleCarte feuilleVide, FeuilleCarte sortie);
 void rotateShape(Piece piece, int rotation);
 int getEmptySpots(FeuilleCarte f);
 int getMaterialAt(FeuilleCarte f, Position pos);
+int getMaterialAt2(FeuilleCarte f, int x, int y);
 int isPosmaterial(FeuilleCarte f, Position pos, int material);
 void getVoisinMaterialPos(FeuilleCarte f, Position pos, int material, Position listeVoisins[8]);
 int getOccurencesOf(FeuilleCarte f, int material);
@@ -123,14 +124,13 @@ int calcGreatCity(FeuilleCarte f);
 int calcShieldgate(FeuilleCarte f);
 
 
-
-
 //Map
 int calcBorderlands(FeuilleCarte f);
-int calcTheBrokenRoad(FeuilleCarte f);
+int calcBrokenRoad(FeuilleCarte f);
 int calcLostBarony(FeuilleCarte f);
 int calcTheCauldrons(FeuilleCarte f);
 
+int IsASquare(FeuilleCarte f, int x, int y, int lenght);
 
 
 

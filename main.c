@@ -67,12 +67,70 @@ int main()
 	printf("\n\n\n\n\n\n\n Debug de fin de partie \n\n\n\n\n\n\n");
 
     printf("\n\n stoneSideQuest points = %d\n", calcStoneSideQuest(f));
-    WaitTime(10.0f);
+    WaitTime(1.0f);
+
+
+    
+
+
 
     // De-Initialization
     //--------------------------------------------------------------------------------------
     CloseWindow();        // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
+
+
+
+
+
+
+    FeuilleCarte test = {
+        {4, 0, 0, 104, 0, 0, 0, 5, 4, 6, 1},
+        {0, 3, 0, 2, 0, 0, 0, 100, 3, 5, 2},
+        {4, 3, 8, 2, 0, 0, 0, 0, 0, 5, 3},
+        {0, 3, 0, 2, 0, 0, 0, 0, 0, 103, 3},
+        {0, 3, 3, 2, 2, 0, 0, 0, 0, 5},
+        {2 ,2 ,2 ,2 ,6 ,8 ,6 ,3 ,2 ,4},
+        {0 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ,5},
+        {4 ,4 ,4 ,4 ,4 ,104 ,4 ,4 ,4 ,5},
+        {5 ,5 ,5 ,5 ,5 ,5 ,5 ,5 ,5 ,5},
+        {5 ,5 ,5 ,5 ,5 ,5 ,5 ,5 ,5 ,5},
+        {2, 4, 5, 3, 3, 3, 4, 4, 2, 2, 9}
+
+	}; //Borderlands devrait faire 24 points, Broken Road 15 points
+
+
+    /*initCarte2(test, FALSE, FALSE);
+    for (int i = 0; i < SIZE; i++) test[0][i] = FORET;
+    for (int i = 0; i < SIZE; i++) test[5][i] = RUINE;
+    for (int i = 0; i < SIZE; i++) test[7][i] = CHAMPS;
+    for (int i = 0; i < SIZE; i++) test[i][3] = FORET;
+    for (int i = 1; i < SIZE; i++) test[i][1] = VILLAGE;
+    for (int i = 0; i < SIZE; i++) test[i][9] = EAU;
+    test[0][0] = EAU;
+    test[6][9] = EAU;*/
+
+
+
+
+    displayCarte(test);
+
+    printf("\nBorderlands points = %d\n", calcBorderlands(test));
+
+    test[1][10] = FORET;
+
+    displayCarte(test);
+    printf("\nBroken Road points = %d", calcBrokenRoad(test));
+
+
+
+
+
+
+
+
+
+
 
     return 0;
 
