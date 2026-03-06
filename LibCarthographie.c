@@ -783,7 +783,7 @@ int calcStoneSideQuest(FeuilleCarte f) {
 
     }
 
-    return somme / 2; 
+    return somme*3 ; 
 }
 
 
@@ -792,24 +792,39 @@ int nextForestStep(FeuilleCarte f) {
     int nbO = 0;
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
-            if (f[i][j] == ACTUALFOREST) {
+            if (getMaterialAt(f, (Position){i, j}) == ACTUALFOREST) {
                 f[i][j] = 0;
                 for (int k = -1; k < 2; k++) {
-                    for (int l = -1; l < 2; l++) {
-                        if (isInCarte(i + k, j + l)) {
+                    
+                    if (isInCarte(i + k, j)) {
 
-                            if (f[i + k][j + l] == FORET) {
-                                f[i + k][j + l] = NEXTFOREST;
-                            }
-                            else if (f[i + k][j + l] == MONTAGNE) {
-                                f[i + k][j + l] = 0;
-                                total++;
-                            }
+                        if (getMaterialAt(f, (Position) { i + k, j }) == FORET) {
+                            f[i + k][j] = NEXTFOREST;
                         }
+                        else if (getMaterialAt(f, (Position) { i + k, j }) == MONTAGNE) {
+                            f[i + k][j] = 0;
+                            total++;
+                        }
+                    }
+
+                    if (isInCarte(i, j + k)) {
+
+                        if (getMaterialAt(f, (Position) { i, j + k
+                        }) == FORET) {
+                            f[i][j + k] = NEXTFOREST;
+                        }
+                        else if (getMaterialAt(f, (Position) { i, j + k
+                        }) == MONTAGNE) {
+                            f[i][j + k] = 0;
+                            total++;
+                        }
+
+
+                        
                     }
                 }
             }
-            else if (f[i][j] == 0) nbO++;
+            else if (getMaterialAt(f, (Position) {i, j}) == 0) nbO++;
         }
     }
     for (int i = 0; i < SIZE; i++) {
