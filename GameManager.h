@@ -46,6 +46,7 @@ typedef struct {
 	char name[20];
 }ScoringCard;
 
+extern int coinCount;
 
 /******************Définition du Contenu******************/
 // Cartes Saison
@@ -109,8 +110,8 @@ extern const ExploreCard RiftLands;
 
 
 void SetupGame();
-void InitDeck(const ExploreCard* exploreDeck[40], int monster);
-void ShakeDeck(const ExploreCard* exploreDeck[40], int size);
+void InitDeck(const ExploreCard* exploreDeck[25], int monster);
+void ShakeDeck(const ExploreCard* exploreDeck[25], int size);
 void InitScoringCards(const ScoringCard* edits[4]);
 
 

@@ -1,5 +1,4 @@
 Vu par Math : 
-Afficher les Stats du jeu directement dans l'interface graphique
 Faire un tour de jeu fonctionnel
 Passer d'un tour à l'autre
 Faire des saisons fonctionnelles
@@ -13,6 +12,7 @@ Vu par Tim :
 
 
 En cours par Math : 
+Afficher les Stats du jeu directement dans l'interface graphique
 
 
 En cours par Tim : 

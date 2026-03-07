@@ -6,7 +6,7 @@
 #include <math.h>
 #include <string.h>
 #include "LibCarthographie.h"
-#pragma once
+
 
 /*****************************************CONSTANTES PIECES*************************************************/
 
@@ -392,7 +392,7 @@ void exploreGroup(FeuilleCarte f, int x, int y, FeuilleCarte visited, FeuilleCar
     }
 
     if (material != info->material) {
-        if (voisinsVisited[x][y] == 0) {
+        if (voisinsVisited[x][y] == 0 && material < 10) {
             info->materialVoisin[material] += 1;
             voisinsVisited[x][y] = 1;
         }
@@ -563,7 +563,7 @@ int drawShape(FeuilleCarte f, Piece piece, Position pos, int rotation, int mater
 
 void rotateShape(Piece piece, int rotation) {
     for (int k = 0; k < rotation % 4; k++) {
-        int buff[SIZE][PIECESIZE] = { {0,0} };
+        int buff[PIECESIZE][PIECESIZE] = { {0,0} };
 
         for (int i = 0; i < PIECESIZE; i++) {
             for (int j = 0; j < PIECESIZE; j++) {
@@ -608,7 +608,7 @@ int placementU(FeuilleCarte f, int material) {
             displayCarte(temp);
             drawable = drawable && isDrawable(f, feuilleVide);
             printf(" position actuelle : (%d , %d , %d ) valide : %d \n  entrez la nouvelle position (X Y ROTATION) : ", pos.x, pos.y, rotation, drawable);
-            scanf("%d %d %d", &pos.x, &pos.y, &rotation);
+            //scanf("%d %d %d", &pos.x, &pos.y, &rotation);
             printf("\n");
 
 
@@ -631,7 +631,7 @@ int placementDefault(FeuilleCarte f, int  material) {
 
 }
 
-int placementShape(FeuilleCarte f, Piece shape, int material) {
+int placementShape(FeuilleCarte f, const Piece shape, int material) {
     if (checkShape(f, shape)) {
 		Piece shapeCopy;
 		copyPiece(shape, shapeCopy);
@@ -653,7 +653,7 @@ int placementShape(FeuilleCarte f, Piece shape, int material) {
             drawable = drawable && isDrawable(f, feuilleVide);
             int flip = 0;
             printf(" position actuelle : (%d , %d , %d ) valide : %d \n  entrez la nouvelle position (X Y ROTATION FLIP) : ", pos.x, pos.y, rotation, drawable);
-            scanf("%d %d %d %d", &pos.x, &pos.y, &rotation, &flip);
+            //scanf("%d %d %d %d", &pos.x, &pos.y, &rotation, &flip);
 			if (flip) flipShape(shapeCopy);
             printf("\n");
 
@@ -785,7 +785,7 @@ int calcGreenBough(FeuilleCarte f) {
         for (int j = 0; j < SIZE; j++) {
             if (getMaterialAt(f, i, j) == FORET) {
                 somme++;
-                j = SIZE;
+                break;
             }
         }
     }
@@ -793,7 +793,7 @@ int calcGreenBough(FeuilleCarte f) {
         for (int j = 0; j < SIZE; j++) {
             if (f[j][i] == FORET) {
                 somme++;
-                j = SIZE;
+                break;
             }
         }
     }
@@ -818,17 +818,17 @@ int calcStoneSideQuest(FeuilleCarte f) {
         temp[mountainList[i].x][mountainList[i].y] = ACTUALFOREST;
         int buff = 0;
         int step = 0;
+		int valid = 0;
         do {
-            displayCarte(temp);
-            printf("\n\n\n");
+            // displayCarte(temp);
+            //printf("\n\n\n");
             buff = nextForestStep(temp);
-            displayCarte(temp);
-            printf("\n\n%d\n", buff);
-            if (buff > -1)somme += buff;
+            //displayCarte(temp);
+            //printf("\n\n%d\n", buff);
+			if (buff > 0) { valid = 1; break; }
             step++;
         } while ((buff > -1) && (step < 200) && !(isForestAllProcessed(temp)));
-
-
+		if (valid) somme += 1; // on augmente que d'un par montagne, peut importe le nombre de montagnes connectées
     }
     free(mountainList);
     return somme*3 ; 
@@ -866,8 +866,6 @@ int nextForestStep(FeuilleCarte f) {
                             f[i][j + k] = 0;
                             total++;
                         }
-
-
                         
                     }
                 }
@@ -1209,7 +1207,7 @@ int calcLostBarony(FeuilleCarte f) {
             }
         }
     }
-    return length * 3;
+    return (length - 1) * 3;
 }
 
 int IsASquare(FeuilleCarte f, int x, int y, int length) {

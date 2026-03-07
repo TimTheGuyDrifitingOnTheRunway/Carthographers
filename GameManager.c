@@ -8,6 +8,8 @@
 #include "GameManager.h"
 
 
+int coinCount = 0;
+
 /******************Définition du Contenu******************/
 // Cartes Saison
 
@@ -87,14 +89,15 @@ void SetupGame() {
 	// Initialisation du jeu
 	// Initialiser la Map, actuellement dans le main
 
+
 	// Initialiser les cartes Scores
 	const ScoringCard* edits[4];
 	InitScoringCards(edits);
 
 	// Mélange des cartes, Définition des packets, Saison, Cartes de Score, etc
-	const ExploreCard* exploreDeck[40];
+	const ExploreCard* exploreDeck[25];
 	InitDeck(exploreDeck, 1);
-	int deckSize = 37;
+	int deckSize = 22;
 
 	// Initialisation du 1er tour
 
@@ -112,26 +115,18 @@ int CalcPointsFromCards(FeuilleCarte f, ScoringCard *cards, int numberOfCards) {
 
 
 
-void InitDeck(const ExploreCard* exploreDeck[40], int monster) {
+void InitDeck(const ExploreCard* exploreDeck[25], int monster) {
 	// Setup du deck
-	for (int i = 0; i < 10; i++) {
-		exploreDeck[3 * i] = expCards[i];
-		exploreDeck[3 * i + 1] = expCards[i];
-		exploreDeck[3 * i + 2] = expCards[i];
-	}
-	for (int i = 0; i < 3; i++) {
-		exploreDeck[30 + 2 * i] = expCards[18 + i];
-		exploreDeck[31 + 2 * i] = expCards[18 + i];
-	}
-	for (int i = 0; i < monster; i++) exploreDeck[36 + i] = expCards[randInt(10, 17)];
-	for (int i = 36 + monster; i < 40; i++) exploreDeck[i] = NULL;
+	monster <= 4 ? monster : 4;
+	for (int i = 0; i < 21; i++) exploreDeck[i] = expCards[i];
+	for (int i = 21; i < 21 + monster; i++) exploreDeck[i] = expCards[randInt(10, 17)];
+	for (int i = 21 + monster; i < 40; i++) exploreDeck[i] = NULL;
 	
-
 	//Melanger le deck :
-	ShakeDeck(exploreDeck, 37);
+	ShakeDeck(exploreDeck, 25 + monster);
 }
 
-void ShakeDeck(const ExploreCard* exploreDeck[40], int size) {
+void ShakeDeck(const ExploreCard* exploreDeck[25], int size) {
 	const ExploreCard* temp;
 	for (int k = 0; k < 100; k++) {
 		int j = randInt(0, size - 1);
