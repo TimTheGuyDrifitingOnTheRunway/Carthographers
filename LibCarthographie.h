@@ -11,14 +11,14 @@
 #define PIECESIZE 3
 #define NOMBREMONTAGNE 5
 #define MONTAGNEDIST 3.0f
-#define NOMBRERUINE 8
+#define NOMBRERUINE 6
 #define RUINEDIST 2.7f
 #define TRUE 1
 #define FALSE 0
 #define CONFLICTVALUE 9
 #define OUTOFBOUND -1
 
-
+// ne rien metre sur 1
 #define FORET 2
 #define VILLAGE 3
 #define CHAMPS 4
@@ -73,7 +73,7 @@ int getOccurencesOf(FeuilleCarte f, int material);
 Position* getPositionsOfMaterial(FeuilleCarte f, int material);
 float distPos(Position a, Position b);
 Position* emptyPositionList(int size);
-void copyPiece(Piece pieceFrom, Piece pieceTo);
+void copyPiece(const Piece pieceFrom, Piece pieceTo);
 void flipShape(Piece shape);
 
 
@@ -81,8 +81,11 @@ int GroupNextStep(FeuilleCarte temp, int material, int materialToAvoid, int incl
 int isGroupAtPosNeighborWithMaterial(FeuilleCarte f, Position pos, int material, int includeBorder);
 int isAllProcessed(FeuilleCarte f);
 
+
 void exploreGroup(FeuilleCarte f, int x, int y, FeuilleCarte visited, FeuilleCarte voisinsVisites, InfoGroupe* info);
-int RecenseEveryGroupes(FeuilleCarte f, InfoGroupe listeGroupes[SIZE * SIZE]);
+//Trouver tous les groupes de la carte, leur taille, leur material, et le nombre de voisins en fonction de leur material
+// Retourne le nombre de groupes trouvé
+int RecenseEveryGroups(FeuilleCarte f, InfoGroupe listeGroupes[SIZE * SIZE]);
 
 
 
@@ -105,7 +108,7 @@ int placementShape(FeuilleCarte f, Piece shape, int material);//SP à utiliser p
 
 // vérification de la placabilité
 int checkU(FeuilleCarte f);//DEPRECIé
-int checkShape(FeuilleCarte f, Piece shape);
+int checkShape(FeuilleCarte f, const Piece shape);
 
 //Calcul des points :
 
@@ -127,8 +130,8 @@ int calcShoreSideExpanse(FeuilleCarte f);
 
 int pointAdjacensce(FeuilleCarte f, int materia1, int material2);
 
-int CalcShoreSidePart1(FeuilleCarte f, int material);
-void nextStepShoreside(FeuilleCarte temp);
+//int CalcShoreSidePart1(FeuilleCarte f, int material);
+//void nextStepShoreside(FeuilleCarte temp);
 
 //Village
 int calcWildholds(FeuilleCarte f);
@@ -143,7 +146,7 @@ int calcBrokenRoad(FeuilleCarte f);
 int calcLostBarony(FeuilleCarte f);
 int calcTheCauldrons(FeuilleCarte f);
 
-int IsASquare(FeuilleCarte f, int x, int y, int lenght);
+int IsASquare(FeuilleCarte f, int x, int y, int length);
 
 
 

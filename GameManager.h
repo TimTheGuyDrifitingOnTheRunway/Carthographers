@@ -24,9 +24,9 @@ typedef struct {
 
 typedef struct {
 	int time;
-	Piece* pieceA;
+	const Piece* pieceA;
 	int iscoinA;
-	Piece* pieceB; // NULL si pas de piece
+	const Piece* pieceB; // NULL si pas de piece
 	int iscoinB;
 
 	int terrainA;
@@ -109,9 +109,9 @@ extern const ExploreCard RiftLands;
 
 
 void SetupGame();
-void InitDeck(ExploreCard* exploreDeck[40]);
-void ShakeDeck(ExploreCard* exploreDeck[40], int size);
-void InitScoringCards(ScoringCard* edits[4]);
+void InitDeck(const ExploreCard* exploreDeck[40], int monster);
+void ShakeDeck(const ExploreCard* exploreDeck[40], int size);
+void InitScoringCards(const ScoringCard* edits[4]);
 
 
 

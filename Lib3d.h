@@ -18,6 +18,6 @@
 
 void DrawCarteGrid(int slices, float spacing);
 void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp);
-int GUIplacementShape(FeuilleCarte f, Piece shape, int material, Camera3D camera);
+int GUIplacementShape(FeuilleCarte f, const Piece shape, int material, Camera3D camera);
 int GUIplacementDefault(FeuilleCarte f, int  material, Camera3D camera);
 void GUIdrawGrille();

@@ -122,6 +122,7 @@ void setupMontagnePosition(int posMontage[NOMBREMONTAGNE][2]) {
         else i--;
 
     }
+	free(op);
 }
 
 void flipShape(Piece shape){
@@ -137,8 +138,7 @@ void flipShape(Piece shape){
 
 void setupRuinsPosition(FeuilleCarte f, int posRuins[NOMBRERUINE][2]) {
     Position* op = emptyPositionList(NOMBRERUINE);
-
-
+    int a = 0;
 
     for (int i = 0; i < NOMBRERUINE; i++) {
         Position np;
@@ -151,7 +151,7 @@ void setupRuinsPosition(FeuilleCarte f, int posRuins[NOMBRERUINE][2]) {
         int validPos = 1;
 
         for (int j = 0; j < NOMBRERUINE; j++) {
-            if (distPos(np, op[j]) < RUINEDIST && isInCarte(np.x, np.y)) { validPos = 0; break; }
+            if (distPos(np, op[j]) < RUINEDIST && isInCarte(np.x, np.y)) { validPos = 0; a++; break; }
         }
         if (validPos) {
             posRuins[i][0] = np.x;
@@ -159,8 +159,15 @@ void setupRuinsPosition(FeuilleCarte f, int posRuins[NOMBRERUINE][2]) {
             op[i] = np;
 			printf("Ruins %d pos : %d, %d \n", i, np.x, np.y);
         }
+        else if (a > 1000) {
+			i = 0;
+			a = 0;
+			printf("Too much failed attempts to place ruins, retrying whole placement\n");
+			// implémenter un truc WTF si jamais ça arrive, 1 chance sur des milliards, mais bon, on sait jamais
+        }
         else i--;
     }
+    free(op);
 }
 
 
@@ -195,7 +202,7 @@ int isInCarte(int x, int y) {
     return 0;
 }
 
-void copyPiece(Piece pieceFrom, Piece pieceTo) {
+void copyPiece(const Piece pieceFrom, Piece pieceTo) {
     for (int i = 0; i < PIECESIZE; i++) {
         for (int j = 0; j < PIECESIZE; j++) {
             pieceTo[i][j] = pieceFrom[i][j];
@@ -255,7 +262,7 @@ int getEmptySpots(FeuilleCarte f) {
     int count = 0;
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
-            if (f[i][j] == 0)count++;
+            if (getMaterialAt(f, i, j) == 0)count++;
         }
     }
     return count;
@@ -265,18 +272,23 @@ int getOccurencesOf(FeuilleCarte f, int material) {
     int count = 0;
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
-            if (f[i][j] == material)count++;
+            if (getMaterialAt(f, i, j) == material)count++;
         }
     }
     return count;
 }
 
 Position* getPositionsOfMaterial(FeuilleCarte f, int material) {
-    Position* positions = malloc(sizeof(Position) * getOccurencesOf(f, material));
+    int occurences = getOccurencesOf(f, material);
+    if (occurences == 0) return NULL;
+
+    Position* positions = malloc(sizeof(Position) * occurences);
+    if (positions == NULL) return NULL; // allocation failed
+
     int k = 0;
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
-            if (f[i][j] == material) {
+            if (getMaterialAt(f, i, j) == material) {
                 positions[k].x = i;
                 positions[k].y = j;
                 k++;
@@ -335,43 +347,25 @@ int GroupNextStep(FeuilleCarte temp, int material, int materialToAvoid, int incl
     int retour = 0;
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
-            if (temp[i][j] == ACTUAL) {
+            if (getMaterialAt(temp, i, j) == ACTUAL) {
                 retour = 1;
                 temp[i][j] = 0;
                 for (int k = -1; k < 2; k++) {
- 
-                        if (isInCarte(i + k, j)) {
-                            if (temp[i + k][j] == material) {
-                                temp[i + k][j] = NEXT;
-                            }
-                            else if (temp[i + k][j] == materialToAvoid) {
-                                return 0;
 
-                            }
+                    if (getMaterialAt(temp, i + k, j) == material) temp[i + k][j] = NEXT;
+                    else if (getMaterialAt(temp, i + k, j) == materialToAvoid) return 0;
+                    else if (!isInCarte(i + k, j) && includeBorder) return 0;
 
-                        }
-                        else if (includeBorder) return 0;
-
-                        if (isInCarte(i, j+k)) {
-                            if (temp[i][j+k] == material) {
-                                temp[i][j+k] = NEXT;
-                            }
-                            else if (temp[i][j+k] == materialToAvoid) {
-                                return 0;
-
-                            }
-
-                        }
-                        else if (includeBorder) return 0;
-
-
-                    
+                    if (getMaterialAt(temp, i, j + k) == material) temp[i + k][j] = NEXT;
+                    else if (getMaterialAt(temp, i, j + k) == materialToAvoid) return 0;
+                    else if (!isInCarte(i + k, j) && includeBorder) return 0;
+                                       
                 }
             }
         }
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
-                if (temp[i][j] == NEXT) temp[i][j] = ACTUAL;
+                if (getMaterialAt(temp, i, j) == NEXT) temp[i][j] = ACTUAL;
             }
         }
 
@@ -382,7 +376,7 @@ int GroupNextStep(FeuilleCarte temp, int material, int materialToAvoid, int incl
 int isAllProcessed(FeuilleCarte f) {
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
-            if (f[i][j] == ACTUAL) return 0;
+            if (getMaterialAt(f, i, j) == ACTUAL) return 0;
         }
     }
     return 1;
@@ -417,6 +411,7 @@ void exploreGroup(FeuilleCarte f, int x, int y, FeuilleCarte visited, FeuilleCar
 }
 
 int RecenseEveryGroups(FeuilleCarte f, InfoGroupe listeGroupes[SIZE * SIZE]) {
+	int start = clock();
     FeuilleCarte visited;
     initCarte2(visited, FALSE, FALSE);
 
@@ -433,7 +428,6 @@ int RecenseEveryGroups(FeuilleCarte f, InfoGroupe listeGroupes[SIZE * SIZE]) {
                 for (int k = 0; k < 10; k++) {
                     listeGroupes[nbGroupes].materialVoisin[k] = 0;
                 }
-
                 FeuilleCarte voisinsVisited;
                 initCarte(voisinsVisited, FALSE);
 
@@ -443,7 +437,7 @@ int RecenseEveryGroups(FeuilleCarte f, InfoGroupe listeGroupes[SIZE * SIZE]) {
             }
         }
     }
-
+    printf("Recensement des groupes effectué en %f secondes\n", (float)(clock() - start));
     return nbGroupes;
 }
 
@@ -453,11 +447,8 @@ int RecenseEveryGroups(FeuilleCarte f, InfoGroupe listeGroupes[SIZE * SIZE]) {
 int isDrawable(FeuilleCarte f, FeuilleCarte feuilleVide) {
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
-            if ((feuilleVide[i][j] != 0) && (f[i][j] % RUINE) != 0) return 0;
-
+            if (feuilleVide[i][j] != 0 && getMaterialAt(f, i, j) != 0) return 0;
         }
-
-
     }
     return 1;
 }
@@ -714,7 +705,7 @@ int checkU(FeuilleCarte f) {
     return 0;
 }
 
-int checkShape(FeuilleCarte f, Piece shape) {/// vérifie si il y a la place de placer une piece quelque part sur la carte, et retourne 1 si c'est le cas, 0 sinon
+int checkShape(FeuilleCarte f, const Piece shape) {/// vérifie si il y a la place de placer une piece quelque part sur la carte, et retourne 1 si c'est le cas, 0 sinon
     FeuilleCarte feuilleVide, temp;
     int drawable = 0;
     Position pos;
@@ -771,20 +762,16 @@ int calcSentinelWood(FeuilleCarte f) {
 
 int calcTreeTower(FeuilleCarte f) {
     int somme = 0;
+	int valid = 0;
+	Position d[4] = { {0,1}, {0,-1}, {1,0}, {-1,0} };
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
-            if (f[i][j] == FORET) {
-                int count = 0;
-                for (int k = -1; k < 2; k++) {
-                    for (int l = -1; l < 2; l++) {
-                        if (isInCarte(i + k, j + l)) {
-                            if (f[i + k][j + l] == FORET)count++;
-                        }
-                        else count++;
-
-                    }
-                }
-                if (count == 9)somme++;
+            if (getMaterialAt(f, i, j) == FORET) {
+                valid = 1;
+                for (int k = 0; k < 4; k++) {
+                    if (getMaterialAt(f, i + d[k].x, j + d[k].y) == 0) valid = 0;
+				}
+				if (valid) somme++;
             }
         }
     }
@@ -796,7 +783,7 @@ int calcGreenBough(FeuilleCarte f) {
     int somme = 0;
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
-            if (f[i][j] == FORET) {
+            if (getMaterialAt(f, i, j) == FORET) {
                 somme++;
                 j = SIZE;
             }
@@ -816,12 +803,17 @@ int calcGreenBough(FeuilleCarte f) {
 
 ///Calcul des chemins etc...
 int calcStoneSideQuest(FeuilleCarte f) {
+    int mountainCount = getOccurencesOf(f, MONTAGNE);
+    if (mountainCount == 0) return 0;
+
     Position* mountainList = getPositionsOfMaterial(f, MONTAGNE);
+    if (mountainList == NULL) return 0; // allocation failed or no mountains
+
     FeuilleCarte temp;
     int somme = 0;
 
 
-    for (int i = 0; i < NOMBREMONTAGNE; i++) {
+    for (int i = 0; i < mountainCount; i++) {
         copyFeuilleCarte(f, temp);
         temp[mountainList[i].x][mountainList[i].y] = ACTUALFOREST;
         int buff = 0;
@@ -838,7 +830,7 @@ int calcStoneSideQuest(FeuilleCarte f) {
 
 
     }
-
+    free(mountainList);
     return somme*3 ; 
 }
 
@@ -885,7 +877,7 @@ int nextForestStep(FeuilleCarte f) {
     }
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
-            if (f[i][j] == NEXTFOREST)f[i][j] = ACTUALFOREST;
+            if (getMaterialAt(f, i, j) == NEXTFOREST) f[i][j] = ACTUALFOREST;
         }
     }
 
@@ -898,7 +890,7 @@ int nextForestStep(FeuilleCarte f) {
 int isForestAllProcessed(FeuilleCarte f) {
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
-            if (f[i][j] == ACTUALFOREST) return 0;
+            if (getMaterialAt(f, i, j) == ACTUALFOREST) return 0;
         }
     }
     return 1;
@@ -908,28 +900,22 @@ int isForestAllProcessed(FeuilleCarte f) {
 
 int calcCanalLake(FeuilleCarte f) {
     int somme = 0;
+	int valid = 0;
+	Position d[4] = { {0,1}, {0,-1}, {1,0}, {-1,0} };
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
-            if (f[i][j] == EAU) {
-
-                for (int k = -1; k < 2; k++) {
-                    if (isInCarte(i + k, j)) if (f[i + k][j] == CHAMPS) somme++;
+            valid = 0;
+            if ((getMaterialAt(f, i, j)) == EAU) {
+				for (int k = 0; k < 4; k++) {
+					if (getMaterialAt(f, i + d[k].x, j + d[k].y) == CHAMPS) { valid = 1; break; }
                 }
-                for (int k = -1; k < 2; k++) {
-                    if (isInCarte(i, j + k)) if (f[i][j + k] == CHAMPS) somme++;
-                }
-
+                if (valid) somme++;
             }
-            if (f[i][j] == CHAMPS) {
-
-                for (int k = -1; k < 2; k++) {
-                    if (isInCarte(i + k, j)) if (f[i + k][j] == EAU) somme++;
+            else if (getMaterialAt(f, i, j) == CHAMPS) {
+                for (int k = 0; k < 4; k++) {
+                    if (getMaterialAt(f, i + d[k].x, j + d[k].y) == EAU) { valid = 1; break; }
                 }
-                for (int k = -1; k < 2; k++) {
-                    if (isInCarte(i, j + k)) if (f[i][j + k] == EAU) somme++;
-                }
-
-
+                if (valid) somme++;
             }
         }
 
@@ -939,16 +925,18 @@ int calcCanalLake(FeuilleCarte f) {
 
 int pointAdjacensce(FeuilleCarte f, int materia1, int material2) {
     int somme = 0;
+	int valid = 0;
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
             if (getMaterialAt(f, i, j) == materia1) {
                 for (int k = -1; k < 2; k++) {
-                    if (getMaterialAt(f, i + k, j) == material2) somme++;
+                    if (getMaterialAt(f, i + k, j) == material2) { valid = 1; break; }
                 }
                 for (int k = -1; k < 2; k++) {
-                    if (getMaterialAt(f, i, j + k) == material2) somme++;
+                    if (getMaterialAt(f, i, j + k) == material2) { valid = 1; break; }
                 }
             }
+			if (valid) somme++;
         }
     }
     return somme;
@@ -980,10 +968,24 @@ int calcMagesValley(FeuilleCarte f) {
     somme = pointAdjacensce(f, EAU, MONTAGNE) * 2;
     somme += pointAdjacensce(f, CHAMPS, MONTAGNE);
     return somme;
-
 }
 
+int calcShoreSideExpanse(FeuilleCarte f) {
+	int somme = 0;
 
+    InfoGroupe allGroups[SIZE * SIZE];
+    int total = RecenseEveryGroups(f, allGroups);
+
+    for (int i = 0; i < total; i++) {
+		InfoGroupe aG = allGroups[i];
+        if (aG.material == EAU && aG.materialVoisin[CHAMPS] == 0 && aG.materialVoisin[1] == 0) somme++;
+		if (aG.material == CHAMPS && aG.materialVoisin[EAU] == 0 && aG.materialVoisin[1] == 0) somme++;
+	}
+    return somme * 3;
+}
+
+// ancient calcShoreSideExpanse
+/*
 int calcShoreSideExpanse(FeuilleCarte f) {
     int somme = 0;
     somme += CalcShoreSidePart1(f, CHAMPS);
@@ -991,7 +993,6 @@ int calcShoreSideExpanse(FeuilleCarte f) {
 
     return somme;
 }
-
 
 int CalcShoreSidePart1(FeuilleCarte f, int material) {
     Position* posOfMaterial = getPositionsOfMaterial(f, material);
@@ -1023,6 +1024,7 @@ int CalcShoreSidePart1(FeuilleCarte f, int material) {
         }
     }
 
+	free(posOfMaterial);
     return somme;
 
 }
@@ -1068,9 +1070,7 @@ int ShoreSide1NextStep(FeuilleCarte temp, int material, Position* alreadyChecked
         nextStepShoreside(temp);
     }
     return 1;
-
 }
-
 
 void nextStepShoreside(FeuilleCarte temp) {
     for (int i = 0; i < SIZE; i++) {
@@ -1079,6 +1079,7 @@ void nextStepShoreside(FeuilleCarte temp) {
         }
     }
 }
+*/
 
 // Village
 
@@ -1116,16 +1117,16 @@ int calcGreengoldPlains(FeuilleCarte f) {
 }
 
 int calcGreatCity(FeuilleCarte f) {
-    int lenght = 0;
+    int length = 0;
 
     InfoGroupe allGroups[SIZE * SIZE];
     int total = RecenseEveryGroups(f, allGroups);
 
     for (int i = 0; i < total; i++) {
         InfoGroupe aG = allGroups[i];
-		if (aG.material == VILLAGE && aG.taille > lenght && aG.materialVoisin[MONTAGNE] == 0) lenght = aG.taille;
+		if (aG.material == VILLAGE && aG.taille > length && aG.materialVoisin[MONTAGNE] == 0) length = aG.taille;
     }
-	return lenght;
+	return length;
 }
 
 int calcShieldgate(FeuilleCarte f) {
@@ -1199,21 +1200,21 @@ int calcBrokenRoad(FeuilleCarte f) {
 
 
 int calcLostBarony(FeuilleCarte f) {
-    int lenght = 2;
-	for (int i = 0; i <= SIZE - lenght; i++) {
-        for (int j = 0; j <= SIZE - lenght; j++) {
-			if (IsASquare(f, i, j, lenght)) {
-				lenght++;
+    int length = 2;
+	for (int i = 0; i <= SIZE - length; i++) {
+        for (int j = 0; j <= SIZE - length; j++) {
+			if (IsASquare(f, i, j, length)) {
+				length++;
                 j--;
             }
         }
     }
-    return lenght * 3;
+    return length * 3;
 }
 
-int IsASquare(FeuilleCarte f, int x, int y, int lenght) {
-    for (int i = x; i < x + lenght; i++) {
-        for (int j = y; j < y + lenght; j++) {
+int IsASquare(FeuilleCarte f, int x, int y, int length) {
+    for (int i = x; i < x + length; i++) {
+        for (int j = y; j < y + length; j++) {
             if (getMaterialAt(f, i, j) == 0) return FALSE;
         }
     }
@@ -1244,6 +1245,14 @@ int calcTheCauldrons(FeuilleCarte f) {
 	}
 	return somme;
 }
+
+
+
+
+
+
+
+
 
 
 

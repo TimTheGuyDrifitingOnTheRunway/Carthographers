@@ -39,30 +39,30 @@ const ScoringCard BrokenRoad = { 4, calcBrokenRoad, "TheBrokenRoad"};
 const ScoringCard LostBarony = { 4, calcLostBarony, "LostBarony"};
 const ScoringCard TheCauldrons = { 4, calcTheCauldrons, "TheCauldrons"};
 
-ScoringCard* scoringCards[16] = { &SentinelWood, &TreeTower, &GreenBough, &StoneSideQuest, &CanalLake, &ShoreSideExpanse, &GoldenGranary, &MagesValley, &Wildholds, &GreengoldPlains, &GreatCity, &Shieldgate, &Borderlands, &BrokenRoad, &LostBarony, &TheCauldrons };
+const ScoringCard* scoringCards[16] = { &SentinelWood, &TreeTower, &GreenBough, &StoneSideQuest, &CanalLake, &ShoreSideExpanse, &GoldenGranary, &MagesValley, &Wildholds, &GreengoldPlains, &GreatCity, &Shieldgate, &Borderlands, &BrokenRoad, &LostBarony, &TheCauldrons };
 // Et plus, quand les fonctions seront définies
 
 // Cartes Exploration
-const ExploreCard FarmLands = { .time = 1, .pieceA = L_LINE, .iscoinA = 1, .pieceB = CROSS, .terrainA = CHAMPS };
-const ExploreCard ForgottenForest = { .time = 1, .pieceA = L_DIAG, .iscoinA = 1, .pieceB = Z, .terrainA = FORET };
-const ExploreCard Hamlet = { .time = 1, .pieceA = L_L, .iscoinA = 1, .pieceB = CUBE_WITH_POINT, .terrainA = VILLAGE };
-const ExploreCard GreatRiver = { .time = 1, .pieceA = LINE, .iscoinA = 1, .pieceB = STAIRS, .terrainA = EAU };
-const ExploreCard HinterlandStream = { .time = 2, .pieceA = B_L, .terrainA = CHAMPS, .terrainB = EAU };
-const ExploreCard Homestead = { .time = 2, .pieceA = L_T, .terrainA = VILLAGE, .terrainB = CHAMPS };
-const ExploreCard Orchard = { .time = 2, .pieceA = L, .terrainA = FORET, .terrainB = CHAMPS };
-const ExploreCard Marshlands = { .time = 2, .pieceA = T, .terrainA = FORET, .terrainB = EAU };
-const ExploreCard TreetopVillage = { .time = 2, .pieceA = STRANGE, .terrainA = FORET, .terrainB = VILLAGE };
-const ExploreCard FishingVillage = { .time = 2, .pieceA = B_Z, .terrainA = EAU, .terrainB = VILLAGE };
+const ExploreCard FarmLands = { .time = 1, .pieceA = &L_LINE, .iscoinA = 1, .pieceB = &CROSS, .terrainA = CHAMPS };
+const ExploreCard ForgottenForest = { .time = 1, .pieceA = &L_DIAG, .iscoinA = 1, .pieceB = &Z, .terrainA = FORET };
+const ExploreCard Hamlet = { .time = 1, .pieceA = &L_L, .iscoinA = 1, .pieceB = &CUBE_WITH_POINT, .terrainA = VILLAGE };
+const ExploreCard GreatRiver = { .time = 1, .pieceA = &LINE, .iscoinA = 1, .pieceB = &STAIRS, .terrainA = EAU };
+const ExploreCard HinterlandStream = { .time = 2, .pieceA = &B_L, .terrainA = CHAMPS, .terrainB = EAU };
+const ExploreCard Homestead = { .time = 2, .pieceA = &L_T, .terrainA = VILLAGE, .terrainB = CHAMPS };
+const ExploreCard Orchard = { .time = 2, .pieceA = &L, .terrainA = FORET, .terrainB = CHAMPS };
+const ExploreCard Marshlands = { .time = 2, .pieceA = &T, .terrainA = FORET, .terrainB = EAU };
+const ExploreCard TreetopVillage = { .time = 2, .pieceA = &STRANGE, .terrainA = FORET, .terrainB = VILLAGE };
+const ExploreCard FishingVillage = { .time = 2, .pieceA = &B_Z, .terrainA = EAU, .terrainB = VILLAGE };
 
 // Cartes Ennemis
-const ExploreCard BugbearAssault = { .isEnemy = 1, .rotation = 1, .pieceA = RECT_WITH_HOLE };
-const ExploreCard GoblinAttack = { .isEnemy = 1, .rotation = -1, .pieceA = DIAG };
-const ExploreCard FlayerIncursion = { .isEnemy = 1, .rotation = -1, .pieceA = L_L };
-const ExploreCard GnollRaid = { .isEnemy = 1, .rotation = -1, .pieceA = U };
-const ExploreCard InsectoidInvasion = { .isEnemy = 1, .rotation = 1, .pieceA = Z };
-const ExploreCard OgreCharge = { .isEnemy = 1, .rotation = -1, .pieceA = CUBE };
-const ExploreCard RatmanStrike = { .isEnemy = 1, .rotation = 1, .pieceA = LINE };
-const ExploreCard KoboldOnlaught = { .isEnemy = 1, .rotation = 1, .pieceA = L_T };
+const ExploreCard BugbearAssault = { .isEnemy = 1, .rotation = 1, .pieceA = &RECT_WITH_HOLE };
+const ExploreCard GoblinAttack = { .isEnemy = 1, .rotation = -1, .pieceA = &DIAG };
+const ExploreCard FlayerIncursion = { .isEnemy = 1, .rotation = -1, .pieceA = &L_L };
+const ExploreCard GnollRaid = { .isEnemy = 1, .rotation = -1, .pieceA = &U };
+const ExploreCard InsectoidInvasion = { .isEnemy = 1, .rotation = 1, .pieceA = &Z };
+const ExploreCard OgreCharge = { .isEnemy = 1, .rotation = -1, .pieceA = &CUBE };
+const ExploreCard RatmanStrike = { .isEnemy = 1, .rotation = 1, .pieceA = &LINE };
+const ExploreCard KoboldOnlaught = { .isEnemy = 1, .rotation = 1, .pieceA = &L_T };
 
 // Ruines et RiftLands
 const ExploreCard OutpostRuins = { .isRuin = 1 };
@@ -71,7 +71,7 @@ const ExploreCard RiftLands = { .isRiftLands = 1 };
 
 int scores[4] = { 0, 0, 0, 0 };
 
-ExploreCard* expCards[21] = { &FarmLands, &ForgottenForest, &Hamlet, &GreatRiver, &HinterlandStream, &Homestead, &Orchard, &Marshlands, &TreetopVillage, &FishingVillage, &BugbearAssault, &GoblinAttack, &FlayerIncursion, &GnollRaid, &InsectoidInvasion, &OgreCharge, &RatmanStrike, &KoboldOnlaught, &OutpostRuins, &TempleRuins, &RiftLands };
+const ExploreCard* expCards[21] = { &FarmLands, &ForgottenForest, &Hamlet, &GreatRiver, &HinterlandStream, &Homestead, &Orchard, &Marshlands, &TreetopVillage, &FishingVillage, &BugbearAssault, &GoblinAttack, &FlayerIncursion, &GnollRaid, &InsectoidInvasion, &OgreCharge, &RatmanStrike, &KoboldOnlaught, &OutpostRuins, &TempleRuins, &RiftLands };
 
 
 /*TODO: 
@@ -88,12 +88,12 @@ void SetupGame() {
 	// Initialiser la Map, actuellement dans le main
 
 	// Initialiser les cartes Scores
-	ScoringCard* edits[4];
+	const ScoringCard* edits[4];
 	InitScoringCards(edits);
 
 	// Mélange des cartes, Définition des packets, Saison, Cartes de Score, etc
-	ExploreCard* exploreDeck[40];
-	InitDeck(exploreDeck);
+	const ExploreCard* exploreDeck[40];
+	InitDeck(exploreDeck, 1);
 	int deckSize = 37;
 
 	// Initialisation du 1er tour
@@ -112,7 +112,7 @@ int CalcPointsFromCards(FeuilleCarte f, ScoringCard *cards, int numberOfCards) {
 
 
 
-void InitDeck(ExploreCard* exploreDeck[40]) {
+void InitDeck(const ExploreCard* exploreDeck[40], int monster) {
 	// Setup du deck
 	for (int i = 0; i < 10; i++) {
 		exploreDeck[3 * i] = expCards[i];
@@ -123,17 +123,16 @@ void InitDeck(ExploreCard* exploreDeck[40]) {
 		exploreDeck[30 + 2 * i] = expCards[18 + i];
 		exploreDeck[31 + 2 * i] = expCards[18 + i];
 	}
-	exploreDeck[36] = expCards[randInt(10, 17)];
-	exploreDeck[37] = NULL;
-	exploreDeck[38] = NULL;
-	exploreDeck[39] = NULL;
+	for (int i = 0; i < monster; i++) exploreDeck[36 + i] = expCards[randInt(10, 17)];
+	for (int i = 36 + monster; i < 40; i++) exploreDeck[i] = NULL;
+	
 
 	//Melanger le deck :
 	ShakeDeck(exploreDeck, 37);
 }
 
-void ShakeDeck(ExploreCard* exploreDeck[40], int size) {
-	ExploreCard* temp;
+void ShakeDeck(const ExploreCard* exploreDeck[40], int size) {
+	const ExploreCard* temp;
 	for (int k = 0; k < 100; k++) {
 		int j = randInt(0, size - 1);
 		int i = randInt(0, size - 1);
@@ -143,12 +142,13 @@ void ShakeDeck(ExploreCard* exploreDeck[40], int size) {
 	}
 }
 
-void InitScoringCards(ScoringCard* edits[4]) {
-	ScoringCard* temp[4];
+void InitScoringCards(const ScoringCard* edits[4]) {
+	const ScoringCard* temp[4];
 	for (int i = 0; i < 4; i++) {
 		int a = 0;
+		temp[0] = NULL; temp[1] = NULL; temp[2] = NULL; temp[3] = NULL;
 		for (int j = 0; j < 16; j++) {
-			if (scoringCards[j]->type == i + 1) { temp[i] = scoringCards[j]; a++; }
+			if (scoringCards[j]->type == i + 1) { temp[a] = scoringCards[j]; a++; }
 			if (a == 4) break;
 		}
 		edits[i] = temp[randInt(0, 3)];

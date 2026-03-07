@@ -51,7 +51,7 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp) {
 };
 
 
-int GUIplacementShape(FeuilleCarte f, Piece shape, int material, Camera3D camera) {
+int GUIplacementShape(FeuilleCarte f, const Piece shape, int material, Camera3D camera) {
     if (checkShape(f, shape)) {
 		Piece shapeCopy;
 		copyPiece(shape, shapeCopy);
@@ -78,7 +78,7 @@ int GUIplacementShape(FeuilleCarte f, Piece shape, int material, Camera3D camera
             for (int i = 0; i < SIZE; i++) 
                 for (int j = 0; j < SIZE; j++) 
                     if (temp[i][j] !=f[i][j])
-                        DrawCubeWires((Vector3) { i-SIZE/2, PLACEMENT_HEIGHT, j-SIZE/2 }, 1.0f, 1.0f, 1.0f, BORDERCOLOR);
+                        DrawCubeWires((Vector3) { (float)i - SIZE/2, PLACEMENT_HEIGHT, (float)j - SIZE/2 }, 1.0f, 1.0f, 1.0f, BORDERCOLOR);
                 
             GUIdrawGrille();
             // DrawCarteGrid(SIZE, 1.0f);
@@ -89,8 +89,8 @@ int GUIplacementShape(FeuilleCarte f, Piece shape, int material, Camera3D camera
             UpdateCamera(&camera,CAMERA_THIRD_PERSON);//gestion caméra : toujours au même endraoit
             camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
             
-            pos.x += -IsKeyPressed(KEY_J) + IsKeyPressed(KEY_L);// déplacement pièce
-            pos.y += -IsKeyPressed(KEY_I) + IsKeyPressed(KEY_K);
+            pos.x += -(int)IsKeyPressed(KEY_J) + (int)IsKeyPressed(KEY_L);// déplacement pièce
+            pos.y += -(int)IsKeyPressed(KEY_I) + (int)IsKeyPressed(KEY_K);
 
             if (IsKeyPressed(KEY_O)) { pos.x = 6; pos.y = 6; }//possibilité de resset
 
