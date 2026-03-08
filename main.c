@@ -8,20 +8,15 @@
 #include <math.h>
 #include <raylib.h>
 #include <string.h>
+//#include <windows.h>
 
 #define BGCOLOR RAYWHITE
 
-
+void DebugGameStats(FeuilleCarte f, ScoringCard** edits, ExploreCard** exploreDeck, int deckSize);
 
 int main()
 {
     srand(time(NULL));
-
-
-    FeuilleCarte f;
-    initCarte2(f, TRUE, TRUE);
-
-
 
     // Initialization
     //--------------------------------------------------------------------------------------
@@ -30,41 +25,78 @@ int main()
     printf("\n\n\n\n\n\n\n Debug 1 \n\n\n\n\n\n\n");
 
 
-    InitWindow(screenWidth, screenHeight, "raylib [core] example - 3d camera mode");
+    // InitWindow(screenWidth, screenHeight, "raylib [core] example - 3d camera mode");
 
     printf("\n\n\n\n\n\n\n Debug 2 \n\n\n\n\n\n\n");
 
 
-    // Define the camera to look into our 3d world
+    /* Define the camera to look into our 3d world 
     Camera3D camera = { 0 };
     camera.position = (Vector3){ 0.0f, 10.0f, 10.0f };  // Camera position
     camera.target = (Vector3){ 0.0f, 0.0f, 1.0f };      // Camera looking at point
     camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
     camera.fovy = 45.0f;                                // Camera field-of-view Y
     camera.projection = CAMERA_PERSPECTIVE;             // Camera mode type
-    //DisableCursor();
+    //DisableCursor();*/
     
 
     Vector3 cubePosition = { 0.0f, 0.0f, 0.0f };
 
-    SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
+    //SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
     printf("\n\n\n\n\n\n\n Debug 3 \n\n\n\n\n\n\n");
+	// WaitTime(1.0f);
+
+    // CloseWindow();        // Close window and OpenGL context
 
 
-	SetupGame();
 
+	// Main game loop
+    FeuilleCarte f;
+    const ScoringCard* edits[4];
+    const ExploreCard* exploreDeck[17];
+	int deckSize = 14;
+    printf("\n\n\n\n\n\n\n Debug 4 \n\n\n\n\n\n\n");
+	SetupGame(f, edits, exploreDeck);
+    // Display
+	DebugGameStats(f, edits, exploreDeck, deckSize);
+
+    /* Multi tests de fonctionnement
+    for (int i = 0; i < 5; i++) {
+		SetupGame(f, edits, exploreDeck);
+		DebugGameStats(f, edits, exploreDeck, deckSize);
+        printf("\n\n\n\n\n");
+    }*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // Tests
 
 	Piece* pieceTab[] = {&POINT, &NOTHING, &U, &L, &L_L, &B_L, &LINE, &L_LINE, &CUBE, &T, &L_T, &RECT, &RECT_WITH_HOLE, &DIAG, &L_DIAG, &CROSS, &STAIRS, &Z, &B_Z, &STRANGE};
     Piece radompiece;
 	copyPiece(pieceTab[3], radompiece);
     //for (int i = 0; i < 2; i++) {GUIplacementShape(f, pieceTab[3], FORET, camera); }
-    GUIplacementDefault(f, 5, camera);
-	WaitTime(1.0f);
+    //GUIplacementDefault(f, 5, camera);
+    Sleep(1000);
 	printf("\n\n\n\n\n\n\n Debug de fin de partie \n\n\n\n\n\n\n");
 
     printf("\n\n stoneSideQuest points = %d\n", calcStoneSideQuest(f));
-    WaitTime(1.0f);
+	Sleep(1000);
 
 
     
@@ -73,7 +105,7 @@ int main()
 
     // De-Initialization
     //--------------------------------------------------------------------------------------
-    CloseWindow();        // Close window and OpenGL context
+    //CloseWindow();        // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
 
 
@@ -129,5 +161,21 @@ int main()
     }
 
     return 0;
+
+}
+
+void DebugGameStats(FeuilleCarte f, ScoringCard** edits, ExploreCard** exploreDeck, int deckSize) {
+    printf("\n\n\n");
+    displayCarte(f);
+    printf("\n\nEdits :\n");
+    for (int i = 0; i < 4; i++) {
+        printf("edit %d : %s, type : %d;\n", i, edits[i]->name, edits[i]->type);
+    }
+    printf("\n");
+
+    printf("\n\nExplore Deck (size = %d) :\n", deckSize);
+    for (int i = 0; i < deckSize; i++) {
+        printf("card %d : %s, isEnemy = %d;\n", i, exploreDeck[i]->name, exploreDeck[i]->isEnemy);
+    }
 
 }

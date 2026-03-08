@@ -38,6 +38,8 @@ typedef struct {
 
 	int isRuin;
 	int isRiftLands;
+
+	char name[30];
 }ExploreCard;
 
 typedef struct {
@@ -55,6 +57,8 @@ extern const Saison Spring;
 extern const Saison Summer;
 extern const Saison Autumn;
 extern const Saison Winter;
+
+extern const Saison* seasons[4];
 
 // Cartes Scoring
 extern const ScoringCard SentinelWood;
@@ -76,6 +80,8 @@ extern const ScoringCard Borderlands;
 extern const ScoringCard BrokenRoad;
 extern const ScoringCard LostBarony;
 extern const ScoringCard TheCauldrons;
+
+extern const ScoringCard* scoringCards[16];
 
 // Et plus, quand les fonctions seront définies
 
@@ -107,11 +113,13 @@ extern const ExploreCard OutpostRuins;
 extern const ExploreCard TempleRuins;
 extern const ExploreCard RiftLands;
 
+extern const ExploreCard* expCards[21];
 
 
-void SetupGame();
-void InitDeck(const ExploreCard* exploreDeck[25], int monster);
-void ShakeDeck(const ExploreCard* exploreDeck[25], int size);
+
+void SetupGame(FeuilleCarte f, const ScoringCard* edits[4], const ExploreCard* exploreDeck[17]);
+void InitDeck(const ExploreCard* exploreDeck[17], int size);
+void ShakeDeck(const ExploreCard* exploreDeck[17], int size);
 void InitScoringCards(const ScoringCard* edits[4]);
 
 
