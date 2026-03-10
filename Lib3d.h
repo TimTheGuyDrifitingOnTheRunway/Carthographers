@@ -9,6 +9,9 @@
 #include <raylib.h>
 
 
+// Eviter les inclusions circulaiers : GameManager
+typedef struct ExploreCard ExploreCard;
+
 /*****************************************CONSTANTES d'affichage*************************************************/
 
 #define GRIDCOLOR GRAY
@@ -16,8 +19,9 @@
 #define PLACEMENT_HEIGHT 1.0f
 
 
-void DrawCarteGrid(int slices, float spacing);
+void DrawMapGrid(int slices, float spacing);
 void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp);
-int GUIplacementShape(FeuilleCarte f, const Piece shape, int material, Camera3D camera);
+int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D camera);
+int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int isRuin, Camera3D camera);
 int GUIplacementDefault(FeuilleCarte f, int  material, Camera3D camera);
 void GUIdrawGrille();

@@ -6,14 +6,12 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+#include <raylib.h>
 #include "LibCarthographie.h"
+#include "Lib3d.h"
 
 
 #define EXP_CARD_NUMBER 34
-
-
-
-int coinCount; //pr suivre le nombre de coin que le joueur a
 
 typedef struct {
 	int maxTime;
@@ -22,7 +20,7 @@ typedef struct {
 	char name[7];
 }Saison;
 
-typedef struct {
+typedef struct ExploreCard {
 	int time;
 	const Piece* pieceA;
 	int iscoinA;
@@ -31,7 +29,6 @@ typedef struct {
 
 	int terrainA;
 	int terrainB;  // 0 si pas de terrain
-	int TerrainC;  // 0 si pas de terrain
 
 	int isEnemy;
 	int rotation; //1 = Right, -1 = Left, 0 = None
@@ -48,7 +45,9 @@ typedef struct {
 	char name[20];
 }ScoringCard;
 
+extern int currentTime;
 extern int coinCount;
+extern int currentSeason;
 
 /******************Définition du Contenu******************/
 // Cartes Saison
@@ -116,11 +115,24 @@ extern const ExploreCard RiftLands;
 extern const ExploreCard* expCards[21];
 
 
+// Setup
+void SetupGame(FeuilleCarte f);
+void InitDeck();
+void ShakeDeck();
+void InitScoringCards();
 
-void SetupGame(FeuilleCarte f, const ScoringCard* edits[4], const ExploreCard* exploreDeck[17]);
-void InitDeck(const ExploreCard* exploreDeck[17], int size);
-void ShakeDeck(const ExploreCard* exploreDeck[17], int size);
-void InitScoringCards(const ScoringCard* edits[4]);
+
+void StartGame(FeuilleCarte f, int* score, Camera3D camera);
+// Saison
+void NextSeason(FeuilleCarte f, int* score, Camera3D camera);
+void Season(FeuilleCarte f, int* score, Camera3D camera);
+
+// Tour de jeu
+
+const ExploreCard* Turn(FeuilleCarte f, int* index, Camera3D camera);
+const ExploreCard* NextExploreCard(int* index, int* isRuin);
+
+void DebugGameStats(FeuilleCarte f);
 
 
 

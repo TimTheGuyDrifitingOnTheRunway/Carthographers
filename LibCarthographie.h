@@ -109,6 +109,10 @@ int placementShape(FeuilleCarte f, Piece shape, int material);//SP à utiliser p
 // vérification de la placabilité
 int checkU(FeuilleCarte f);//DEPRECIé
 int checkShape(FeuilleCarte f, const Piece shape);
+int coversRuin(FeuilleCarte f, FeuilleCarte feuilleVide);
+int checkShapeOnRuin(FeuilleCarte f, const Piece shape);
+
+
 
 //Calcul des points :
 

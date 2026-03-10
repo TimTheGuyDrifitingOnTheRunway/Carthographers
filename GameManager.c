@@ -5,20 +5,23 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+#include "Lib3d.h"
 #include "GameManager.h"
 
 
 int coinCount = 0;
+int currentTime = 0;
 
 /******************Définition du Contenu******************/
 // Cartes Saison
 
-const Saison Spring = { 8, 0, 1, "Spring" };
-const Saison Summer = { 8, 1, 2, "Summer" };
-const Saison Autumn = { 7, 2, 3, "Autumn" };
-const Saison Winter = { 6, 3, 0, "Winter" };
+const Saison Spring = { .maxTime = 8, .EditA = 0, .EditB = 1, .name = "Spring" };
+const Saison Summer = { .maxTime = 8, .EditA = 1, .EditB = 2, .name = "Summer" };
+const Saison Autumn = { .maxTime = 7, .EditA = 2, .EditB = 3, .name = "Autumn" };
+const Saison Winter = { .maxTime = 6, .EditA = 3, .EditB = 0, .name = "Winter" };
 
 const Saison* seasons[4] = { &Spring, &Summer, &Autumn, &Winter };
+int currentSeason = 0; //[extern] Track the actual season
 
 // Cartes Scoring
 
@@ -43,7 +46,8 @@ const ScoringCard LostBarony = { 4, calcLostBarony, "LostBarony"};
 const ScoringCard TheCauldrons = { 4, calcTheCauldrons, "TheCauldrons"};
 
 const ScoringCard* scoringCards[16] = { &SentinelWood, &TreeTower, &GreenBough, &StoneSideQuest, &CanalLake, &ShoreSideExpanse, &GoldenGranary, &MagesValley, &Wildholds, &GreengoldPlains, &GreatCity, &Shieldgate, &Borderlands, &BrokenRoad, &LostBarony, &TheCauldrons };
-// Et plus, quand les fonctions seront définies
+const ScoringCard* edits[4];
+
 
 // Cartes Exploration
 const ExploreCard FarmLands = { .name = "Farm Lands", .time = 1, .pieceA = &L_LINE, .iscoinA = 1, .pieceB = &CROSS, .terrainA = CHAMPS };
@@ -70,11 +74,12 @@ const ExploreCard KoboldOnlaught = { .name = "Kobold Onslaught", .isEnemy = 1, .
 // Ruines et RiftLands
 const ExploreCard OutpostRuins = { .name = "Outpost Ruins", .isRuin = 1 };
 const ExploreCard TempleRuins = { .name = "Temple Ruins", .isRuin = 1 };
-const ExploreCard RiftLands = { .name = "Rift Lands", .isRiftLands = 1 };
+const ExploreCard RiftLands = { .pieceA = &POINT, .terrainA = FORET, .name = "Rift Lands", .isRiftLands = 1 };
 int scores[4] = { 0, 0, 0, 0 };
 
 const ExploreCard* expCards[21] = { &FarmLands, &ForgottenForest, &Hamlet, &GreatRiver, &HinterlandStream, &Homestead, &Orchard, &Marshlands, &TreetopVillage, &FishingVillage, &OutpostRuins, &TempleRuins, &RiftLands, &BugbearAssault, &GoblinAttack, &FlayerIncursion, &GnollRaid, &InsectoidInvasion, &OgreCharge, &RatmanStrike, &KoboldOnlaught };
-
+const ExploreCard* exploreDeck[17] = { &FarmLands, &ForgottenForest, &Hamlet, &GreatRiver, &HinterlandStream, &Homestead, &Orchard, &Marshlands, &TreetopVillage, &FishingVillage, &OutpostRuins, &TempleRuins, &RiftLands, NULL, NULL, NULL, NULL };
+int deckSize = 14;
 
 /*TODO: 
 * Mise en place du jeu complet
@@ -85,7 +90,7 @@ const ExploreCard* expCards[21] = { &FarmLands, &ForgottenForest, &Hamlet, &Grea
 
 
 
-void SetupGame(FeuilleCarte f, const ScoringCard* edits[4],  const ExploreCard* exploreDeck[17]) {
+void SetupGame(FeuilleCarte f) {
 	// Initialisation du jeu
 	// Initialiser la Map, actuellement dans le main
 	initCarte2(f, TRUE, TRUE);
@@ -94,12 +99,29 @@ void SetupGame(FeuilleCarte f, const ScoringCard* edits[4],  const ExploreCard* 
 	InitScoringCards(edits);
 
 	// Mélange des cartes, Définition des packets, Saison, Cartes de Score, etc
-	int deckSize = 14;
-	InitDeck(exploreDeck, deckSize);
+	InitDeck();
 
 	// Initialisation du 1er tour
+	currentSeason = 0;
+	coinCount = 0;
+	currentTime = 0;
 
 
+}
+
+void DebugGameStats(FeuilleCarte f) {
+	printf("\n\n\n");
+	displayCarte(f);
+	printf("\n\nEdits :\n");
+	for (int i = 0; i < 4; i++) {
+		printf("edit %d : %s, type : %d;\n", i, edits[i]->name, edits[i]->type);
+	}
+	printf("\n");
+
+	printf("\n\nExplore Deck (size = %d) :\n", deckSize);
+	for (int i = 0; i < deckSize; i++) {
+		printf("card %d : %s, isEnemy = %d;\n", i, exploreDeck[i]->name, exploreDeck[i]->isEnemy);
+	}
 
 }
 
@@ -111,31 +133,35 @@ int CalcPointsFromCards(FeuilleCarte f, ScoringCard *cards, int numberOfCards) {
 	return somme;
 }
 
-
-
-void InitDeck(const ExploreCard* exploreDeck[17], int size) {
+void InitDeck() {
 	// Setup du deck
-	size <= 17 ? size : 17;
-	for (int i = 0; i < 13; i++) exploreDeck[i] = expCards[i];
-	for (int i = 13; i < size; i++) exploreDeck[i] = expCards[randInt(13, 20)];
-	for (int i = size; i < 13; i++) exploreDeck[i] = NULL;
+	int j = 0;
+	for (int i = 0; i < deckSize; i++) { //Remettre les NULL au fond du Deck
+		if (exploreDeck[i] == NULL) {
+			exploreDeck[i] = exploreDeck[16 - j];
+			exploreDeck[16 - j] = NULL;
+			j++;
+			i--;
+		}
+		if (j >= 4) break;
+	}
 	
 	//Melanger le deck :
-	ShakeDeck(exploreDeck, size);
+	ShakeDeck(deckSize);
 }
 
-void ShakeDeck(const ExploreCard* exploreDeck[17], int size) {
+void ShakeDeck() {
 	const ExploreCard* temp;
 	for (int k = 0; k < 100; k++) {
-		int j = randInt(0, size - 1);
-		int i = randInt(0, size - 1);
+		int j = randInt(0, deckSize - 1);
+		int i = randInt(0, deckSize - 1);
 		temp = exploreDeck[i];
 		exploreDeck[i] = exploreDeck[j];
 		exploreDeck[j] = temp;
 	}
 }
 
-void InitScoringCards(const ScoringCard* edits[4]) {
+void InitScoringCards() {
 	const ScoringCard* temp[4];
 	int usedEdit[4] = { 0, 0, 0, 0 };
 	int b = 0;
@@ -152,8 +178,69 @@ void InitScoringCards(const ScoringCard* edits[4]) {
 	}
 }
 
+void StartGame(FeuilleCarte f, int* score, Camera3D camera) {
+	printf("\n\n\n\nLancement du jeu !\n\n\n\n");
+	Season(f, score, camera);
+}
 
+// Saisons
+void Season(FeuilleCarte f, int* score, Camera3D camera) {
+	if (currentSeason >= 4) { printf("Jeu Termine"); return; }
+	int actTime = 0;
+	int index = 0;
+	while (actTime < seasons[currentSeason]->maxTime) {
+		const ExploreCard* card = Turn(f, &index, camera);
+		actTime += card->time;
+	}
 
+	NextSeason(f, score, camera);
+
+}
+
+void NextSeason(FeuilleCarte f, int* score, Camera3D camera) {
+	deckSize++;
+	InitDeck();
+	// calculs des points
+	
+	*score += edits[seasons[currentSeason]->EditA]->fctCaluls(f);
+	*score += edits[seasons[currentSeason]->EditB]->fctCaluls(f);
+
+	currentSeason++;
+	Season(f, score, camera);
+}
+
+// Tour de jeu
+const ExploreCard* Turn(FeuilleCarte f, int *index, Camera3D camera) {
+	int isRuin = 0;
+	const ExploreCard* card = NextExploreCard(index, &isRuin);
+	printf("Carte Recue\n\n");
+	if (card->isEnemy) {
+		// Later : Give the map to the other player
+		printf("Carte Ennemie\n\n");
+		GUIplacementShape(f, card->pieceA, MONSTRE, camera);
+		deckSize--;
+
+	}
+	else {
+		printf("Carte Normale, placement en cours\n\n");
+		GUIPlacementCard(f, card, isRuin, camera);
+		printf("placement effectué\n\n");
+
+	}
+
+	return card;
+}
+
+const ExploreCard* NextExploreCard(int* index, int *isRuin) {
+	const ExploreCard* card;
+	do {
+		card = exploreDeck[*index];
+		(*index)++;
+		if (card->isRuin) *isRuin = 1;
+		printf("Carte choisie %d, %d\n\n", *index, *isRuin);
+	} while (card->isRuin);
+	return card;
+}
 
 
 

@@ -12,7 +12,6 @@
 
 #define BGCOLOR RAYWHITE
 
-void DebugGameStats(FeuilleCarte f, ScoringCard** edits, ExploreCard** exploreDeck, int deckSize);
 
 int main()
 {
@@ -25,19 +24,19 @@ int main()
     printf("\n\n\n\n\n\n\n Debug 1 \n\n\n\n\n\n\n");
 
 
-    // InitWindow(screenWidth, screenHeight, "raylib [core] example - 3d camera mode");
+    InitWindow(screenWidth, screenHeight, "raylib [core] example - 3d camera mode");
 
     printf("\n\n\n\n\n\n\n Debug 2 \n\n\n\n\n\n\n");
 
 
-    /* Define the camera to look into our 3d world 
+    //Define the camera to look into our 3d world 
     Camera3D camera = { 0 };
     camera.position = (Vector3){ 0.0f, 10.0f, 10.0f };  // Camera position
     camera.target = (Vector3){ 0.0f, 0.0f, 1.0f };      // Camera looking at point
     camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
     camera.fovy = 45.0f;                                // Camera field-of-view Y
     camera.projection = CAMERA_PERSPECTIVE;             // Camera mode type
-    //DisableCursor();*/
+    //DisableCursor();
     
 
     Vector3 cubePosition = { 0.0f, 0.0f, 0.0f };
@@ -47,7 +46,6 @@ int main()
     printf("\n\n\n\n\n\n\n Debug 3 \n\n\n\n\n\n\n");
 	// WaitTime(1.0f);
 
-    // CloseWindow();        // Close window and OpenGL context
 
 
 
@@ -57,9 +55,15 @@ int main()
     const ExploreCard* exploreDeck[17];
 	int deckSize = 14;
     printf("\n\n\n\n\n\n\n Debug 4 \n\n\n\n\n\n\n");
-	SetupGame(f, edits, exploreDeck);
+	SetupGame(f);
     // Display
-	DebugGameStats(f, edits, exploreDeck, deckSize);
+	// DebugGameStats(f, edits, exploreDeck, deckSize);
+    int score = 0;
+
+    StartGame(f, score, camera);
+
+
+
 
     /* Multi tests de fonctionnement
     for (int i = 0; i < 5; i++) {
@@ -87,7 +91,7 @@ int main()
 
     // Tests
 
-	Piece* pieceTab[] = {&POINT, &NOTHING, &U, &L, &L_L, &B_L, &LINE, &L_LINE, &CUBE, &T, &L_T, &RECT, &RECT_WITH_HOLE, &DIAG, &L_DIAG, &CROSS, &STAIRS, &Z, &B_Z, &STRANGE};
+	const Piece* pieceTab[] = {&POINT, &NOTHING, &U, &L, &L_L, &B_L, &LINE, &L_LINE, &CUBE, &T, &L_T, &RECT, &RECT_WITH_HOLE, &DIAG, &L_DIAG, &CROSS, &STAIRS, &Z, &B_Z, &STRANGE};
     Piece radompiece;
 	copyPiece(pieceTab[3], radompiece);
     //for (int i = 0; i < 2; i++) {GUIplacementShape(f, pieceTab[3], FORET, camera); }
@@ -105,7 +109,7 @@ int main()
 
     // De-Initialization
     //--------------------------------------------------------------------------------------
-    //CloseWindow();        // Close window and OpenGL context
+    CloseWindow();        // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
 
 
@@ -164,7 +168,7 @@ int main()
 
 }
 
-void DebugGameStats(FeuilleCarte f, ScoringCard** edits, ExploreCard** exploreDeck, int deckSize) {
+/*void DebugGameStats(FeuilleCarte f, ScoringCard** edits, ExploreCard** exploreDeck, int deckSize) {
     printf("\n\n\n");
     displayCarte(f);
     printf("\n\nEdits :\n");
@@ -178,4 +182,4 @@ void DebugGameStats(FeuilleCarte f, ScoringCard** edits, ExploreCard** exploreDe
         printf("card %d : %s, isEnemy = %d;\n", i, exploreDeck[i]->name, exploreDeck[i]->isEnemy);
     }
 
-}
+}*/

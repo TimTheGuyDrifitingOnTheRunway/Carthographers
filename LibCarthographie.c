@@ -722,27 +722,62 @@ int checkShape(FeuilleCarte f, const Piece shape) {/// vérifie si il y a la pla
 
 
                     drawable = drawShape(feuilleVide, shapeCopy, pos, r, 4);
-                    tryDraw(f, feuilleVide, temp);
+                    tryDraw(f, feuilleVide, temp); // utile ?
 
                     drawable = min(drawable, isDrawable(f, feuilleVide));
 
                     if (drawable == 1) return 1;
                 }
-
-
-
             }
-
         }
-
-
     }
     return 0;
-
-
-
 }
 
+int coversRuin(FeuilleCarte f, FeuilleCarte feuilleVide) {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            // Si la case de la forme est pleine ET que la case correspondante sur la map est une RUINE non couverte
+            if (feuilleVide[i][j] != 0 && f[i][j] == RUINE) {
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+int checkShapeOnRuin(FeuilleCarte f, const Piece shape) {
+    FeuilleCarte feuilleVide, temp;
+    int drawable = 0;
+    Position pos;
+
+    for (int i = -1; i < SIZE + 1; i++) {
+        for (int j = -1; j < SIZE + 1; j++) {
+            for (int r = 0; r < 4; r++) {
+                for (int flip = 0; flip < 2; flip++) {
+                    Piece shapeCopy;
+                    copyPiece(shape, shapeCopy);
+                    if (flip) flipShape(shapeCopy);
+
+                    initCarte(feuilleVide, FALSE);
+                    pos.x = i;
+                    pos.y = j;
+
+                    drawable = drawShape(feuilleVide, shapeCopy, pos, r, 4);
+                    tryDraw(f, feuilleVide, temp); // utile ?
+
+                    // Si on peut la dessiner, on vérifie si elle est jouable ET si elle couvre une ruine
+                    if (drawable) {
+                        if (isDrawable(f, feuilleVide) && coversRuin(f, feuilleVide)) {
+                            return 1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return 0;
+}
 
 
 /************************FONCTIONS de points*******************/
