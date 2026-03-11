@@ -441,7 +441,7 @@ int RecenseEveryGroups(FeuilleCarte f, InfoGroupe listeGroupes[SIZE * SIZE]) {
     return nbGroupes;
 }
 
-int compareShape(Piece shape1, Piece shape2) {
+int compareShape(Piece shape1, Piece shape2) {// compare 2 shape et renvoi 1 si c'est les m$êmes
 
     for (int i = 0; i < PIECESIZE; i++) for (int j = 0; j < PIECESIZE; j++) if (shape1[i][j] != shape2[i][j]) return 0;
     return 1;
