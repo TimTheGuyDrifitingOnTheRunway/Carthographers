@@ -131,7 +131,7 @@ void Season(FeuilleCarte f, int* score, Camera3D camera);
 
 // Tour de jeu
 
-const ExploreCard* Turn(FeuilleCarte f, int* index, Camera3D camera);
+const ExploreCard* Turn(FeuilleCarte f, int* index, int score, Camera3D camera);
 const ExploreCard* NextExploreCard(int* index, int* isRuin);
 
 void DebugGameStats(FeuilleCarte f);

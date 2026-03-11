@@ -122,10 +122,11 @@ int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D
     }
 }
 
-int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int isRuin, Camera3D camera) {
+int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int score, int isRuin, Camera3D camera) {
     int hasTwoShapes = card->pieceB != NULL;
     int hasTwoMat = card->terrainB != 0;
 
+    int isEnemy = card->isEnemy;
     int isRiftLands = card->isRiftLands;
     int RiftLandsMat = 2;
 
@@ -135,7 +136,7 @@ int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int isRuin, Camera
 
     if (!canFitA && !canFitB) {
         printf("IL n'y a pas la place pour rentrer votre piece \n");
-        return GUIplacementDefaultCard(f, card, isRuin, camera);
+        return GUIplacementDefaultCard(f, card, score, 0, camera);
     }
 
     Piece shapeCopy;
@@ -189,6 +190,12 @@ int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int isRuin, Camera
             DrawText(TextFormat("Edits %d : %s", i, edits[i]->name), 5, 145 + 20 * i, 15, BLACK);
         }
         DrawText(TextFormat("Piece en A ? %d", card->iscoinA), 5, 225, 15, BLACK);
+
+        DrawRectangle(1400, 0, 200, 200, PURPLE);
+        DrawText(TextFormat("Score : %d", score), 1405, 5, 30, BLACK);
+        DrawText(TextFormat("Coins : %d", coinCount), 1405, 35, 30, BLACK);
+
+
 
 
         EndDrawing(); // Fin de l'affichage
@@ -266,13 +273,13 @@ int GUIplacementDefault(FeuilleCarte f, int  material, Camera3D camera) {
     return 1;
 }
 
-int GUIplacementDefaultCard(FeuilleCarte f, const ExploreCard* card, int isRuin, Camera3D camera) {
+int GUIplacementDefaultCard(FeuilleCarte f, const ExploreCard* card, int score, int isRuin, Camera3D camera) {
     if (getEmptySpots(f) == 0) return 0;
     ExploreCard def = *card;
     def.pieceA = &POINT;
     def.iscoinA = 0;
 
-    GUIPlacementCard(f, &def, isRuin, camera);
+    GUIPlacementCard(f, &def, score, isRuin, camera);
     return 1;
 }
 

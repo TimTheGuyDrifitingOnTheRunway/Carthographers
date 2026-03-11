@@ -62,7 +62,7 @@ int main()
 
     StartGame(f, &score, camera);
 
-
+    printf("Score final : %d", score);
 
 
     /* Multi tests de fonctionnement
@@ -164,22 +164,11 @@ int main()
         printf("\n");
     }
 
+    calcEnenmyPoints(test);
+
+
+
     return 0;
 
 }
 
-/*void DebugGameStats(FeuilleCarte f, ScoringCard** edits, ExploreCard** exploreDeck, int deckSize) {
-    printf("\n\n\n");
-    displayCarte(f);
-    printf("\n\nEdits :\n");
-    for (int i = 0; i < 4; i++) {
-        printf("edit %d : %s, type : %d;\n", i, edits[i]->name, edits[i]->type);
-    }
-    printf("\n");
-
-    printf("\n\nExplore Deck (size = %d) :\n", deckSize);
-    for (int i = 0; i < deckSize; i++) {
-        printf("card %d : %s, isEnemy = %d;\n", i, exploreDeck[i]->name, exploreDeck[i]->isEnemy);
-    }
-
-}*/

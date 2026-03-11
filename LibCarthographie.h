@@ -153,6 +153,7 @@ int calcTheCauldrons(FeuilleCarte f);
 
 int IsASquare(FeuilleCarte f, int x, int y, int length);
 
+int calcEnenmyPoints(FeuilleCarte f);
 
 
 
