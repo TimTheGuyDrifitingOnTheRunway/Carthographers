@@ -21,6 +21,25 @@ typedef struct ExploreCard ExploreCard;
 #define SPEEDY 5// constantes inverse de vitesse
 #define SPEEDX 5
 
+// keybinds des pièces
+#define UPP KEY_W
+#define DOWNP KEY_S
+#define RIGHTP KEY_D
+#define LEFTP KEY_A
+
+#define ROTATEP KEY_R
+#define FLIPP KEY_F
+#define SWITCHP KEY_G
+#define SWITCHMP KEY_U
+
+// keybinds camera
+
+#define UPC KEY_UP
+#define DOWNC KEY_DOWN
+#define RIGHTC KEY_RIGHT
+#define LEFTC KEY_LEFT
+
+
 
 void DrawMapGrid(int slices, float spacing);
 void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp);

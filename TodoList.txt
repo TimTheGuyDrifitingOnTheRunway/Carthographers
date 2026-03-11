@@ -12,21 +12,18 @@ En cours par Math :
 Afficher plus de Stats à l'interface
 
 En cours par Tim : 
- Custom camera controls
+ 
 
 
 
 Fini par Math (à Tim d'effacer) : 
-Afficher les Stats du jeu directement dans l'interface graphique (brouillon)
-Faire un tour de jeu fonctionnel
-Passer d'un tour à l'autre
-Faire des saisons fonctionnelles
-Passer d'une saison à l'autre
+
 
 
 
 
 Fini par Tim (à Math d'effacer) : 
+Custom camera controls
 
 
 
