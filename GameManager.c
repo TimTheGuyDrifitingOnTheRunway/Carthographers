@@ -197,8 +197,12 @@ void Season(FeuilleCarte f, int* score, Camera3D camera) {
 	int actTime = 0;
 	int index = 0;
 	while (actTime < seasons[currentSeason]->maxTime) {
-		const ExploreCard* card = Turn(f, &index, camera);
+		const ExploreCard* card = Turn(f, &index, *score, camera);
 		actTime += card->time;
+
+
+
+
 	}
 
 	NextSeason(f, score, camera);
@@ -209,17 +213,23 @@ void NextSeason(FeuilleCarte f, int* score, Camera3D camera) {
 	InitDeck();
 	// calculs des points
 	
-	*score += edits[seasons[currentSeason]->EditA]->fctCaluls(f);
-	*score += edits[seasons[currentSeason]->EditB]->fctCaluls(f);
-
-
+	int points1 = edits[seasons[currentSeason]->EditA]->fctCaluls(f);
+	printf("%s a donne %d points", edits[seasons[currentSeason]->EditA]->name, points1);
+	int points2 = edits[seasons[currentSeason]->EditB]->fctCaluls(f);
+	printf("%s a donne %d points", edits[seasons[currentSeason]->EditB]->name, points2);
+	printf("Les coins ont donne %d points", coinCount);
+	
+	int Epoints = calcEnenmyPoints(f);
+	int points = points1 + points2 + coinCount - Epoints;
+	*score += points;
+	printf("Points cette saison : %d\nPoints totaux : %d\n\n", points, *score);
 
 	currentSeason++;
 	Season(f, score, camera);
 }
 
 // Tour de jeu
-const ExploreCard* Turn(FeuilleCarte f, int *index, Camera3D camera) {
+const ExploreCard* Turn(FeuilleCarte f, int *index, int score, Camera3D camera) {
 	int isRuin = 0;
 	const ExploreCard* card = NextExploreCard(index, &isRuin);
 	printf("Carte Recue\n\n");
@@ -232,7 +242,7 @@ const ExploreCard* Turn(FeuilleCarte f, int *index, Camera3D camera) {
 	}
 	else {
 		printf("Carte Normale, placement en cours\n\n");
-		GUIPlacementCard(f, card, isRuin, camera);
+		GUIPlacementCard(f, card, score, isRuin, camera);
 		printf("placement effectué\n\n");
 
 	}

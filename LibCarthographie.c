@@ -228,10 +228,6 @@ int isPosMaterial(FeuilleCarte f, Position pos, int material) {
 
 void getVoisinMaterialPos(FeuilleCarte f, Position pos, int material, Position listeVoisins[4]) {// retourne dans listeVoisins les positions des voisins de pos qui sont du material
     Position posCible;
-    posCible.x = -1;
-    posCible.y = -1;
-	for (int a = 0; a < 4; a++) { listeVoisins[a] = posCible; } // 8 -> 4 Les diagonales ne sont pas considérées comme des voisins, voir page 9 du livret de regles
-
     int k = 0;
     /*for (int i = -1; i < 2; i++) {
         for (int j = -1; j < 2; j++) {
@@ -255,7 +251,6 @@ void getVoisinMaterialPos(FeuilleCarte f, Position pos, int material, Position l
             k++;
         }
 	}
-
 }
 
 int getEmptySpots(FeuilleCarte f) {
@@ -1286,15 +1281,31 @@ int calcTheCauldrons(FeuilleCarte f) {
 }
 
 
+/*décompte des points dus aux ennemis*/
 
+int calcEnenmyPoints(FeuilleCarte f) {
+    int somme = 0;
+    int valid = 1;
 
-
-
-
-
-
-
-
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            if (getMaterialAt(f, i, j) == 0) {
+                valid = 0;
+                Position d[4] = { {0,1}, {0,-1}, {1,0}, {-1,0} };
+                for (int k = 0; k < 4; k++) {
+                    if (getMaterialAt(f, i + d[k].x, j + d[k].y) == MONSTRE) { // Si un enemy est voisin
+                        valid = 1;
+                        printf("Case vide en (%d,%d) perd un point a cause du monstre en (%d,%d)\n", i, j, i + d[k].x, j + d[k].y);
+                        break;
+                    }
+                }
+                if (valid) somme++;
+            }
+        }
+    }
+    printf("\npoints perdus par les ennemis : %d\n\n", somme);
+    return somme;
+}
 
 
 

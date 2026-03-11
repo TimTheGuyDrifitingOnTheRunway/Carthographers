@@ -1,11 +1,10 @@
+à faire :
+Multijoueur local
+
 Vu par Math : 
 
 
-
--!-!- Analyse de la pièce non fonctionelle dans GUIPlacementCard dans Lib3d.c, à régler au plus vite -!-!-
-
 Vu par Tim : 
-
 
 
 
@@ -18,7 +17,6 @@ En cours par Tim :
 
 
 Fini par Math (à Tim d'effacer) : 
-
 
 
 

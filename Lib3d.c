@@ -72,7 +72,7 @@ int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D
             drawable = drawShape(feuilleVide, shapeCopy, pos, rotation, material);
             tryDraw(f, feuilleVide, temp);
 
-            BeginDrawing(); // Début de l'affichage
+            BeginDrawing(); // DÃ©but de l'affichage
             ClearBackground(RAYWHITE);
             BeginMode3D(camera);
             GUIDrawFeuille(f, temp);
@@ -91,10 +91,10 @@ int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D
             GUIUpdateCustomCamera(& camera);
             camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
             
-            pos.x += -(int)IsKeyPressed(LEFTP) + (int)IsKeyPressed(RIGHTP); // déplacement pièce
+            pos.x += -(int)IsKeyPressed(LEFTP) + (int)IsKeyPressed(RIGHTP); // dÃ©placement piÃ¨ce
             pos.y += -(int)IsKeyPressed(UPP) + (int)IsKeyPressed(DOWNP);
 
-            if (IsKeyPressed(KEY_O)) { pos.x = 6; pos.y = 6; }//possibilité de resset
+            if (IsKeyPressed(KEY_O)) { pos.x = 6; pos.y = 6; }//possibilitÃ© de resset
 
             if (IsKeyPressed(ROTATEP)) {
                 rotation = (rotation + 1);
@@ -122,10 +122,11 @@ int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D
     }
 }
 
-int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int isRuin, Camera3D camera) {
+int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int score, int isRuin, Camera3D camera) {
     int hasTwoShapes = card->pieceB != NULL;
     int hasTwoMat = card->terrainB != 0;
 
+    int isEnemy = card->isEnemy;
     int isRiftLands = card->isRiftLands;
     int RiftLandsMat = 2;
 
@@ -135,7 +136,7 @@ int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int isRuin, Camera
 
     if (!canFitA && !canFitB) {
         printf("IL n'y a pas la place pour rentrer votre piece \n");
-        return GUIplacementDefaultCard(f, card, isRuin, camera);
+        return GUIplacementDefaultCard(f, card, score, 0, camera);
     }
 
     Piece shapeCopy;
@@ -162,7 +163,7 @@ int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int isRuin, Camera
         drawable = drawShape(feuilleVide, shapeCopy, pos, rotation, material);
         tryDraw(f, feuilleVide, temp);
 
-        BeginDrawing(); // Début de l'affichage
+        BeginDrawing(); // DÃ©but de l'affichage
         ClearBackground(RAYWHITE);
         BeginMode3D(camera);
         GUIDrawFeuille(f, temp);
@@ -181,14 +182,20 @@ int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int isRuin, Camera
         DrawText(TextFormat("Nom de la carte : %s", card->name), 5, 5, 15, BLACK);
         DrawText(TextFormat("Peut changer de couleur : %d", hasTwoMat), 5, 25, 15, BLACK);
         DrawText(TextFormat("Peut changer de forme : %d", hasTwoShapes), 5, 45, 15, BLACK);
-        DrawText(TextFormat("Doit être placé sur une Ruine : %d", isRuin), 5, 65, 15, BLACK);
+        DrawText(TextFormat("Doit Ãªtre placÃ© sur une Ruine : %d", isRuin), 5, 65, 15, BLACK);
         DrawText(TextFormat("Saison en cours : %s", seasons[currentSeason]->name), 5, 85, 15, BLACK);
         DrawText(TextFormat("Edits en cours : %s et %s", edits[seasons[currentSeason]->EditA]->name, edits[seasons[currentSeason]->EditB]->name), 5, 105, 15, BLACK);
-        DrawText("tous les édits : ", 5, 125, 15, BLACK);
+        DrawText("tous les Ã©dits : ", 5, 125, 15, BLACK);
         for (int i = 0; i < 4; i++) {
             DrawText(TextFormat("Edits %d : %s", i, edits[i]->name), 5, 145 + 20 * i, 15, BLACK);
         }
         DrawText(TextFormat("Piece en A ? %d", card->iscoinA), 5, 225, 15, BLACK);
+
+        DrawRectangle(1400, 0, 200, 200, PURPLE);
+        DrawText(TextFormat("Score : %d", score), 1405, 5, 30, BLACK);
+        DrawText(TextFormat("Coins : %d", coinCount), 1405, 35, 30, BLACK);
+
+
 
 
         EndDrawing(); // Fin de l'affichage
@@ -196,7 +203,7 @@ int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int isRuin, Camera
         if (isRuin) {
             drawable = drawable && coversRuin(f, feuilleVide);
         }
-        // gestion caméra : toujours au même endraoit
+        // gestion camÃ©ra : toujours au mÃªme endraoit
         //UpdateCameraPro(&camera, (Vector3) { 0, 0, 1 }, (Vector3) { 0, 0, 0 }, 1);
         GUIUpdateCustomCamera(&camera);
         camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
@@ -220,12 +227,12 @@ int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int isRuin, Camera
             
         }
 
-        pos.x += -(int)IsKeyPressed(LEFTP) + (int)IsKeyPressed(RIGHTP); // déplacement pièce
+        pos.x += -(int)IsKeyPressed(LEFTP) + (int)IsKeyPressed(RIGHTP); // dÃ©placement piÃ¨ce
         pos.y += -(int)IsKeyPressed(UPP) + (int)IsKeyPressed(DOWNP);
 
 
 
-        if (IsKeyPressed(KEY_P)) { pos.x = 6; pos.y = 6; } //possibilité de resset
+        if (IsKeyPressed(KEY_P)) { pos.x = 6; pos.y = 6; } //possibilitÃ© de resset
 
         if (IsKeyPressed(ROTATEP)) {
             rotation++;
@@ -252,11 +259,11 @@ int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int isRuin, Camera
 
 void DrawMapGrid(int slices, float spacing) {
     float halfSize = (slices * spacing) / 2.0f;
-    Color gridColor = LIGHTGRAY; // Couleur par défaut pour rester cohérent
+    Color gridColor = LIGHTGRAY; // Couleur par dÃ©faut pour rester cohÃ©rent
 
     for (int i = 0; i <= slices; i++) {
         float pos = -halfSize + i * spacing;
-        // Lignes parallèles à l'axe X puis Z
+        // Lignes parallÃ¨les Ã  l'axe X puis Z
         DrawLine3D((Vector3) { -halfSize, 0.0f, pos }, (Vector3) { halfSize, 0.0f, pos }, gridColor);
         DrawLine3D((Vector3) { pos, 0.0f, -halfSize }, (Vector3) { pos, 0.0f, halfSize }, gridColor);
     }
@@ -268,13 +275,13 @@ int GUIplacementDefault(FeuilleCarte f, int  material, Camera3D camera) {
     return 1;
 }
 
-int GUIplacementDefaultCard(FeuilleCarte f, const ExploreCard* card, int isRuin, Camera3D camera) {
+int GUIplacementDefaultCard(FeuilleCarte f, const ExploreCard* card, int score, int isRuin, Camera3D camera) {
     if (getEmptySpots(f) == 0) return 0;
     ExploreCard def = *card;
     def.pieceA = &POINT;
     def.iscoinA = 0;
 
-    GUIPlacementCard(f, &def, isRuin, camera);
+    GUIPlacementCard(f, &def, score, isRuin, camera);
     return 1;
 }
 
@@ -295,12 +302,12 @@ void GUIUpdateCustomCamera(Camera3D *camera) {
     Vector3 mouvement = (Vector3){ camera->up.x * ((int)IsKeyDown(UPC) - (int)IsKeyDown(DOWNC)), camera->up.y * ((int)IsKeyDown(UPC) - (int)IsKeyDown(DOWNC)), camera->up.z * ((int)IsKeyDown(UPC) - (int)IsKeyDown(DOWNC)) };
     multiplyVector(&mouvement, GetFrameTime()*SPEEDY);
     multiplyVector(&mouvement, 1+abs((int)camera->position.y/2));//compensation de vitesse
-    newPos = addVectors(newPos, mouvement);//calcule la nouvelle position en ajoutant le vecteur déplacement
+    newPos = addVectors(newPos, mouvement);//calcule la nouvelle position en ajoutant le vecteur dÃ©placement
 
     normalize(&newPos);//normalise le vecteur de position
 
-    if (newPos.y > 0.0f) {// évite les postions négatives
-        camera->position.x = newPos.x * rhoCam;// replace la caméra à son écart cible
+    if (newPos.y > 0.0f) {// Ã©vite les postions nÃ©gatives
+        camera->position.x = newPos.x * rhoCam;// replace la camÃ©ra Ã  son Ã©cart cible
         camera->position.y = newPos.y * rhoCam;
         camera->position.z = newPos.z * rhoCam;
     }
@@ -322,7 +329,7 @@ void GUIUpdateCustomCamera(Camera3D *camera) {
 
     normalize(&newPos);//normalise le vecteur de position
 
-    camera->position.x = newPos.x * rhoCam;// replace la caméra à son écart cible
+    camera->position.x = newPos.x * rhoCam;// replace la camÃ©ra Ã  son Ã©cart cible
     camera->position.y = newPos.y * rhoCam;
     camera->position.z = newPos.z * rhoCam;
     
@@ -332,7 +339,7 @@ void GUIUpdateCustomCamera(Camera3D *camera) {
 }
 
 
-/****************************************Opérations de vecteurs**************************/
+/****************************************OpÃ©rations de vecteurs**************************/
 
 void normalize(Vector3 *vector) {//normalise un vecteur
     double rho = sqrt(pow(vector->x, 2) + pow(vector->y, 2) + pow(vector->z, 2));
