@@ -21,7 +21,7 @@ typedef struct ExploreCard ExploreCard;
 #define SPEEDY 5// constantes inverse de vitesse
 #define SPEEDX 5
 
-// keybinds des pièces
+// keybinds des piÃ¨ces
 #define UPP KEY_W
 #define DOWNP KEY_S
 #define RIGHTP KEY_D
