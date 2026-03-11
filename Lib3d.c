@@ -281,15 +281,20 @@ void GUIUpdateCustomCamera(Camera3D *camera) {
     Vector3 newPos;
     newPos = camera->position;
     double rhoCam = sqrt(pow(camera->position.x, 2) + pow(camera->position.y, 2) + pow(camera->position.z, 2));
-    Vector3 mouvement = (Vector3){ camera->up.x * ((int)IsKeyDown(KEY_UP) - (int)IsKeyDown(KEY_DOWN))/SPEEDY, camera->up.y * ((int)IsKeyDown(KEY_UP) - (int)IsKeyDown(KEY_DOWN))/ SPEEDY, camera->up.z * ((int)IsKeyDown(KEY_UP) - (int)IsKeyDown(KEY_DOWN))/ SPEEDY };
-
+    Vector3 mouvement = (Vector3){ camera->up.x * ((int)IsKeyDown(KEY_UP) - (int)IsKeyDown(KEY_DOWN)), camera->up.y * ((int)IsKeyDown(KEY_UP) - (int)IsKeyDown(KEY_DOWN)), camera->up.z * ((int)IsKeyDown(KEY_UP) - (int)IsKeyDown(KEY_DOWN)) };
+    multiplyVector(&mouvement, GetFrameTime()*SPEEDY);
+    multiplyVector(&mouvement, 1+abs((int)camera->position.y/2));//compensation de vitesse
     newPos = addVectors(newPos, mouvement);//calcule la nouvelle position en ajoutant le vecteur déplacement
 
     normalize(&newPos);//normalise le vecteur de position
 
-    camera->position.x = newPos.x * rhoCam;// replace la caméra à son écart cible
-    camera->position.y = newPos.y * rhoCam;
-    camera->position.z = newPos.z * rhoCam;
+    if (newPos.y > 0.0f) {// évite les postions négatives
+        camera->position.x = newPos.x * rhoCam;// replace la caméra à son écart cible
+        camera->position.y = newPos.y * rhoCam;
+        camera->position.z = newPos.z * rhoCam;
+    }
+
+
 
     //gauche droite :
     Vector3 sideVect = crossProduct(camera->position, camera->up);
@@ -297,7 +302,10 @@ void GUIUpdateCustomCamera(Camera3D *camera) {
     normalize(&sideVect);
     
     newPos = camera->position;
-    mouvement = (Vector3){ sideVect.x * ((int)IsKeyDown(KEY_LEFT) - (int)IsKeyDown(KEY_RIGHT)) / SPEEDX, sideVect.y * ((int)IsKeyDown(KEY_LEFT) - (int)IsKeyDown(KEY_RIGHT)) / SPEEDX, sideVect.z * ((int)IsKeyDown(KEY_LEFT) - (int)IsKeyDown(KEY_RIGHT)) / SPEEDX };
+    mouvement = (Vector3){ sideVect.x * ((int)IsKeyDown(KEY_LEFT) - (int)IsKeyDown(KEY_RIGHT)), sideVect.y * ((int)IsKeyDown(KEY_LEFT) - (int)IsKeyDown(KEY_RIGHT)), sideVect.z * ((int)IsKeyDown(KEY_LEFT) - (int)IsKeyDown(KEY_RIGHT)) };
+    multiplyVector(&mouvement, GetFrameTime()*SPEEDX);
+    
+    
 
     newPos = addVectors(newPos, mouvement);
 
@@ -313,7 +321,7 @@ void GUIUpdateCustomCamera(Camera3D *camera) {
 }
 
 
-/****************************************Opérations de veteurs**************************/
+/****************************************Opérations de vecteurs**************************/
 
 void normalize(Vector3 *vector) {//normalise un vecteur
     double rho = sqrt(pow(vector->x, 2) + pow(vector->y, 2) + pow(vector->z, 2));

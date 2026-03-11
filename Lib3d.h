@@ -18,8 +18,8 @@ typedef struct ExploreCard ExploreCard;
 #define BORDERCOLOR MAROON
 #define PLACEMENT_HEIGHT 1.0f
 
-#define SPEEDY 50// constante inverse de vitesse
-#define SPEEDX 50
+#define SPEEDY 5// constantes inverse de vitesse
+#define SPEEDX 5
 
 
 void DrawMapGrid(int slices, float spacing);
