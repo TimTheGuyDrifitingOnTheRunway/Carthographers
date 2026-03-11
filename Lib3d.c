@@ -203,7 +203,9 @@ int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int score, int isR
         if (isRuin) {
             drawable = drawable && coversRuin(f, feuilleVide);
         }
-        UpdateCamera(&camera, CAMERA_THIRD_PERSON);// gestion caméra : toujours au même endraoit
+        // gestion caméra : toujours au même endraoit
+        //UpdateCameraPro(&camera, (Vector3) { 0, 0, 1 }, (Vector3) { 0, 0, 0 }, 1);
+        GUIUpdateCustomCamera(&camera);
         camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
 
         if (IsKeyPressed(KEY_O) && hasTwoShapes) {
@@ -289,4 +291,74 @@ void GUIdrawGrille() {
         DrawLine3D((Vector3) { (float)i + 0.5f, 0.0f, (float)-SIZE / 2 }, (Vector3) { (float)i + 0.5f, 0.0f, (float)SIZE / 2 }, GRIDCOLOR);
         DrawLine3D((Vector3) { (float)-SIZE / 2, 0.0f, (float)i + 0.5f }, (Vector3) { (float)SIZE / 2, 0.0f, (float)i + 0.5f }, GRIDCOLOR);
     }
+}
+
+void GUIUpdateCustomCamera(Camera3D *camera) {
+    // vers le haut/bas
+
+    Vector3 newPos;
+    newPos = camera->position;
+    double rhoCam = sqrt(pow(camera->position.x, 2) + pow(camera->position.y, 2) + pow(camera->position.z, 2));
+    Vector3 mouvement = (Vector3){ camera->up.x * ((int)IsKeyDown(KEY_UP) - (int)IsKeyDown(KEY_DOWN)), camera->up.y * ((int)IsKeyDown(KEY_UP) - (int)IsKeyDown(KEY_DOWN)), camera->up.z * ((int)IsKeyDown(KEY_UP) - (int)IsKeyDown(KEY_DOWN)) };
+    multiplyVector(&mouvement, GetFrameTime()*SPEEDY);
+    multiplyVector(&mouvement, 1+abs((int)camera->position.y/2));//compensation de vitesse
+    newPos = addVectors(newPos, mouvement);//calcule la nouvelle position en ajoutant le vecteur déplacement
+
+    normalize(&newPos);//normalise le vecteur de position
+
+    if (newPos.y > 0.0f) {// évite les postions négatives
+        camera->position.x = newPos.x * rhoCam;// replace la caméra à son écart cible
+        camera->position.y = newPos.y * rhoCam;
+        camera->position.z = newPos.z * rhoCam;
+    }
+
+
+
+    //gauche droite :
+    Vector3 sideVect = crossProduct(camera->position, camera->up);
+
+    normalize(&sideVect);
+    
+    newPos = camera->position;
+    mouvement = (Vector3){ sideVect.x * ((int)IsKeyDown(KEY_LEFT) - (int)IsKeyDown(KEY_RIGHT)), sideVect.y * ((int)IsKeyDown(KEY_LEFT) - (int)IsKeyDown(KEY_RIGHT)), sideVect.z * ((int)IsKeyDown(KEY_LEFT) - (int)IsKeyDown(KEY_RIGHT)) };
+    multiplyVector(&mouvement, GetFrameTime()*SPEEDX);
+    
+    
+
+    newPos = addVectors(newPos, mouvement);
+
+    normalize(&newPos);//normalise le vecteur de position
+
+    camera->position.x = newPos.x * rhoCam;// replace la caméra à son écart cible
+    camera->position.y = newPos.y * rhoCam;
+    camera->position.z = newPos.z * rhoCam;
+    
+    
+
+
+}
+
+
+/****************************************Opérations de vecteurs**************************/
+
+void normalize(Vector3 *vector) {//normalise un vecteur
+    double rho = sqrt(pow(vector->x, 2) + pow(vector->y, 2) + pow(vector->z, 2));
+    vector->x /= rho;
+    vector->y /= rho;
+    vector->z /= rho;
+}
+
+Vector3 addVectors(Vector3 vectora, Vector3 vectorb) {
+    return (Vector3) { vectora.x + vectorb.x, vectora.y + vectorb.y, vectora.z + vectorb.z };
+
+}
+
+Vector3 crossProduct(Vector3 vectora, Vector3 vectorb) {
+    return (Vector3) { vectora.y * vectorb.z - vectora.z*vectorb.y , vectora.z * vectorb.x - vectora.x*vectorb.z, vectora.x * vectorb.y - vectora.y*vectorb.x };
+
+}
+void multiplyVector(Vector3* vector, double a) {
+    vector->x *= a;
+    vector->y *= a;
+    vector->z *= a;
 }
