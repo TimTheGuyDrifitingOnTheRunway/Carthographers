@@ -75,11 +75,10 @@ const ExploreCard KoboldOnlaught = { .name = "Kobold Onslaught", .isEnemy = 1, .
 const ExploreCard OutpostRuins = { .name = "Outpost Ruins", .isRuin = 1 };
 const ExploreCard TempleRuins = { .name = "Temple Ruins", .isRuin = 1 };
 const ExploreCard RiftLands = { .pieceA = &POINT, .terrainA = FORET, .name = "Rift Lands", .isRiftLands = 1 };
-int scores[4] = { 0, 0, 0, 0 };
 
 const ExploreCard* expCards[21] = { &FarmLands, &ForgottenForest, &Hamlet, &GreatRiver, &HinterlandStream, &Homestead, &Orchard, &Marshlands, &TreetopVillage, &FishingVillage, &OutpostRuins, &TempleRuins, &RiftLands, &BugbearAssault, &GoblinAttack, &FlayerIncursion, &GnollRaid, &InsectoidInvasion, &OgreCharge, &RatmanStrike, &KoboldOnlaught };
 const ExploreCard* exploreDeck[17] = { &FarmLands, &ForgottenForest, &Hamlet, &GreatRiver, &HinterlandStream, &Homestead, &Orchard, &Marshlands, &TreetopVillage, &FishingVillage, &OutpostRuins, &TempleRuins, &RiftLands, NULL, NULL, NULL, NULL };
-int deckSize = 14;
+int deckSize = 13;
 
 /*TODO: 
 * Mise en place du jeu complet
@@ -143,11 +142,20 @@ void InitDeck() {
 			j++;
 			i--;
 		}
-		if (j >= 4) break;
 	}
+
+	exploreDeck[deckSize] = expCards[randInt(13, 20)];
+	deckSize++;
+
 	
 	//Melanger le deck :
 	ShakeDeck(deckSize);
+
+	// display Deck for debug
+	for (int i = 0; i < deckSize; i++) {
+		printf("Carte %d = %s\n", i, exploreDeck[i]->name);
+	}
+
 }
 
 void ShakeDeck() {
@@ -198,12 +206,13 @@ void Season(FeuilleCarte f, int* score, Camera3D camera) {
 }
 
 void NextSeason(FeuilleCarte f, int* score, Camera3D camera) {
-	deckSize++;
 	InitDeck();
 	// calculs des points
 	
 	*score += edits[seasons[currentSeason]->EditA]->fctCaluls(f);
 	*score += edits[seasons[currentSeason]->EditB]->fctCaluls(f);
+
+
 
 	currentSeason++;
 	Season(f, score, camera);
@@ -235,10 +244,11 @@ const ExploreCard* NextExploreCard(int* index, int *isRuin) {
 	const ExploreCard* card;
 	do {
 		card = exploreDeck[*index];
+		if (card && card->isRuin) *isRuin = 1;
+		if (card && card->isEnemy) exploreDeck[*index] = NULL;
 		(*index)++;
-		if (card->isRuin) *isRuin = 1;
 		printf("Carte choisie %d, %d\n\n", *index, *isRuin);
-	} while (card->isRuin);
+	} while (card && card->isRuin);
 	return card;
 }
 

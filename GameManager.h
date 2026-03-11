@@ -81,6 +81,8 @@ extern const ScoringCard LostBarony;
 extern const ScoringCard TheCauldrons;
 
 extern const ScoringCard* scoringCards[16];
+extern const ScoringCard* edits[4];
+
 
 // Et plus, quand les fonctions seront définies
 
