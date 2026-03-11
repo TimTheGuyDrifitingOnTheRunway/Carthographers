@@ -78,7 +78,7 @@ const ExploreCard RiftLands = { .pieceA = &POINT, .terrainA = FORET, .name = "Ri
 
 const ExploreCard* expCards[21] = { &FarmLands, &ForgottenForest, &Hamlet, &GreatRiver, &HinterlandStream, &Homestead, &Orchard, &Marshlands, &TreetopVillage, &FishingVillage, &OutpostRuins, &TempleRuins, &RiftLands, &BugbearAssault, &GoblinAttack, &FlayerIncursion, &GnollRaid, &InsectoidInvasion, &OgreCharge, &RatmanStrike, &KoboldOnlaught };
 const ExploreCard* exploreDeck[17] = { &FarmLands, &ForgottenForest, &Hamlet, &GreatRiver, &HinterlandStream, &Homestead, &Orchard, &Marshlands, &TreetopVillage, &FishingVillage, &OutpostRuins, &TempleRuins, &RiftLands, NULL, NULL, NULL, NULL };
-int deckSize = 14;
+int deckSize = 13;
 
 /*TODO: 
 * Mise en place du jeu complet
@@ -142,11 +142,20 @@ void InitDeck() {
 			j++;
 			i--;
 		}
-		if (j >= 4) break;
 	}
+
+	exploreDeck[deckSize] = expCards[randInt(13, 20)];
+	deckSize++;
+
 	
 	//Melanger le deck :
 	ShakeDeck(deckSize);
+
+	// display Deck for debug
+	for (int i = 0; i < deckSize; i++) {
+		printf("Carte %d = %s\n", i, exploreDeck[i]->name);
+	}
+
 }
 
 void ShakeDeck() {
@@ -197,12 +206,13 @@ void Season(FeuilleCarte f, int* score, Camera3D camera) {
 }
 
 void NextSeason(FeuilleCarte f, int* score, Camera3D camera) {
-	deckSize++;
 	InitDeck();
 	// calculs des points
 	
 	*score += edits[seasons[currentSeason]->EditA]->fctCaluls(f);
 	*score += edits[seasons[currentSeason]->EditB]->fctCaluls(f);
+
+
 
 	currentSeason++;
 	Season(f, score, camera);
@@ -234,8 +244,9 @@ const ExploreCard* NextExploreCard(int* index, int *isRuin) {
 	const ExploreCard* card;
 	do {
 		card = exploreDeck[*index];
-		(*index)++;
 		if (card && card->isRuin) *isRuin = 1;
+		if (card && card->isEnemy) exploreDeck[*index] = NULL;
+		(*index)++;
 		printf("Carte choisie %d, %d\n\n", *index, *isRuin);
 	} while (card && card->isRuin);
 	return card;

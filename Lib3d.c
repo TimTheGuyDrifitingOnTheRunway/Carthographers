@@ -36,6 +36,9 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp) {
                 case MONTAGNE:
                     color = GRAY;
                     break;
+                case MONSTRE:
+                    color = PURPLE;
+                    break;
                 case CONFLICTVALUE:
                     color = RED;
                     break;

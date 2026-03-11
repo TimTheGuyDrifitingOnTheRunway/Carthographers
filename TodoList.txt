@@ -1,8 +1,4 @@
 Vu par Math : 
-Faire un tour de jeu fonctionnel
-Passer d'un tour à l'autre
-Faire des saisons fonctionnelles
-Passer d'une saison à l'autre
 
 
 
@@ -14,7 +10,7 @@ Vu par Tim :
 
 
 En cours par Math : 
-
+Afficher plus de Stats à l'interface
 
 En cours par Tim : 
  Custom camera controls
@@ -23,6 +19,11 @@ En cours par Tim :
 
 Fini par Math (à Tim d'effacer) : 
 Afficher les Stats du jeu directement dans l'interface graphique (brouillon)
+Faire un tour de jeu fonctionnel
+Passer d'un tour à l'autre
+Faire des saisons fonctionnelles
+Passer d'une saison à l'autre
+
 
 
 
