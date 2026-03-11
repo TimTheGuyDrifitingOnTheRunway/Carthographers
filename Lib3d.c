@@ -151,6 +151,10 @@ int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int isRuin, Camera
 
     int done = 0;
     while (!done && !WindowShouldClose()) {
+
+        canFitB = hasTwoShapes ? isRuin ? checkShapeOnRuin(f, card->pieceB) : checkShape(f, card->pieceB) : 0;
+
+
         initCarte(feuilleVide, FALSE);
         drawable = drawShape(feuilleVide, shapeCopy, pos, rotation, material);
         tryDraw(f, feuilleVide, temp);
@@ -193,7 +197,8 @@ int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int isRuin, Camera
         camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
 
         if (IsKeyPressed(KEY_O) && hasTwoShapes) {
-            if (card->pieceA == shapeCopy && canFitB) copyPiece(card->pieceB, shapeCopy);
+            printf("switch shape : %d \n", canFitB);
+            if (compareShape(card->pieceA, shapeCopy) && canFitB) copyPiece(card->pieceB, shapeCopy);
             else if (canFitA) copyPiece(card->pieceA, shapeCopy);
         }
 
@@ -206,6 +211,7 @@ int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int isRuin, Camera
                 if (material == card->terrainA) material = card->terrainB;
                 else material = card->terrainA;
             }
+            
             
         }
 

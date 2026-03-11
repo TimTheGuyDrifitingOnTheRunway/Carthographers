@@ -75,6 +75,7 @@ float distPos(Position a, Position b);
 Position* emptyPositionList(int size);
 void copyPiece(const Piece pieceFrom, Piece pieceTo);
 void flipShape(Piece shape);
+int compareShape(Piece shape1, Piece shape2);
 
 
 int GroupNextStep(FeuilleCarte temp, int material, int materialToAvoid, int includeBorder);
