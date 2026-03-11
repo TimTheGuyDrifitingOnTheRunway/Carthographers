@@ -88,18 +88,18 @@ int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D
 			EndDrawing(); // Fin de l'affichage
             drawable = drawable && isDrawable(f, feuilleVide);
 
-            UpdateCamera(&camera,CAMERA_THIRD_PERSON);//gestion caméra : toujours au même endraoit
+            GUIUpdateCustomCamera(& camera);
             camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
             
-            pos.x += -(int)IsKeyPressed(KEY_J) + (int)IsKeyPressed(KEY_L); // déplacement pièce
-            pos.y += -(int)IsKeyPressed(KEY_I) + (int)IsKeyPressed(KEY_K);
+            pos.x += -(int)IsKeyPressed(LEFTP) + (int)IsKeyPressed(RIGHTP); // déplacement pièce
+            pos.y += -(int)IsKeyPressed(UPP) + (int)IsKeyPressed(DOWNP);
 
             if (IsKeyPressed(KEY_O)) { pos.x = 6; pos.y = 6; }//possibilité de resset
 
-            if (IsKeyPressed(KEY_R)) {
+            if (IsKeyPressed(ROTATEP)) {
                 rotation = (rotation + 1);
             }
-			if (IsKeyPressed(KEY_F)) {
+			if (IsKeyPressed(FLIPP)) {
                 flipShape(shapeCopy);
             }
             //printf("rotation %d(%d, %d) \n", rotation, pos.x, pos.y);
@@ -201,13 +201,13 @@ int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int isRuin, Camera
         GUIUpdateCustomCamera(&camera);
         camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
 
-        if (IsKeyPressed(KEY_O) && hasTwoShapes) {
+        if (IsKeyPressed(SWITCHP) && hasTwoShapes) {
             printf("switch shape : %d \n", canFitB);
             if (compareShape(card->pieceA, shapeCopy) && canFitB) copyPiece(card->pieceB, shapeCopy);
             else if (canFitA) copyPiece(card->pieceA, shapeCopy);
         }
 
-        if (IsKeyPressed(KEY_U)) {
+        if (IsKeyPressed(SWITCHMP)) {
             if (isRiftLands) {
                 RiftLandsMat = ((RiftLandsMat - 1) % 5) + 2;
                 material = RiftLandsMat;
@@ -220,17 +220,17 @@ int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int isRuin, Camera
             
         }
 
-        pos.x += -(int)IsKeyPressed(KEY_J) + (int)IsKeyPressed(KEY_L); // déplacement pièce
-        pos.y += -(int)IsKeyPressed(KEY_I) + (int)IsKeyPressed(KEY_K);
+        pos.x += -(int)IsKeyPressed(LEFTP) + (int)IsKeyPressed(RIGHTP); // déplacement pièce
+        pos.y += -(int)IsKeyPressed(UPP) + (int)IsKeyPressed(DOWNP);
 
 
 
         if (IsKeyPressed(KEY_P)) { pos.x = 6; pos.y = 6; } //possibilité de resset
 
-        if (IsKeyPressed(KEY_R)) {
+        if (IsKeyPressed(ROTATEP)) {
             rotation++;
         }
-        if (IsKeyPressed(KEY_F)) {
+        if (IsKeyPressed(FLIPP)) {
             flipShape(shapeCopy);
         }
         //printf("rotation %d(%d, %d) \n", rotation, pos.x, pos.y);
@@ -292,7 +292,7 @@ void GUIUpdateCustomCamera(Camera3D *camera) {
     Vector3 newPos;
     newPos = camera->position;
     double rhoCam = sqrt(pow(camera->position.x, 2) + pow(camera->position.y, 2) + pow(camera->position.z, 2));
-    Vector3 mouvement = (Vector3){ camera->up.x * ((int)IsKeyDown(KEY_UP) - (int)IsKeyDown(KEY_DOWN)), camera->up.y * ((int)IsKeyDown(KEY_UP) - (int)IsKeyDown(KEY_DOWN)), camera->up.z * ((int)IsKeyDown(KEY_UP) - (int)IsKeyDown(KEY_DOWN)) };
+    Vector3 mouvement = (Vector3){ camera->up.x * ((int)IsKeyDown(UPC) - (int)IsKeyDown(DOWNC)), camera->up.y * ((int)IsKeyDown(UPC) - (int)IsKeyDown(DOWNC)), camera->up.z * ((int)IsKeyDown(UPC) - (int)IsKeyDown(DOWNC)) };
     multiplyVector(&mouvement, GetFrameTime()*SPEEDY);
     multiplyVector(&mouvement, 1+abs((int)camera->position.y/2));//compensation de vitesse
     newPos = addVectors(newPos, mouvement);//calcule la nouvelle position en ajoutant le vecteur déplacement
@@ -313,7 +313,7 @@ void GUIUpdateCustomCamera(Camera3D *camera) {
     normalize(&sideVect);
     
     newPos = camera->position;
-    mouvement = (Vector3){ sideVect.x * ((int)IsKeyDown(KEY_LEFT) - (int)IsKeyDown(KEY_RIGHT)), sideVect.y * ((int)IsKeyDown(KEY_LEFT) - (int)IsKeyDown(KEY_RIGHT)), sideVect.z * ((int)IsKeyDown(KEY_LEFT) - (int)IsKeyDown(KEY_RIGHT)) };
+    mouvement = (Vector3){ sideVect.x * ((int)IsKeyDown(LEFTC) - (int)IsKeyDown(RIGHTC)), sideVect.y * ((int)IsKeyDown(LEFTC) - (int)IsKeyDown(RIGHTC)), sideVect.z * ((int)IsKeyDown(LEFTC) - (int)IsKeyDown(RIGHTC)) };
     multiplyVector(&mouvement, GetFrameTime()*SPEEDX);
     
     
