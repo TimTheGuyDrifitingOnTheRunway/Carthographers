@@ -131,6 +131,7 @@ int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int score, int isR
     int RiftLandsMat = 2;
 
     int material = card->terrainA;
+    if (isEnemy) material = MONSTRE;
     int canFitA = isRuin ? checkShapeOnRuin(f, card->pieceA) : checkShape(f, card->pieceA);
     int canFitB = hasTwoShapes ? isRuin ? checkShapeOnRuin(f, card->pieceB) : checkShape(f, card->pieceB) : 0;
 
@@ -190,6 +191,7 @@ int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int score, int isR
             DrawText(TextFormat("Edits %d : %s", i, edits[i]->name), 5, 145 + 20 * i, 15, BLACK);
         }
         DrawText(TextFormat("Piece en A ? %d", card->iscoinA), 5, 225, 15, BLACK);
+
 
         DrawRectangle(1400, 0, 200, 200, PURPLE);
         DrawText(TextFormat("Score : %d", score), 1405, 5, 30, BLACK);
@@ -251,10 +253,18 @@ int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int score, int isR
         exit(1);
     }
 
+    int mountainBefore = countSurroundedMountains(f);
     draw(f, feuilleVide);
+    int mountainAfter = countSurroundedMountains(f);
+    coinCount += mountainAfter - mountainBefore;
+
+    if (compareShape(shapeCopy, card->pieceA) && card->iscoinA) coinCount++;
+
     return 1;
     
 }
+
+
 
 
 void DrawMapGrid(int slices, float spacing) {

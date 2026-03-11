@@ -1308,6 +1308,29 @@ int calcEnenmyPoints(FeuilleCarte f) {
 }
 
 
+// Calcluer le nombre de montagnes "complétées"
+int countSurroundedMountains(FeuilleCarte f) {
+    int count = 0;
+    Position d[4] = { {0,1}, {0,-1}, {1,0}, {-1,0} };
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            if (getMaterialAt(f, i, j) == MONTAGNE) {
+                int isSurrounded = 1;
+                for (int k = 0; k < 4; k++) {
+                    int mat = getMaterialAt(f, i + d[k].x, j + d[k].y);
+                    if (mat == 0) {
+                        isSurrounded = 0;
+                        break;
+                    }
+                }
+                if (isSurrounded) {
+                    count++;
+                }
+            }
+        }
+    }
+    return count;
+}
 
 
 
