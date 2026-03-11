@@ -119,9 +119,9 @@ int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D
     }
 }
 
-int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int isRuin,  Camera3D camera) {
+int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int isRuin, Camera3D camera) {
     int hasTwoShapes = card->pieceB != NULL;
-    int hasTwoMat = !(card->terrainB);
+    int hasTwoMat = card->terrainB != 0;
 
     int isRiftLands = card->isRiftLands;
     int RiftLandsMat = 2;
@@ -175,6 +175,14 @@ int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int isRuin,  Camer
         DrawText(TextFormat("Peut changer de couleur : %d", hasTwoMat), 5, 25, 15, BLACK);
         DrawText(TextFormat("Peut changer de forme : %d", hasTwoShapes), 5, 45, 15, BLACK);
         DrawText(TextFormat("Doit être placé sur une Ruine : %d", isRuin), 5, 65, 15, BLACK);
+        DrawText(TextFormat("Saison en cours : %s", seasons[currentSeason]->name), 5, 85, 15, BLACK);
+        DrawText(TextFormat("Edits en cours : %s et %s", edits[seasons[currentSeason]->EditA]->name, edits[seasons[currentSeason]->EditB]->name), 5, 105, 15, BLACK);
+        DrawText("tous les édits : ", 5, 125, 15, BLACK);
+        for (int i = 0; i < 4; i++) {
+            DrawText(TextFormat("Edits %d : %s", i, edits[i]->name), 5, 145 + 20 * i, 15, BLACK);
+        }
+        DrawText(TextFormat("Piece en A ? %d", card->iscoinA), 5, 225, 15, BLACK);
+
 
         EndDrawing(); // Fin de l'affichage
         drawable = drawable && isDrawable(f, feuilleVide);

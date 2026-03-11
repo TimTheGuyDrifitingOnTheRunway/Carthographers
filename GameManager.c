@@ -75,7 +75,6 @@ const ExploreCard KoboldOnlaught = { .name = "Kobold Onslaught", .isEnemy = 1, .
 const ExploreCard OutpostRuins = { .name = "Outpost Ruins", .isRuin = 1 };
 const ExploreCard TempleRuins = { .name = "Temple Ruins", .isRuin = 1 };
 const ExploreCard RiftLands = { .pieceA = &POINT, .terrainA = FORET, .name = "Rift Lands", .isRiftLands = 1 };
-int scores[4] = { 0, 0, 0, 0 };
 
 const ExploreCard* expCards[21] = { &FarmLands, &ForgottenForest, &Hamlet, &GreatRiver, &HinterlandStream, &Homestead, &Orchard, &Marshlands, &TreetopVillage, &FishingVillage, &OutpostRuins, &TempleRuins, &RiftLands, &BugbearAssault, &GoblinAttack, &FlayerIncursion, &GnollRaid, &InsectoidInvasion, &OgreCharge, &RatmanStrike, &KoboldOnlaught };
 const ExploreCard* exploreDeck[17] = { &FarmLands, &ForgottenForest, &Hamlet, &GreatRiver, &HinterlandStream, &Homestead, &Orchard, &Marshlands, &TreetopVillage, &FishingVillage, &OutpostRuins, &TempleRuins, &RiftLands, NULL, NULL, NULL, NULL };
@@ -236,9 +235,9 @@ const ExploreCard* NextExploreCard(int* index, int *isRuin) {
 	do {
 		card = exploreDeck[*index];
 		(*index)++;
-		if (card->isRuin) *isRuin = 1;
+		if (card && card->isRuin) *isRuin = 1;
 		printf("Carte choisie %d, %d\n\n", *index, *isRuin);
-	} while (card->isRuin);
+	} while (card && card->isRuin);
 	return card;
 }
 

@@ -60,7 +60,7 @@ int main()
 	// DebugGameStats(f, edits, exploreDeck, deckSize);
     int score = 0;
 
-    StartGame(f, score, camera);
+    StartGame(f, &score, camera);
 
 
 
