@@ -22,7 +22,7 @@ En cours par Tim :
 
 
 Fini par Math (à Tim d'effacer) : 
-Afficher les Stats du jeu directement dans l'interface graphique (brouillon)
+
 
 
 
