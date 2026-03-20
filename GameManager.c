@@ -193,15 +193,13 @@ void StartGame(FeuilleCarte f, int* score, Camera3D camera) {
 
 // Saisons
 void Season(FeuilleCarte f, int* score, Camera3D camera) {
+	int isRuin = 0;
 	if (currentSeason >= 4) { printf("Jeu Termine"); return; }
 	int actTime = 0;
 	int index = 0;
 	while (actTime < seasons[currentSeason]->maxTime) {
-		const ExploreCard* card = Turn(f, &index, *score, camera);
+		const ExploreCard* card = Turn(f, &index, *score, &isRuin, camera);
 		actTime += card->time;
-
-
-
 
 	}
 
@@ -229,22 +227,21 @@ void NextSeason(FeuilleCarte f, int* score, Camera3D camera) {
 }
 
 // Tour de jeu
-const ExploreCard* Turn(FeuilleCarte f, int *index, int score, Camera3D camera) {
-	int isRuin = 0;
+const ExploreCard* Turn(FeuilleCarte f, int *index, int score, int* isRuin, Camera3D camera) {
 	const ExploreCard* card = NextExploreCard(index, &isRuin);
 	printf("Carte Recue\n\n");
 	if (card->isEnemy) {
 		// Later : Give the map to the other player
-		printf("Carte Ennemie\n\n");
-		GUIplacementShape(f, card->pieceA, MONSTRE, camera);
-		deckSize--;
 
+		printf("Carte Ennemie\n\n");
+		GUIPlacementCard(f, card, score, 0, camera);
+		deckSize--;
 	}
 	else {
 		printf("Carte Normale, placement en cours\n\n");
-		GUIPlacementCard(f, card, score, isRuin, camera);
+		GUIPlacementCard(f, card, score, *isRuin, camera);
 		printf("placement effectué\n\n");
-
+		*isRuin = 0;
 	}
 
 	return card;

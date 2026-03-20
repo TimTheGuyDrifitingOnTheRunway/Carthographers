@@ -6,6 +6,7 @@
 #include <math.h>
 
 
+
 /*****************************************CONSTANTES**************************************************/
 #define SIZE 11
 #define PIECESIZE 3
@@ -154,6 +155,9 @@ int calcTheCauldrons(FeuilleCarte f);
 int IsASquare(FeuilleCarte f, int x, int y, int length);
 
 int calcEnenmyPoints(FeuilleCarte f);
+
+int countSurroundedMountains(FeuilleCarte f);
+
 
 
 

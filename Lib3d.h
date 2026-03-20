@@ -21,7 +21,7 @@ typedef struct ExploreCard ExploreCard;
 #define SPEEDY 5// constantes inverse de vitesse
 #define SPEEDX 7
 
-// keybinds des pièces
+// keybinds des piÃ¨ces
 #define UPP KEY_W
 #define DOWNP KEY_S
 #define RIGHTP KEY_D
@@ -44,7 +44,7 @@ typedef struct ExploreCard ExploreCard;
 void DrawMapGrid(int slices, float spacing);
 void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp);
 int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D camera);
-int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int isRuin, int score, Camera3D camera);
+int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int score, int isRuin, Camera3D camera);
 int GUIplacementDefault(FeuilleCarte f, int  material, Camera3D camera);
 void GUIdrawGrille();
 void GUIUpdateCustomCamera(Camera3D *camera);
