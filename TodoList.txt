@@ -1,4 +1,5 @@
 à faire :
+bug de violation de mémoire dans certains cas lors de l'accèes a une liste de ruines.
 Multijoueur local
 
 Vu par Math : 
@@ -24,7 +25,7 @@ Fini par Math (à Tim d'effacer) :
 
 Fini par Tim (à Math d'effacer) : 
 Custom camera controls
-
+patch un bug dans la déclaration de turn
 
 
 
