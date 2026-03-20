@@ -315,8 +315,9 @@ void GUIUpdateCustomCamera(Camera3D *camera) {
     newPos = addVectors(newPos, mouvement);//calcule la nouvelle position en ajoutant le vecteur déplacement
 
     normalize(&newPos);//normalise le vecteur de position
+    printf("%f \n", newPos.y);
 
-    if (newPos.y > 0.0f) {// évite les postions négatives
+    if (newPos.y > 0.0f && newPos.y < (float)MAXCAMERAHEIGHT) {// évite les postions négatives
         camera->position.x = newPos.x * rhoCam;// replace la caméra à son écart cible
         camera->position.y = newPos.y * rhoCam;
         camera->position.z = newPos.z * rhoCam;

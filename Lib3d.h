@@ -39,6 +39,8 @@ typedef struct ExploreCard ExploreCard;
 #define RIGHTC KEY_RIGHT
 #define LEFTC KEY_LEFT
 
+#define MAXCAMERAHEIGHT 0.8
+
 
 
 void DrawMapGrid(int slices, float spacing);
