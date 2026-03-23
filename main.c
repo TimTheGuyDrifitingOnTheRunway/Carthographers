@@ -24,7 +24,7 @@ int main()
     printf("\n\n\n\n\n\n\n Debug 1 \n\n\n\n\n\n\n");
 
 
-    InitWindow(screenWidth, screenHeight, "raylib [core] example - 3d camera mode");
+    InitWindow(screenWidth, screenHeight, "Cartographer");
 
     printf("\n\n\n\n\n\n\n Debug 2 \n\n\n\n\n\n\n");
 

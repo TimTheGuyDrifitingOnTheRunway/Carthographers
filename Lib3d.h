@@ -19,7 +19,7 @@ typedef struct ExploreCard ExploreCard;
 #define PLACEMENT_HEIGHT 1.0f
 
 #define SPEEDY 5// constantes inverse de vitesse
-#define SPEEDX 5
+#define SPEEDX 7
 
 // keybinds des pièces
 #define UPP KEY_W
@@ -38,6 +38,8 @@ typedef struct ExploreCard ExploreCard;
 #define DOWNC KEY_DOWN
 #define RIGHTC KEY_RIGHT
 #define LEFTC KEY_LEFT
+
+#define MAXCAMERAHEIGHT 0.8
 
 
 
