@@ -95,7 +95,7 @@ void SetupGame(FeuilleCarte f) {
 	initCarte2(f, TRUE, TRUE);
 
 	// Initialiser les cartes Scores
-	InitScoringCards(edits);
+	InitScoringCards();
 
 	// Mélange des cartes, Définition des packets, Saison, Cartes de Score, etc
 	InitDeck();
@@ -124,6 +124,7 @@ void DebugGameStats(FeuilleCarte f) {
 
 }
 
+// ???
 int CalcPointsFromCards(FeuilleCarte f, ScoringCard *cards, int numberOfCards) {
 	int somme =0;
 	for (int i = 0; i < numberOfCards; i++) {
@@ -149,7 +150,7 @@ void InitDeck() {
 
 	
 	//Melanger le deck :
-	ShakeDeck(deckSize);
+	ShakeDeck();
 
 	// display Deck for debug
 	for (int i = 0; i < deckSize; i++) {

@@ -212,8 +212,8 @@ int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int score, int isR
 
         if (IsKeyPressed(SWITCHP) && hasTwoShapes) {
             printf("switch shape : %d \n", canFitB);
-            if (compareShape(card->pieceA, shapeCopy) && canFitB) copyPiece(card->pieceB, shapeCopy);
-            else if (canFitA) copyPiece(card->pieceA, shapeCopy);
+            if (compareShape(card->pieceA, shapeCopy) && canFitB) copyPiece(*card->pieceB, shapeCopy);
+            else if (canFitA) copyPiece(*card->pieceA, shapeCopy);
         }
 
         if (IsKeyPressed(SWITCHMP)) {
