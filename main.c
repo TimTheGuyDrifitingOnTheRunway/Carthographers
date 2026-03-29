@@ -51,9 +51,9 @@ int main()
 
 	// Main game loop
     FeuilleCarte f;
-    const ScoringCard* edits[4];
+    /*const ScoringCard* edits[4];
     const ExploreCard* exploreDeck[17];
-	int deckSize = 14;
+	int deckSize = 14;*/
     printf("\n\n\n\n\n\n\n Debug 4 \n\n\n\n\n\n\n");
 	SetupGame(f);
     // Display
