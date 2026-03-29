@@ -13,7 +13,7 @@
 
 #define EXP_CARD_NUMBER 34
 
-typedef struct {
+typedef struct Saison{
 	int maxTime;
 	int EditA;
 	int EditB;
@@ -31,7 +31,7 @@ typedef struct ExploreCard {
 	int terrainB;  // 0 si pas de terrain
 
 	int isEnemy;
-	int rotation; //1 = Right, -1 = Left, 0 = None
+	int rotation; // 1 = Right, -1 = Left, 0 = None
 
 	int isRuin;
 	int isRiftLands;
@@ -39,15 +39,32 @@ typedef struct ExploreCard {
 	char name[30];
 }ExploreCard;
 
-typedef struct {
+typedef struct ScoringCard {
 	int type;
 	int (*fctCaluls)(FeuilleCarte f);
 	char name[20];
 }ScoringCard;
 
-extern int currentTime;
-extern int coinCount;
-extern int currentSeason;
+typedef struct PlayerState{
+	FeuilleCarte map;
+	int coinCount;
+	int score;
+	char name[30];
+} PlayerState;
+
+
+typedef struct GameState {
+	int playerNumber;		// Nombre de joueurs
+	PlayerState* players;	// Tableau alloué dynamiquement
+	int playerIndex;		// Index du joueur actuel
+	ExploreCard* card;
+	int currentTime;
+	int currentSeason;
+	const ScoringCard* edits[4];
+	const ExploreCard* exploreDeck[17];
+	int deckSize;
+} GameState;
+
 
 /******************Définition du Contenu******************/
 // Cartes Saison
@@ -81,7 +98,6 @@ extern const ScoringCard LostBarony;
 extern const ScoringCard TheCauldrons;
 
 extern const ScoringCard* scoringCards[16];
-extern const ScoringCard* edits[4];
 
 
 // Et plus, quand les fonctions seront définies
@@ -118,25 +134,23 @@ extern const ExploreCard* expCards[21];
 
 
 // Setup
-void SetupGame(FeuilleCarte f);
-void InitDeck();
-void ShakeDeck();
-void InitScoringCards();
+void SetupGame(GameState* gs, int nbPlayers);
+void InitDeck(GameState* gs);
+void ShakeDeck(GameState* gs);
+void InitScoringCards(GameState* gs);
 
 
-void StartGame(FeuilleCarte f, int* score, Camera3D camera);
+void StartGame(GameState* gs, Camera3D camera);
 // Saison
-void NextSeason(FeuilleCarte f, int* score, Camera3D camera);
-void Season(FeuilleCarte f, int* score, Camera3D camera);
+void NextSeason(GameState* gs, Camera3D camera);
+void Season(GameState* gs, Camera3D camera);
 
 // Tour de jeu
 
-const ExploreCard* Turn(FeuilleCarte f, int* index, int score, int* isRuin, Camera3D camera);
-const ExploreCard* NextExploreCard(int* index, int* isRuin);
+const ExploreCard* Turn(GameState* gs, int* index, int* isRuin, Camera3D camera);
+const ExploreCard* NextExploreCard(GameState* gs, int* index, int* isRuin);
 
-void DebugGameStats(FeuilleCarte f);
-
-
+void DebugGameStats(GameState* gs);
 
 /******************Prototypes******************/
 int CalcPointsFromCards(FeuilleCarte f, ScoringCard* cards, int numberOfCards);

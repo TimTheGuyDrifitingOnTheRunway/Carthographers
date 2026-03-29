@@ -12,6 +12,7 @@
 
 #define BGCOLOR RAYWHITE
 
+void sort_players_by_score(GameState* gs);
 
 int main()
 {
@@ -50,19 +51,27 @@ int main()
 
 
 	// Main game loop
+
     FeuilleCarte f;
     /*const ScoringCard* edits[4];
     const ExploreCard* exploreDeck[17];
 	int deckSize = 14;*/
     printf("\n\n\n\n\n\n\n Debug 4 \n\n\n\n\n\n\n");
-	SetupGame(f);
-    // Display
-	// DebugGameStats(f, edits, exploreDeck, deckSize);
-    int score = 0;
+	GameState gs = { 0 };
+    int PNbre = 2;
+	printf("Nombre de joueurs : ");     scanf("%d", &PNbre);    PNbre = (PNbre > 0) ? PNbre > 100 ? 100 : PNbre : 1;
+	printf("\nNombre de Joueurs : %d\n", PNbre);
+    SetupGame(&gs, PNbre);
+	DebugGameStats(&gs);
 
-    StartGame(f, &score, camera);
+    StartGame(&gs, camera);
 
-    printf("Score final : %d", score);
+
+	sort_players_by_score(&gs);
+    printf("LeaderBoard Final : \n\n");
+    for (int i = 0; i < gs.playerNumber; i++) {
+        if (gs.players != NULL) printf("%d : %s, score : %d\n", i + 1, gs.players[i].name, gs.players[i].score);
+    }
 
 
     /* Multi tests de fonctionnement
@@ -171,4 +180,24 @@ int main()
     return 0;
 
 }
+
+void sort_players_by_score(GameState* gs)
+{
+    PlayerState* arr = gs->players;
+    int          n = gs->playerNumber;
+
+    for (int i = 1; i < n; i++)
+    {
+        PlayerState key = arr[i];
+        int         j = i;
+
+        while (j > 0 && arr[j - 1].score < key.score)  /* décroissant */
+        {
+            arr[j] = arr[j - 1];
+            j--;
+        }
+        arr[j] = key;
+    }
+}
+
 

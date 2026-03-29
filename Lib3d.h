@@ -11,8 +11,27 @@
 
 // Eviter les inclusions circulaiers : GameManager
 typedef struct ExploreCard ExploreCard;
+typedef struct GameState GameState;
+
+typedef struct PlacementState {
+    Piece       shapeCopy;
+    Position    pos;
+    int         rotation;
+    int         material;
+    int         drawable;
+    int         isRuin;
+    int         hasTwoShapes;
+    int         hasTwoMat;
+    int         isRiftLands;
+    int         RiftLandsMat;
+    FeuilleCarte feuilleVide;   // grille temporaire pour preview
+    FeuilleCarte temp;          // f + feuilleVide fusionnés pour rendu
+    const ExploreCard* card;
+    int status;                 // 0 = En placement, 1 = placé
+} PlacementState;
 
 /*****************************************CONSTANTES d'affichage*************************************************/
+#define BACKGROUND_COLOR LIGHTGRAY
 
 #define GRIDCOLOR GRAY
 #define BORDERCOLOR MAROON
@@ -29,8 +48,8 @@ typedef struct ExploreCard ExploreCard;
 
 #define ROTATEP KEY_R
 #define FLIPP KEY_F
-#define SWITCHP KEY_G
-#define SWITCHMP KEY_U
+#define SWITCHP KEY_E
+#define SWITCHMP KEY_Q
 
 // keybinds camera
 
@@ -46,10 +65,17 @@ typedef struct ExploreCard ExploreCard;
 void DrawMapGrid(int slices, float spacing);
 void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp);
 int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D camera);
-int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int score, int isRuin, Camera3D camera);
+int GUIPlacementCard(GameState* gs, FeuilleCarte f, const ExploreCard* card, int score, int isRuin, int* coinCount, Camera3D camera);
 int GUIplacementDefault(FeuilleCarte f, int  material, Camera3D camera);
+int GUIplacementDefaultCard(GameState* gs, FeuilleCarte f, const ExploreCard* card, int score, int isRuin, int* coinCount, Camera3D camera);
 void GUIdrawGrille();
 void GUIUpdateCustomCamera(Camera3D *camera);
+
+
+void UpdatePlacement(FeuilleCarte f, PlacementState* state);
+void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state, int score, Camera3D camera);
+void ApplyPlacement(FeuilleCarte f, PlacementState* state, int* coinCount);
+
 
 
 /*OP2RATIONS vecteurs*/

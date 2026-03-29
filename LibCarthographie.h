@@ -41,12 +41,12 @@ typedef int Piece[PIECESIZE][PIECESIZE];
 
 
 
-typedef struct {
+typedef struct Position {
     int x;
     int y;
 }Position;
 
-typedef struct {
+typedef struct InfoGroupe {
     int taille;
 	int material;
     int materialVoisin[10];
@@ -75,6 +75,7 @@ Position* getPositionsOfMaterial(FeuilleCarte f, int material);
 float distPos(Position a, Position b);
 Position* emptyPositionList(int size);
 void copyPiece(const Piece pieceFrom, Piece pieceTo);
+void copyCarte(FeuilleCarte Ffrom, FeuilleCarte Fto);
 void flipShape(Piece shape);
 int compareShape(Piece shape1, Piece shape2);
 

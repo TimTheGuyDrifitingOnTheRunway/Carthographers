@@ -211,6 +211,14 @@ void copyPiece(const Piece pieceFrom, Piece pieceTo) {
     }
 }
 
+void copyCarte(FeuilleCarte Ffrom, FeuilleCarte Fto) {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            Fto[i][j] = Ffrom[i][j];
+        }
+	}
+}
+
 int getMaterialAtPos(FeuilleCarte f, Position pos) {
     if (isInCarte(pos.x, pos.y)) { return (f[pos.x][pos.y] % RUINE); }
     return OUTOFBOUND; 

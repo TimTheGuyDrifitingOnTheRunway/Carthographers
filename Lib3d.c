@@ -102,7 +102,7 @@ int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D
 			if (IsKeyPressed(FLIPP)) {
                 flipShape(shapeCopy);
             }
-            //printf("rotation %d(%d, %d) \n", rotation, pos.x, pos.y);
+            //printf("rotation %d(%d, %d) \n", rotation, pos.x, pos.y1);
             if (IsKeyPressed(KEY_SPACE) && drawable) {
                 done = 1;
             }
@@ -122,7 +122,9 @@ int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D
     }
 }
 
-int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int score, int isRuin, Camera3D camera) {
+/*int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int score, int isRuin, Camera3D camera) {
+
+    PlacementState state = { 0 };
     int hasTwoShapes = card->pieceB != NULL;
     int hasTwoMat = card->terrainB != 0;
 
@@ -136,9 +138,21 @@ int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int score, int isR
     int canFitB = hasTwoShapes ? isRuin ? checkShapeOnRuin(f, card->pieceB) : checkShape(f, card->pieceB) : 0;
 
     if (!canFitA && !canFitB) {
-        printf("IL n'y a pas la place pour rentrer votre piece \n");
+        printf("IL n'y1 a pas la place pour rentrer votre piece \n");
         return GUIplacementDefaultCard(f, card, score, 0, camera);
     }
+
+    // Initialisation du placement
+    state.card = card;
+    state.isRuin = isRuin;
+    state.hasTwoShapes = card->pieceB != NULL;
+    state.hasTwoMat = card->terrainB != 0;
+    state.isRiftLands = card->isRiftLands;
+    state.RiftLandsMat = 2;
+    state.material = card->isEnemy ? MONSTRE : card->terrainA;
+    state.pos = (Position){ 6, 6 };
+    state.status = 0;
+
 
     Piece shapeCopy;
 
@@ -148,11 +162,11 @@ int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int score, int isR
     Position pos;
     int rotation = 0;
     pos.x = 6;
-    pos.y = 6;
+    pos.y1 = 6;
     int drawable = 0;
     FeuilleCarte feuilleVide, temp;
     float accX = (float)pos.x;
-    float accY = (float)pos.y;
+    float accY = (float)pos.y1;
 
     int done = 0;
     while (!done && !WindowShouldClose()) {
@@ -163,6 +177,8 @@ int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int score, int isR
         initCarte(feuilleVide, FALSE);
         drawable = drawShape(feuilleVide, shapeCopy, pos, rotation, material);
         tryDraw(f, feuilleVide, temp);
+
+
 
         BeginDrawing(); // Début de l'affichage
         ClearBackground(RAYWHITE);
@@ -201,6 +217,8 @@ int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int score, int isR
 
 
         EndDrawing(); // Fin de l'affichage
+
+
         drawable = drawable && isDrawable(f, feuilleVide);
         if (isRuin) {
             drawable = drawable && coversRuin(f, feuilleVide);
@@ -230,11 +248,11 @@ int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int score, int isR
         }
 
         pos.x += -(int)IsKeyPressed(LEFTP) + (int)IsKeyPressed(RIGHTP); // déplacement pièce
-        pos.y += -(int)IsKeyPressed(UPP) + (int)IsKeyPressed(DOWNP);
+        pos.y1 += -(int)IsKeyPressed(UPP) + (int)IsKeyPressed(DOWNP);
 
 
 
-        if (IsKeyPressed(KEY_P)) { pos.x = 6; pos.y = 6; } //possibilité de resset
+        if (IsKeyPressed(KEY_P)) { pos.x = 6; pos.y1 = 6; } //possibilité de resset
 
         if (IsKeyPressed(ROTATEP)) {
             rotation++;
@@ -242,7 +260,7 @@ int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int score, int isR
         if (IsKeyPressed(FLIPP)) {
             flipShape(shapeCopy);
         }
-        //printf("rotation %d(%d, %d) \n", rotation, pos.x, pos.y);
+        //printf("rotation %d(%d, %d) \n", rotation, pos.x, pos.y1);
         if (IsKeyPressed(KEY_SPACE) && drawable) {
             done = 1;
         }
@@ -262,6 +280,152 @@ int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int score, int isR
 
     return 1;
     
+}*/
+
+int GUIPlacementCard(GameState* gs, FeuilleCarte f, const ExploreCard* card,
+    int score, int isRuin, int* coinCount, Camera3D camera) {
+
+    // Vérification placabilité
+    int canFitA = isRuin ? checkShapeOnRuin(f, card->pieceA) : checkShape(f, card->pieceA);
+    int canFitB = card->pieceB
+        ? (isRuin ? checkShapeOnRuin(f, card->pieceB) : checkShape(f, card->pieceB))
+        : 0;
+
+    if (!canFitA && !canFitB)
+        return GUIplacementDefaultCard(gs, f, card, score, 0, coinCount, camera);
+
+    // Init état
+    PlacementState state = { 0 };
+    state.card = card;
+    state.isRuin = isRuin;
+    state.hasTwoShapes = card->pieceB != NULL;
+    state.hasTwoMat = card->terrainB != 0;
+    state.isRiftLands = card->isRiftLands;
+    state.RiftLandsMat = 2;
+    state.material = card->isEnemy ? MONSTRE : card->terrainA;
+    state.pos = (Position){ 6, 6 };
+    state.status = 0;
+
+    copyPiece(canFitA ? *card->pieceA : *card->pieceB, state.shapeCopy);
+
+    // Boucle principale — logique et rendu séparés
+    while (state.status == 0 && !WindowShouldClose()) {
+        UpdatePlacement(f, &state);
+        RenderPlacement(gs, f, &state, score, camera);
+        GUIUpdateCustomCamera(&camera);
+        camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
+    }
+
+    if (WindowShouldClose()) { CloseWindow(); exit(1); }
+
+    ApplyPlacement(f, &state, coinCount);
+    return 1;
+}
+
+void UpdatePlacement(FeuilleCarte f, PlacementState* state) {
+
+    // Recalcul de la preview
+    initCarte(state->feuilleVide, FALSE);
+    state->drawable = drawShape(state->feuilleVide, state->shapeCopy,
+        state->pos, state->rotation, state->material);
+    tryDraw(f, state->feuilleVide, state->temp);
+    state->drawable = state->drawable && isDrawable(f, state->feuilleVide);
+    if (state->isRuin)
+        state->drawable = state->drawable && coversRuin(f, state->feuilleVide);
+
+    // Inputs — déplacement
+    state->pos.x += -(int)IsKeyPressed(LEFTP) + (int)IsKeyPressed(RIGHTP);
+    state->pos.y += -(int)IsKeyPressed(UPP) + (int)IsKeyPressed(DOWNP);
+    if (IsKeyPressed(KEY_P)) { state->pos.x = 6; state->pos.y = 6; }
+
+    // Rotation / flip
+    if (IsKeyPressed(ROTATEP)) state->rotation++;
+    if (IsKeyPressed(FLIPP))   flipShape(state->shapeCopy);
+
+    // Switch de forme
+    if (IsKeyPressed(SWITCHP) && state->hasTwoShapes) {
+        int canFitA = state->isRuin
+            ? checkShapeOnRuin(f, state->card->pieceA)
+            : checkShape(f, state->card->pieceA);
+        int canFitB = state->isRuin
+            ? checkShapeOnRuin(f, state->card->pieceB)
+            : checkShape(f, state->card->pieceB);
+        if (compareShape(state->card->pieceA, state->shapeCopy) && canFitB)
+            copyPiece(*state->card->pieceB, state->shapeCopy);
+        else if (canFitA)
+            copyPiece(*state->card->pieceA, state->shapeCopy);
+    }
+
+    // Switch de matériau
+    if (IsKeyPressed(SWITCHMP)) {
+        if (state->isRiftLands) {
+            state->RiftLandsMat = ((state->RiftLandsMat - 1) % 5) + 2;
+            state->material = state->RiftLandsMat;
+        }
+        else if (state->hasTwoMat) {
+            state->material = (state->material == state->card->terrainA)
+                ? state->card->terrainB : state->card->terrainA;
+        }
+    }
+
+    // Confirmation
+    if (IsKeyPressed(KEY_SPACE) && state->drawable)
+        state->status = 1;
+}
+
+void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state, int score, Camera3D camera) {
+    BeginDrawing();
+    ClearBackground(BACKGROUND_COLOR);
+    BeginMode3D(camera);
+
+    GUIDrawFeuille(f, state->temp);
+
+    for (int i = 0; i < SIZE; i++)
+        for (int j = 0; j < SIZE; j++)
+            if (state->temp[i][j] != f[i][j])
+                DrawCubeWires(
+                    (Vector3) {
+                (float)i - SIZE / 2, PLACEMENT_HEIGHT, (float)j - SIZE / 2
+            },
+                    1.0f, 1.0f, 1.0f, BORDERCOLOR);
+
+    GUIdrawGrille();
+    EndMode3D();
+
+    // UI 2D — lecture seule sur state
+
+    // Infos relatives à tous les joueurs
+    DrawRectangle(0, 0, 400, 220, RED);
+    DrawRectangle(2, 2, 396, 216, RAYWHITE);
+	int y1 = 5;
+    DrawText(TextFormat("Carte : %s", state->card->name), 5, y1, 15, BLACK); y1 += 20;
+    DrawText(TextFormat("2 formes : %d", state->hasTwoShapes), 5, y1, 15, BLACK); y1 += 20;
+    DrawText(TextFormat("2 matériaux : %d", state->hasTwoMat), 5, y1, 15, BLACK); y1 += 20;
+    DrawText(TextFormat("Saison : %s", seasons[gs->currentSeason]->name), 5, y1, 15, BLACK); y1 += 20;
+    DrawText(TextFormat("Edits : %s / %s", gs->edits[seasons[gs->currentSeason]->EditA]->name, gs->edits[seasons[gs->currentSeason]->EditB]->name), 5, y1, 15, BLACK); y1 += 20;
+    for (int i = 0; i < 4; i++){
+        DrawText(TextFormat("Edit %d : %s", i, gs->edits[i]->name), 5, y1, 15, BLACK); y1 += 20;
+    }
+	if (state->isRuin) DrawText("Doit être placé sur une Ruine", 5, y1, 20, RED); y1 += 25;
+	if (state->isRiftLands) DrawText("Tous matériaux disponibles !", 5, y1, 20, RED); y1 += 25;
+
+	// Infos relatives au joueur actuel
+    int y2 = 5;
+    DrawRectangle(1400, 0, 200, 80, PURPLE);
+    DrawText(TextFormat("Joueur : %s", gs->players[gs->playerIndex].name), 1405, y2, 30, BLACK); y2 += 35;
+    DrawText(TextFormat("Score : %d", score), 1405, y2, 30, BLACK); y2 += 35;
+    DrawText(TextFormat("Coins : %d", gs->players[gs->playerIndex].coinCount), 1405, y2, 30, BLACK); y2 += 35;
+
+    EndDrawing();
+}
+
+void ApplyPlacement(FeuilleCarte f, PlacementState* state, int* coinCount) {
+    int mountainBefore = countSurroundedMountains(f);
+    draw(f, state->feuilleVide);
+    int mountainAfter = countSurroundedMountains(f);
+    *coinCount += mountainAfter - mountainBefore;
+    if (compareShape(state->shapeCopy, *state->card->pieceA) && state->card->iscoinA)
+        (*coinCount)++;
 }
 
 
@@ -285,13 +449,13 @@ int GUIplacementDefault(FeuilleCarte f, int  material, Camera3D camera) {
     return 1;
 }
 
-int GUIplacementDefaultCard(FeuilleCarte f, const ExploreCard* card, int score, int isRuin, Camera3D camera) {
+int GUIplacementDefaultCard(GameState* gs, FeuilleCarte f, const ExploreCard* card, int score, int isRuin, int* coinCount, Camera3D camera) {
     if (getEmptySpots(f) == 0) return 0;
     ExploreCard def = *card;
     def.pieceA = &POINT;
     def.iscoinA = 0;
 
-    GUIPlacementCard(f, &def, score, isRuin, camera);
+    GUIPlacementCard(gs, f, &def, score, isRuin, coinCount, camera);
     return 1;
 }
 
