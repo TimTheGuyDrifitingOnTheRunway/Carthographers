@@ -1,5 +1,5 @@
 à faire :
-bug de violation de mémoire dans certains cas lors de l'accèes a une liste de ruines.
+bug de violation de mémoire dans certains cas lors de l'accèes a une liste de ruine : ligne 242 dans game manager
 Multijoueur local
 
 Vu par Math : 
