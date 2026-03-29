@@ -181,7 +181,7 @@ int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int score, int isR
         DrawRectangle(0, 0, 400, 400, BLACK);
         DrawRectangle(2, 2, 396, 396, RED);
         DrawText(TextFormat("Nom de la carte : %s", card->name), 5, 5, 15, BLACK);
-        DrawText(TextFormat("Peut changer de couleur : %d", hasTwoMat), 5, 25, 15, BLACK);
+        DrawText(TextFormat("Peut changer de couleur : %s", hasTwoMat ? "oui" : "non"), 5, 25, 15, BLACK);
         DrawText(TextFormat("Peut changer de forme : %d", hasTwoShapes), 5, 45, 15, BLACK);
         DrawText(TextFormat("Doit être placé sur une Ruine : %d", isRuin), 5, 65, 15, BLACK);
         DrawText(TextFormat("Saison en cours : %s", seasons[currentSeason]->name), 5, 85, 15, BLACK);
