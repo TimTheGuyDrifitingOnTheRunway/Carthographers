@@ -1,16 +1,14 @@
 à faire :
-bug de violation de mémoire dans certains cas lors de l'accèes a une liste de ruine : ligne 242 dans game manager
-Multijoueur local
-
 Vu par Math : 
-
+Bug d'affichage dans lib3D si on a un nom trop long, mais si on a des "petites lettres" (i, l) ça prends moins d'espace, il faut régler la taile dynamiquement
 
 Vu par Tim : 
+bug de violation de mémoire dans certains cas lors de l'accèes a une liste de ruine : ligne 242 dans game manager
 
 
 
 En cours par Math : 
-Afficher plus de Stats à l'interface
+Améliorer l'affichage et l'expérience utilisateur
 
 En cours par Tim : 
  
@@ -18,7 +16,7 @@ En cours par Tim :
 
 
 Fini par Math (à Tim d'effacer) : 
-Ajout du multijoueur local
+Multijoueur local
 Ajout de classes pour le placement et le multijoueur
 Ajout l'affichage dynamique pour le placement des cartes (Ruines & Riftlands)
 

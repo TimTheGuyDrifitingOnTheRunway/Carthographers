@@ -395,8 +395,8 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
     // UI 2D — lecture seule sur state
 
     // Infos relatives à tous les joueurs
-    DrawRectangle(0, 0, 400, 220, RED);
-    DrawRectangle(2, 2, 396, 216, RAYWHITE);
+    DrawRectangle(0, 0, 400, 320, RED);
+    DrawRectangle(2, 2, 396, 316, RAYWHITE);
 	int y1 = 5;
     DrawText(TextFormat("Carte : %s", state->card->name), 5, y1, 15, BLACK); y1 += 20;
     DrawText(TextFormat("2 formes : %d", state->hasTwoShapes), 5, y1, 15, BLACK); y1 += 20;
@@ -411,10 +411,14 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 
 	// Infos relatives au joueur actuel
     int y2 = 5;
-    DrawRectangle(1400, 0, 200, 80, PURPLE);
-    DrawText(TextFormat("Joueur : %s", gs->players[gs->playerIndex].name), 1405, y2, 30, BLACK); y2 += 35;
+    DrawRectangle(1400, 0, 200, 140, PURPLE);
+    DrawText("Joueur : ", 1405, y2, 30, BLACK); y2 += 35;
+    DrawText(gs->players[gs->playerIndex].name, 1405, y2, 30, BLACK); y2 += 35;
     DrawText(TextFormat("Score : %d", score), 1405, y2, 30, BLACK); y2 += 35;
     DrawText(TextFormat("Coins : %d", gs->players[gs->playerIndex].coinCount), 1405, y2, 30, BLACK); y2 += 35;
+
+
+
 
     EndDrawing();
 }

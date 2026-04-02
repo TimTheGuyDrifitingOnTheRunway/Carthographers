@@ -67,11 +67,16 @@ int main()
     StartGame(&gs, camera);
 
 
+
 	sort_players_by_score(&gs);
     printf("LeaderBoard Final : \n\n");
     for (int i = 0; i < gs.playerNumber; i++) {
         if (gs.players != NULL) printf("%d : %s, score : %d\n", i + 1, gs.players[i].name, gs.players[i].score);
     }
+
+    // afficher par ordre alphabétique
+    
+
 
 
     /* Multi tests de fonctionnement
