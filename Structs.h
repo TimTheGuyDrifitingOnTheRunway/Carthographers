@@ -1,0 +1,118 @@
+#pragma once
+//Ce document est là pour réunir toutes les déclarations de Structures au même endroit
+
+#include "Consts.h"
+
+// GameManager.h
+
+
+typedef struct Saison {
+	int maxTime;
+	int EditA;
+	int EditB;
+	char name[7];
+}Saison;
+
+typedef struct ExploreCard {
+	int time;
+	const Piece* pieceA;
+	int iscoinA;
+	const Piece* pieceB; // NULL si pas de piece
+	int iscoinB;
+
+	int terrainA;
+	int terrainB;  // 0 si pas de terrain
+
+	int isEnemy;
+	int rotation; // 1 = Right, -1 = Left, 0 = None
+
+	int isRuin;
+	int isRiftLands;
+
+	char name[30];
+}ExploreCard;
+
+typedef struct ScoringCard {
+	int type;
+	int (*fctCaluls)(FeuilleCarte f);
+	char name[20];
+}ScoringCard;
+
+typedef struct PlayerState {
+	FeuilleCarte map;
+	int coinCount;
+	int score;
+	char name[30];
+} PlayerState;
+
+typedef struct GameState {
+	int playerNumber;		// Nombre de joueurs
+	PlayerState* players;	// Tableau alloué dynamiquement
+	int playerIndex;		// Index du joueur actuel
+	ExploreCard* card;
+	int currentTime;
+	int currentSeason;
+	const ScoringCard* edits[4];
+	const ExploreCard* exploreDeck[17];
+	int deckSize;
+} GameState;
+
+
+// Lib3D.h
+
+
+typedef struct PlacementState {
+	Piece       shapeCopy;
+	Position    pos;
+	int         rotation;
+	int         material;
+	int         drawable;
+	int         isRuin;
+	int         hasTwoShapes;
+	int         hasTwoMat;
+	int         isRiftLands;
+	int         RiftLandsMat;
+	FeuilleCarte feuilleVide;   // grille temporaire pour preview
+	FeuilleCarte temp;          // f + feuilleVide fusionnés pour rendu
+	const ExploreCard* card;
+	int status;                 // 0 = En placement, 1 = placé
+} PlacementState;
+
+//
+
+typedef int FeuilleCarte[SIZE][SIZE];
+typedef int Piece[PIECESIZE][PIECESIZE];
+
+typedef struct Position {
+	int x;
+	int y;
+}Position;
+
+typedef struct InfoGroupe {
+	int taille;
+	int material;
+	int materialVoisin[10];
+}InfoGroupe;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

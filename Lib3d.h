@@ -1,65 +1,7 @@
 #pragma once
 
-#define _CRT_SECURE_NO_WARNINGS
+#include "Data.h"
 #include "LibCarthographie.h"
-#include <stdio.h>
-#include <time.h>
-#include <stdlib.h>
-#include <math.h>
-#include <raylib.h>
-
-
-// Eviter les inclusions circulaiers : GameManager
-typedef struct ExploreCard ExploreCard;
-typedef struct GameState GameState;
-
-typedef struct PlacementState {
-    Piece       shapeCopy;
-    Position    pos;
-    int         rotation;
-    int         material;
-    int         drawable;
-    int         isRuin;
-    int         hasTwoShapes;
-    int         hasTwoMat;
-    int         isRiftLands;
-    int         RiftLandsMat;
-    FeuilleCarte feuilleVide;   // grille temporaire pour preview
-    FeuilleCarte temp;          // f + feuilleVide fusionnés pour rendu
-    const ExploreCard* card;
-    int status;                 // 0 = En placement, 1 = placé
-} PlacementState;
-
-/*****************************************CONSTANTES d'affichage*************************************************/
-#define BACKGROUND_COLOR LIGHTGRAY
-
-#define GRIDCOLOR GRAY
-#define BORDERCOLOR MAROON
-#define PLACEMENT_HEIGHT 1.0f
-
-#define SPEEDY 5// constantes inverse de vitesse
-#define SPEEDX 7
-
-// keybinds des pièces
-#define UPP KEY_W
-#define DOWNP KEY_S
-#define RIGHTP KEY_D
-#define LEFTP KEY_A
-
-#define ROTATEP KEY_R
-#define FLIPP KEY_F
-#define SWITCHP KEY_E
-#define SWITCHMP KEY_Q
-
-// keybinds camera
-
-#define UPC KEY_UP
-#define DOWNC KEY_DOWN
-#define RIGHTC KEY_RIGHT
-#define LEFTC KEY_LEFT
-
-#define MAXCAMERAHEIGHT 0.8
-
 
 
 void DrawMapGrid(int slices, float spacing);

@@ -18,7 +18,10 @@ En cours par Tim :
 Fini par Math (à Tim d'effacer) : 
 Multijoueur local
 Ajout de classes pour le placement et le multijoueur
-Ajout l'affichage dynamique pour le placement des cartes (Ruines & Riftlands)
+Ajout de l'affichage dynamique pour le placement des cartes (Ruines & Riftlands)
+
+Changement de la structure du projet : Consts.h -> Structs.h -> Data.h -> vrais fichier headers .h -> fichiers sources .c
+
 
 
 Fini par Tim (à Math d'effacer) : 

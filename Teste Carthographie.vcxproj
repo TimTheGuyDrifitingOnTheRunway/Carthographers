@@ -133,9 +133,12 @@
     <ClCompile Include="main.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Consts.h" />
+    <ClInclude Include="Data.h" />
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="Lib3d.h" />
     <ClInclude Include="LibCarthographie.h" />
+    <ClInclude Include="Structs.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

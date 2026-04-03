@@ -1,16 +1,8 @@
-#define _CRT_SECURE_NO_WARNINGS
+//#include <windows.h>
+
 #include "LibCarthographie.h"
 #include "Lib3d.h"
 #include "GameManager.h"
-#include <stdio.h>
-#include <time.h>
-#include <stdlib.h>
-#include <math.h>
-#include <raylib.h>
-#include <string.h>
-//#include <windows.h>
-
-#define BGCOLOR RAYWHITE
 
 void sort_players_by_score(GameState* gs);
 
@@ -19,31 +11,16 @@ int main()
     srand(time(NULL));
 
     // Initialization
-    //--------------------------------------------------------------------------------------
-    const int screenWidth = 1600;
-    const int screenHeight = 900;
+    int screenWidth = 1600;
+    int screenHeight = 900;
     printf("\n\n\n\n\n\n\n Debug 1 \n\n\n\n\n\n\n");
 
 
-    InitWindow(screenWidth, screenHeight, "Cartographer");
-
-    printf("\n\n\n\n\n\n\n Debug 2 \n\n\n\n\n\n\n");
-
-
-    //Define the camera to look into our 3d world 
-    Camera3D camera = { 0 };
-    camera.position = (Vector3){ 0.0f, 10.0f, 10.0f };  // Camera position
-    camera.target = (Vector3){ 0.0f, 0.0f, 1.0f };      // Camera looking at point
-    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
-    camera.fovy = 45.0f;                                // Camera field-of-view Y
-    camera.projection = CAMERA_PERSPECTIVE;             // Camera mode type
     //DisableCursor();
     
 
     Vector3 cubePosition = { 0.0f, 0.0f, 0.0f };
 
-    //SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
-    //--------------------------------------------------------------------------------------
     printf("\n\n\n\n\n\n\n Debug 3 \n\n\n\n\n\n\n");
 	// WaitTime(1.0f);
 
@@ -59,10 +36,34 @@ int main()
     printf("\n\n\n\n\n\n\n Debug 4 \n\n\n\n\n\n\n");
 	GameState gs = { 0 };
     int PNbre = 2;
-	printf("Nombre de joueurs : ");     scanf("%d", &PNbre);    PNbre = (PNbre > 0) ? PNbre > 100 ? 100 : PNbre : 1;
+	printf("Nombre de joueurs : ");     scanf("%d", &PNbre);    PNbre = (PNbre > 0) ? PNbre > MAX_PLAYER ? MAX_PLAYER : PNbre : 1;
 	printf("\nNombre de Joueurs : %d\n", PNbre);
     SetupGame(&gs, PNbre);
 	DebugGameStats(&gs);
+
+    system("PAUSE");
+
+
+    // Ouverture de la fenêtre
+    InitWindow(screenWidth, screenHeight, "Cartographer");
+    ToggleBorderlessWindowed();
+    screenHeight = GetScreenHeight();
+    screenWidth = GetScreenWidth();
+    SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
+
+
+
+    printf("\n\n\n\n\n\n\n Debug Window : %dx%d \n\n\n\n\n\n\n", screenWidth, screenHeight);
+
+
+    //Define the camera to look into our 3d world 
+    Camera3D camera = { 0 };
+    camera.position = (Vector3){ 0.0f, 10.0f, 10.0f };  // Camera position
+    camera.target = (Vector3){ 0.0f, 0.0f, 1.0f };      // Camera looking at point
+    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
+    camera.fovy = 45.0f;                                // Camera field-of-view Y
+    camera.projection = CAMERA_PERSPECTIVE;             // Camera mode type
+
 
     StartGame(&gs, camera);
 

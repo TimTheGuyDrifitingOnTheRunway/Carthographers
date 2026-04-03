@@ -1,56 +1,8 @@
 #pragma once
-#define _CRT_SECURE_NO_WARNINGS
-#include <stdio.h>
-#include <time.h>
-#include <stdlib.h>
-#include <math.h>
+
+#include "Data.h"
 
 
-
-/*****************************************CONSTANTES**************************************************/
-#define SIZE 11
-#define PIECESIZE 3
-#define NOMBREMONTAGNE 5
-#define MONTAGNEDIST 3.0f
-#define NOMBRERUINE 6
-#define RUINEDIST 2.7f
-#define TRUE 1
-#define FALSE 0
-#define CONFLICTVALUE 9
-#define OUTOFBOUND -1
-
-// ne rien metre sur 1
-#define FORET 2
-#define VILLAGE 3
-#define CHAMPS 4
-#define EAU 5
-#define MONSTRE 6
-#define RUINE 100 //Have to be big to not interfere with the material of the pieces
-#define MONTAGNE 8
-
-#define ACTUALFOREST 10
-#define NEXTFOREST 11
-
-#define ACTUAL 12
-#define NEXT 13
-
-
-/*****************************************TYPEDEFS**************************************************/
-typedef int FeuilleCarte[SIZE][SIZE];
-typedef int Piece[PIECESIZE][PIECESIZE];
-
-
-
-typedef struct Position {
-    int x;
-    int y;
-}Position;
-
-typedef struct InfoGroupe {
-    int taille;
-	int material;
-    int materialVoisin[10];
-}InfoGroupe;
 
 /*****************************************PROTOTYPES**************************************************/
 void initCarte(FeuilleCarte f, int montagne);
@@ -160,40 +112,6 @@ int calcEnenmyPoints(FeuilleCarte f);
 int countSurroundedMountains(FeuilleCarte f);
 
 
-
-
-/*****************************************CONSTANTES PIECES**************************************************/
-// Notaion : L_XXX = petit XXX ; B_XXX = GRAND XXX
-
-extern const Piece POINT;
-extern const Piece NOTHING;
-
-extern const Piece U;
-
-extern const Piece L;
-extern const Piece L_L;
-extern const Piece B_L;
-
-extern const Piece LINE;
-extern const Piece L_LINE;
-
-extern const Piece T;
-extern const Piece L_T;
-
-extern const Piece CUBE;
-extern const Piece CUBE_WITH_POINT;
-extern const Piece RECT;
-extern const Piece RECT_WITH_HOLE;
-
-extern const Piece DIAG;
-extern const Piece L_DIAG;
-
-extern const Piece CROSS;
-extern const Piece STAIRS;
-extern const Piece STRANGE;
-
-extern const Piece Z;
-extern const Piece B_Z;
 
 
 

@@ -1,11 +1,3 @@
-#define _CRT_SECURE_NO_WARNINGS
-
-#include <stdio.h>
-#include <time.h>
-#include <stdlib.h>
-#include <math.h>
-#include <string.h>
-#include "Lib3d.h"
 #include "GameManager.h"
 
 
@@ -96,7 +88,7 @@ void SetupGame(GameState* gs, int nbPlayers) { 	// Initialisation du jeu
 		copyCarte(temp, gs->players[i].map);
 		gs->players[i].score = 0;
 		gs->players[i].coinCount = 0;
-		printf("Nom du Joueur %d : ", i + 1);
+		printf("\nNom du Joueur %d : ", i + 1);
 		scanf("%s", gs->players[i].name);
 	}
 
