@@ -3,6 +3,29 @@
 
 #include "Consts.h"
 
+
+
+
+//
+
+typedef int FeuilleCarte[SIZE][SIZE];
+typedef int Piece[PIECESIZE][PIECESIZE];
+
+typedef struct Position {
+	int x;
+	int y;
+}Position;
+
+typedef struct InfoGroupe {
+	int taille;
+	int material;
+	int materialVoisin[10];
+}InfoGroupe;
+
+
+
+
+
 // GameManager.h
 
 
@@ -77,22 +100,6 @@ typedef struct PlacementState {
 	const ExploreCard* card;
 	int status;                 // 0 = En placement, 1 = placé
 } PlacementState;
-
-//
-
-typedef int FeuilleCarte[SIZE][SIZE];
-typedef int Piece[PIECESIZE][PIECESIZE];
-
-typedef struct Position {
-	int x;
-	int y;
-}Position;
-
-typedef struct InfoGroupe {
-	int taille;
-	int material;
-	int materialVoisin[10];
-}InfoGroupe;
 
 
 
