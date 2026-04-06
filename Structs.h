@@ -3,14 +3,28 @@
 
 #include "Consts.h"
 
-// Basic typedefs needed by several structs
+
+
+
+//
+
 typedef int FeuilleCarte[SIZE][SIZE];
 typedef int Piece[PIECESIZE][PIECESIZE];
 
 typedef struct Position {
-    int x;
-    int y;
-} Position;
+	int x;
+	int y;
+}Position;
+
+typedef struct InfoGroupe {
+	int taille;
+	int material;
+	int materialVoisin[10];
+}InfoGroupe;
+
+
+
+
 
 // GameManager.h
 
@@ -87,15 +101,13 @@ typedef struct PlacementState {
     int status;                 // 0 = En placement, 1 = placé
 } PlacementState;
 
-//
 
 typedef struct InfoGroupe {
-    int taille;
-    int material;
-    int materialVoisin[10];
-} InfoGroupe;
+	int taille;
+	int material;
+	int materialVoisin[10];
+}InfoGroupe;
 
-/******** Définitions des structures des éléments affichés ********/
 
 typedef struct Button {
     Rectangle bounds;
