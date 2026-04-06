@@ -102,11 +102,6 @@ typedef struct PlacementState {
 } PlacementState;
 
 
-typedef struct InfoGroupe {
-	int taille;
-	int material;
-	int materialVoisin[10];
-}InfoGroupe;
 
 
 typedef struct Button {
