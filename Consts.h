@@ -5,8 +5,8 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <stdio.h>
-#include <time.h>
 #include <stdlib.h>
+#include <time.h>
 #include <math.h>
 #include <string.h>
 #include <raylib.h>
@@ -45,13 +45,13 @@
 
 /******************************** main.c ********************************/
 
-#define BGCOLOR RAYWHITE
 #define MAX_PLAYER 100
 
 
 /******************************** Lib3d.h ********************************/
 
 #define BACKGROUND_COLOR LIGHTGRAY
+#define BGCOLOR RAYWHITE
 
 #define GRIDCOLOR GRAY
 #define BORDERCOLOR MAROON
@@ -79,6 +79,14 @@
 #define LEFTC KEY_LEFT
 
 #define MAXCAMERAHEIGHT 0.8
+
+
+#define MAX_NAME_LENGTH 20
+
+/******** Constantes du Menu ********/
+
+#define MENUX 800
+#define MENUY 600
 
 
 /******************************** GameManager.h ********************************/

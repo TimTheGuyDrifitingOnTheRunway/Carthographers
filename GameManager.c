@@ -75,21 +75,21 @@ const ExploreCard* expCards[21] = { &FarmLands, &ForgottenForest, &Hamlet, &Grea
 
 
 
-void SetupGame(GameState* gs, int nbPlayers) { 	// Initialisation du jeu
-	gs->playerNumber = nbPlayers;
-	gs->players = malloc(sizeof(PlayerState) * nbPlayers);
+void SetupGame(GameState* gs) { 	// Initialisation du jeu
+	if (gs->playerNumber == 0) {
+		strcpy(gs->players[gs->playerNumber++].name, "Dany");
+	}
 	gs->playerIndex = 0;
 	gs->deckSize = 13;
 
 	FeuilleCarte temp;
 	initCarte2(temp, TRUE, TRUE);
+
 	// Initialiser la Map et les stats pour chaque joueur
-	for (int i = 0; i < nbPlayers; i++) {
+	for (int i = 0; i < gs->playerNumber; i++) {
 		copyCarte(temp, gs->players[i].map);
 		gs->players[i].score = 0;
 		gs->players[i].coinCount = 0;
-		printf("\nNom du Joueur %d : ", i + 1);
-		scanf("%s", gs->players[i].name);
 	}
 
 	// Initialiser les cartes Scores
@@ -121,6 +121,20 @@ void DebugGameStats(GameState* gs) {
 	}
 
 }
+
+void EndGame(GameState* gs, int nbPlayers) {
+	printf("\n\n\n\nFin de la partie ! \n\n\n\n");
+	printf("Joueurs et scores :\n\n");
+	for (int i = 0; i < nbPlayers; i++) {
+		PlayerState p = gs->players[i];
+		printf("%s a obtenu %d points", p.name, p.score);
+	}
+
+}
+
+
+
+
 
 // ???
 int CalcPointsFromCards(FeuilleCarte f, ScoringCard *cards, int numberOfCards) {

@@ -22,6 +22,12 @@ Ajout de l'affichage dynamique pour le placement des cartes (Ruines & Riftlands)
 
 Changement de la structure du projet : Consts.h -> Structs.h -> Data.h -> vrais fichier headers .h -> fichiers sources .c
 
+Ajout d'un menu fonctionnel
+Ajout de fonction de dessin basiques : un Rectangle arrondi avec du Stroke, ou du Texte avec du stroke, en 2 verions : de base et experte avec plus de contrôle
+Ajout de fonction de dessin plus avancées comme dessiner un bouton ou un emplacement de saisie utilisateur
+Ajout d'un bouton pour : Ajouter un joueur, lancer la partie, quitter la partie
+Lorsqu'on ajoute un joueur, un menu d'ajout de joueur s'ouvre
+
 
 
 Fini par Tim (à Math d'effacer) : 

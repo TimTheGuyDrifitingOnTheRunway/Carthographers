@@ -6,16 +6,18 @@
 
 
 // Setup
-void SetupGame(GameState* gs, int nbPlayers);
+void SetupGame(GameState* gs);
 void InitDeck(GameState* gs);
 void ShakeDeck(GameState* gs);
 void InitScoringCards(GameState* gs);
+void EndGame(GameState* gs, int nbPlayers);
 
 
 void StartGame(GameState* gs, Camera3D camera);
 // Saison
 void NextSeason(GameState* gs, Camera3D camera);
 void Season(GameState* gs, Camera3D camera);
+
 
 // Tour de jeu
 
