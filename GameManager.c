@@ -236,10 +236,7 @@ void NextSeason(GameState *gs, Camera3D camera) {
 		printf("\nPoints cette saison : %d\nPoints totaux : %d\n\n", pts, ps->score);
 	}
 
-
-
-	gs->currentSeason++;
-	if (gs->currentSeason < 4) Season(gs, camera);
+	if (++gs->currentSeason < 4) Season(gs, camera);
 }
 
 // Tour de jeu

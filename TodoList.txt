@@ -2,6 +2,7 @@
 Vu par Math : 
 Bug d'affichage dans lib3D si on a un nom trop long, mais si on a des "petites lettres" (i, l) ça prends moins d'espace, il faut régler la taile dynamiquement
 
+
 Vu par Tim : 
 bug de violation de mémoire dans certains cas lors de l'accèes a une liste de ruine : ligne 242 dans game manager
 

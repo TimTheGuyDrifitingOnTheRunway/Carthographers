@@ -51,6 +51,8 @@ int main()
 	//gs.playerNumber = 5;
 	bool start = DisplayMenu(&gs);
 
+	printf("\nstart = %d", start);
+
 	if (!start) {
 		CloseWindow();
 		printf("\n\n\n\n Debug Fin de partie !! \n\n\n\n");

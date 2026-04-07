@@ -13,12 +13,12 @@ int GUIplacementDefaultCard(GameState* gs, FeuilleCarte f, const ExploreCard* ca
 void GUIdrawGrille();
 void GUIUpdateCustomCamera(Camera3D *camera);
 
-void UpdatePlacement(FeuilleCarte f, PlacementState* state);
+void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera);
 void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state, int score, Camera3D camera);
 void ApplyPlacement(FeuilleCarte f, PlacementState* state, int* coinCount);
 
 bool DisplayMenu(GameState* gs);
-void AddPlayer(GameState* gs);
+bool AddPlayer(GameState* gs);
 
 /** Fonctions utilitaires UI **/
 void DrawButton(Button* btn);

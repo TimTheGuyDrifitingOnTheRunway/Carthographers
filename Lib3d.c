@@ -309,7 +309,7 @@ int GUIPlacementCard(GameState* gs, FeuilleCarte f, const ExploreCard* card,
 
 	// Boucle principale — logique et rendu séparés
 	while (state.status == 0 && !WindowShouldClose()) {
-		UpdatePlacement(f, &state);
+		UpdatePlacement(f, &state, camera);
 		RenderPlacement(gs, f, &state, score, camera);
 		GUIUpdateCustomCamera(&camera);
 		camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
@@ -321,7 +321,7 @@ int GUIPlacementCard(GameState* gs, FeuilleCarte f, const ExploreCard* card,
 	return 1;
 }
 
-void UpdatePlacement(FeuilleCarte f, PlacementState* state) {
+void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera) {
 
 	// Recalcul de la preview
 	initCarte(state->feuilleVide, FALSE);
@@ -332,9 +332,20 @@ void UpdatePlacement(FeuilleCarte f, PlacementState* state) {
 	if (state->isRuin)
 		state->drawable = state->drawable && coversRuin(f, state->feuilleVide);
 
+	Vector3 forward = { camera.target.x - camera.position.x, 0, camera.target.z - camera.position.z };
+	normalize(&forward);
+	Vector3 right = crossProduct(forward, camera.up);
+	normalize(&right);
+	
+	if (IsKeyPressed(UPP))		fabs(forward.x) > fabs(forward.z) ? (state->pos.x += forward.x > 0 ? 1 : -1) : (state->pos.y += forward.z > 0 ? 1 : -1);
+	if (IsKeyPressed(DOWNP))	fabs(forward.x) > fabs(forward.z) ? (state->pos.x += forward.x > 0 ? -1 : 1) : (state->pos.y += forward.z > 0 ? -1 : 1);
+	if (IsKeyPressed(LEFTP))	fabs(right.x) > fabs(right.z) ? (state->pos.x += right.x > 0 ? -1 : 1) : (state->pos.y += right.z > 0 ? -1 : 1);
+	if (IsKeyPressed(RIGHTP))	fabs(right.x) > fabs(right.z) ? (state->pos.x += right.x > 0 ? 1 : -1) : (state->pos.y += right.z > 0 ? 1 : -1);
+
 	// Inputs — déplacement
-	state->pos.x += -(int)IsKeyPressed(LEFTP) + (int)IsKeyPressed(RIGHTP);
-	state->pos.y += -(int)IsKeyPressed(UPP) + (int)IsKeyPressed(DOWNP);
+	//state->pos.x += -(int)IsKeyPressed(LEFTP) + (int)IsKeyPressed(RIGHTP);
+	//state->pos.y += -(int)IsKeyPressed(UPP) + (int)IsKeyPressed(DOWNP);
+
 	if (IsKeyPressed(KEY_P)) { state->pos.x = 6; state->pos.y = 6; }
 
 	// Rotation / flip
@@ -565,17 +576,20 @@ bool DisplayMenu(GameState* gs) {
 		EndDrawing();
 	}
 	if (startBtn.validated) {
+		printf("\n\nBouton Start Validé");
 		return true;
 	}
 	if (addPlayer) {
-		AddPlayer(gs);
+		printf("\n\nBouton Add Validé");
+		return AddPlayer(gs);
 	}
-	if (stopBtn.validated) {
+	if (stopBtn.validated || WindowShouldClose()) {
+		printf("\n\nBouton Stop Validé");
 		return false;
 	}
 }
 
-void AddPlayer(GameState* gs) {
+bool AddPlayer(GameState* gs) {
 	int middleX = 0;
 	int middleY = 0;
 	char title[16] = "Cartographers !"; 		int titleFontSize = 60;
@@ -644,7 +658,7 @@ void AddPlayer(GameState* gs) {
 	if (add) {
 		strcpy(gs->players[gs->playerNumber++].name, nameIptBox.text);
 	}
-	DisplayMenu(gs);
+	return DisplayMenu(gs);
 }
 
 void DrawButton(Button* btn) {
