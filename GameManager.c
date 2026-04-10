@@ -206,11 +206,14 @@ void StartGame(GameState* gs, Camera3D camera) {
 
 // Saisons
 void Season(GameState* gs, Camera3D camera) {
+	Model mountains[NOMBREMONTAGNE];
+	int mountainSeed[2] = { randInt(0, 100), randInt(0, 100) };
+
 	gs->currentTime = 0;
 	int index = 0;
 	int isRuin = 0;
 	while (gs->currentTime < seasons[gs->currentSeason]->maxTime) {
-		const ExploreCard* card = Turn(gs, &index, &isRuin, camera);
+		const ExploreCard* card = Turn(gs, &index, &isRuin, camera, mountainSeed);
 		gs->currentTime += card->time;
 	}
 	NextSeason(gs, camera);
@@ -240,14 +243,16 @@ void NextSeason(GameState *gs, Camera3D camera) {
 }
 
 // Tour de jeu
-const ExploreCard* Turn(GameState* gs, int* index, int* isRuin, Camera3D camera) {
+const ExploreCard* Turn(GameState* gs, int* index, int* isRuin, Camera3D camera, int mountainSeed[2]) {
 	const ExploreCard* card = NextExploreCard(gs, index, isRuin);
 
 	for (int p = 0; p < gs->playerNumber; p++) {
 		gs->playerIndex = p;
 		PlayerState* ps = &gs->players[p];
+		Model mountains[NOMBREMONTAGNE];
+		generateMountainsModels(mountains, gs->players[(p + card->rotation + gs->playerNumber) % gs->playerNumber].map, mountainSeed);
 		printf("--- Tour de %s %d/%d---\n", ps->name, p + 1, gs->playerNumber);
-		GUIPlacementCard(gs, gs->players[(p + card->rotation + gs->playerNumber) % gs->playerNumber].map, card, ps->score, (*isRuin && !card->isEnemy), &ps->coinCount, camera);	// p + card->rotation + gs->playerNumber car -1 % playerNumber renvoie -1
+		GUIPlacementCard(gs, gs->players[(p + card->rotation + gs->playerNumber) % gs->playerNumber].map, card, ps->score, (*isRuin && !card->isEnemy), &ps->coinCount, camera, mountains);	// p + card->rotation + gs->playerNumber car -1 % playerNumber renvoie -1
 	}
 
 	if (card->isEnemy) gs->deckSize--;

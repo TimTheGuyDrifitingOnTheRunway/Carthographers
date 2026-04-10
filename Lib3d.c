@@ -3,7 +3,9 @@
 
 /**************************************************Fontions jeux******************************************/
 
-void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp) {
+void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Position moutainPos[NOMBREMONTAGNE]) {
+	int nb = 0;
+	
 	for (int i = 0; i < SIZE; i++) {
 		for (int j = 0; j < SIZE; j++) {
 			if (temp[i][j] >= RUINE) {
@@ -18,6 +20,8 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp) {
 				float z = j - (SIZE - 1) / 2.0f;
 				float y = 0.5;   // Half height so cube sits on grid
 				if (temp[i][j] != f[i][j]) y = PLACEMENT_HEIGHT; // Raise cube if it's part of the shape being placed
+				
+				
 				Color color;
 				switch (getMaterialAtPos(temp, (Position) { i, j })) {
 				case EAU:
@@ -34,12 +38,20 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp) {
 					break;
 				case MONTAGNE:
 					color = GRAY;
+					DrawModel(mountains[nb], (Vector3) { x - 0.5, 0.5f+y, z - 0.5 }, 1, GRAY);
+					nb++;
 					break;
 				case MONSTRE:
 					color = PURPLE;
 					break;
 				case CONFLICTVALUE:
 					color = RED;
+					for (int k = 0; k < NOMBREMONTAGNE; k++) {
+						if(moutainPos[k].x == i && moutainPos[k].y == j){
+							nb++;//avance le compte montagne si collision avec une montagne pour ne pas faire spawn une montagne sur une autre
+							
+						}
+					}
 					break;
 				default:
 					color = WHITE;
@@ -52,7 +64,7 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp) {
 }
 
 
-int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D camera) {
+int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D camera, Model mountains[NOMBREMONTAGNE]) {
 	if (checkShape(f, shape)) {
 		Piece shapeCopy;
 		copyPiece(*shape, shapeCopy);
@@ -66,6 +78,7 @@ int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D
 		float accY = (float)pos.y;
 
 		int done = 0;
+		Position* mountainPos = getPositionsOfMaterial(f, MONTAGNE);//envoi la positions des montagnes pour avancer si un conflit à lieu entre une montagne et autre
 		while (!done && !WindowShouldClose()) {
 			initCarte(feuilleVide, FALSE);
 			drawable = drawShape(feuilleVide, shapeCopy, pos, rotation, material);
@@ -74,7 +87,7 @@ int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D
 			BeginDrawing(); // Début de l'affichage
 			ClearBackground(RAYWHITE);
 			BeginMode3D(camera);
-			GUIDrawFeuille(f, temp);
+			GUIDrawFeuille(f, temp, mountains, mountainPos);
 
 			for (int i = 0; i < SIZE; i++)
 				for (int j = 0; j < SIZE; j++)
@@ -117,172 +130,14 @@ int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D
 	}
 	else {
 		printf("IL n'y a pas la place pour rentrer votre piece \n");
-		return GUIplacementDefault(f, material, camera);
+		return GUIplacementDefault(f, material, camera, mountains);
 	}
 }
 
-/*int GUIPlacementCard(FeuilleCarte f, const ExploreCard* card, int score, int isRuin, Camera3D camera) {
 
-	PlacementState state = { 0 };
-	int hasTwoShapes = card->pieceB != NULL;
-	int hasTwoMat = card->terrainB != 0;
-
-	int isEnemy = card->isEnemy;
-	int isRiftLands = card->isRiftLands;
-	int RiftLandsMat = 2;
-
-	int material = card->terrainA;
-	if (isEnemy) material = MONSTRE;
-	int canFitA = isRuin ? checkShapeOnRuin(f, card->pieceA) : checkShape(f, card->pieceA);
-	int canFitB = hasTwoShapes ? isRuin ? checkShapeOnRuin(f, card->pieceB) : checkShape(f, card->pieceB) : 0;
-
-	if (!canFitA && !canFitB) {
-		printf("IL n'y1 a pas la place pour rentrer votre piece \n");
-		return GUIplacementDefaultCard(f, card, score, 0, camera);
-	}
-
-	// Initialisation du placement
-	state.card = card;
-	state.isRuin = isRuin;
-	state.hasTwoShapes = card->pieceB != NULL;
-	state.hasTwoMat = card->terrainB != 0;
-	state.isRiftLands = card->isRiftLands;
-	state.RiftLandsMat = 2;
-	state.material = card->isEnemy ? MONSTRE : card->terrainA;
-	state.pos = (Position){ 6, 6 };
-	state.status = 0;
-
-
-	Piece shapeCopy;
-
-	if (!canFitA && canFitB) copyPiece(card->pieceB, shapeCopy);
-	else copyPiece(card->pieceA, shapeCopy);
-
-	Position pos;
-	int rotation = 0;
-	pos.x = 6;
-	pos.y1 = 6;
-	int drawable = 0;
-	FeuilleCarte feuilleVide, temp;
-	float accX = (float)pos.x;
-	float accY = (float)pos.y1;
-
-	int done = 0;
-	while (!done && !WindowShouldClose()) {
-
-		canFitB = hasTwoShapes ? isRuin ? checkShapeOnRuin(f, card->pieceB) : checkShape(f, card->pieceB) : 0;
-
-
-		initCarte(feuilleVide, FALSE);
-		drawable = drawShape(feuilleVide, shapeCopy, pos, rotation, material);
-		tryDraw(f, feuilleVide, temp);
-
-
-
-		BeginDrawing(); // Début de l'affichage
-		ClearBackground(RAYWHITE);
-		BeginMode3D(camera);
-		GUIDrawFeuille(f, temp);
-
-		for (int i = 0; i < SIZE; i++)
-			for (int j = 0; j < SIZE; j++)
-				if (temp[i][j] != f[i][j])
-					DrawCubeWires((Vector3) { (float)i - SIZE / 2, PLACEMENT_HEIGHT, (float)j - SIZE / 2 }, 1.0f, 1.0f, 1.0f, BORDERCOLOR);
-
-		GUIdrawGrille();
-		// DrawMapGrid(SIZE, 1.0f);
-		EndMode3D();
-		// 2D
-		DrawRectangle(0, 0, 400, 400, BLACK);
-		DrawRectangle(2, 2, 396, 396, RED);
-		DrawText(TextFormat("Nom de la carte : %s", card->name), 5, 5, 15, BLACK);
-		DrawText(TextFormat("Peut changer de couleur : %s", hasTwoMat ? "oui" : "non"), 5, 25, 15, BLACK);
-		DrawText(TextFormat("Peut changer de forme : %d", hasTwoShapes), 5, 45, 15, BLACK);
-		DrawText(TextFormat("Doit être placé sur une Ruine : %d", isRuin), 5, 65, 15, BLACK);
-		DrawText(TextFormat("Saison en cours : %s", seasons[currentSeason]->name), 5, 85, 15, BLACK);
-		DrawText(TextFormat("Edits en cours : %s et %s", edits[seasons[currentSeason]->EditA]->name, edits[seasons[currentSeason]->EditB]->name), 5, 105, 15, BLACK);
-		DrawText("tous les édits : ", 5, 125, 15, BLACK);
-		for (int i = 0; i < 4; i++) {
-			DrawText(TextFormat("Edits %d : %s", i, edits[i]->name), 5, 145 + 20 * i, 15, BLACK);
-		}
-		DrawText(TextFormat("Piece en A ? %d", card->iscoinA), 5, 225, 15, BLACK);
-
-
-		DrawRectangle(1400, 0, 200, 200, PURPLE);
-		DrawText(TextFormat("Score : %d", score), 1405, 5, 30, BLACK);
-		DrawText(TextFormat("Coins : %d", coinCount), 1405, 35, 30, BLACK);
-
-
-
-
-		EndDrawing(); // Fin de l'affichage
-
-
-		drawable = drawable && isDrawable(f, feuilleVide);
-		if (isRuin) {
-			drawable = drawable && coversRuin(f, feuilleVide);
-		}
-		// gestion caméra : toujours au même endraoit
-		//UpdateCameraPro(&camera, (Vector3) { 0, 0, 1 }, (Vector3) { 0, 0, 0 }, 1);
-		GUIUpdateCustomCamera(&camera);
-		camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
-
-		if (IsKeyPressed(SWITCHP) && hasTwoShapes) {
-			printf("switch shape : %d \n", canFitB);
-			if (compareShape(card->pieceA, shapeCopy) && canFitB) copyPiece(*card->pieceB, shapeCopy);
-			else if (canFitA) copyPiece(*card->pieceA, shapeCopy);
-		}
-
-		if (IsKeyPressed(SWITCHMP)) {
-			if (isRiftLands) {
-				RiftLandsMat = ((RiftLandsMat - 1) % 5) + 2;
-				material = RiftLandsMat;
-			}
-			else if (hasTwoMat) {
-				if (material == card->terrainA) material = card->terrainB;
-				else material = card->terrainA;
-			}
-
-
-		}
-
-		pos.x += -(int)IsKeyPressed(LEFTP) + (int)IsKeyPressed(RIGHTP); // déplacement pièce
-		pos.y1 += -(int)IsKeyPressed(UPP) + (int)IsKeyPressed(DOWNP);
-
-
-
-		if (IsKeyPressed(KEY_P)) { pos.x = 6; pos.y1 = 6; } //possibilité de resset
-
-		if (IsKeyPressed(ROTATEP)) {
-			rotation++;
-		}
-		if (IsKeyPressed(FLIPP)) {
-			flipShape(shapeCopy);
-		}
-		//printf("rotation %d(%d, %d) \n", rotation, pos.x, pos.y1);
-		if (IsKeyPressed(KEY_SPACE) && drawable) {
-			done = 1;
-		}
-
-	}
-	if (WindowShouldClose()) {
-		CloseWindow();
-		exit(1);
-	}
-
-	int mountainBefore = countSurroundedMountains(f);
-	draw(f, feuilleVide);
-	int mountainAfter = countSurroundedMountains(f);
-	coinCount += mountainAfter - mountainBefore;
-
-	if (compareShape(shapeCopy, card->pieceA) && card->iscoinA) coinCount++;
-
-	return 1;
-
-}*/
 
 int GUIPlacementCard(GameState* gs, FeuilleCarte f, const ExploreCard* card,
-	int score, int isRuin, int* coinCount, Camera3D camera) {
+	int score, int isRuin, int* coinCount, Camera3D camera, Model mountains[NOMBREMONTAGNE]) {
 
 	// Vérification placabilité
 	int canFitA = isRuin ? checkShapeOnRuin(f, card->pieceA) : checkShape(f, card->pieceA);
@@ -291,7 +146,7 @@ int GUIPlacementCard(GameState* gs, FeuilleCarte f, const ExploreCard* card,
 		: 0;
 
 	if (!canFitA && !canFitB)
-		return GUIplacementDefaultCard(gs, f, card, score, 0, coinCount, camera);
+		return GUIplacementDefaultCard(gs, f, card, score, 0, coinCount, camera, mountains);
 
 	// Init état
 	PlacementState state = { 0 };
@@ -306,11 +161,11 @@ int GUIPlacementCard(GameState* gs, FeuilleCarte f, const ExploreCard* card,
 	state.status = 0;
 
 	copyPiece(canFitA ? *card->pieceA : *card->pieceB, state.shapeCopy);
-
+	Position* mountainPos = getPositionsOfMaterial(f, MONTAGNE);//envoi la positions des montagnes pour avancer si un conflit à lieu entre une montagne et autre
 	// Boucle principale — logique et rendu séparés
 	while (state.status == 0 && !WindowShouldClose()) {
 		UpdatePlacement(f, &state, camera);
-		RenderPlacement(gs, f, &state, score, camera);
+		RenderPlacement(gs, f, &state, score, camera, mountains, mountainPos);
 		GUIUpdateCustomCamera(&camera);
 		camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
 	}
@@ -383,17 +238,21 @@ void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera) {
 		state->status = 1;
 }
 
-void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state, int score, Camera3D camera) {
+void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state, int score, Camera3D camera, Model mountain[NOMBREMONTAGNE], Position mountainPos[NOMBREMONTAGNE]) {
 	BeginDrawing();
 	ClearBackground(BACKGROUND_COLOR);
 	BeginMode3D(camera);
+	
 
-	GUIDrawFeuille(f, state->temp);
+	GUIDrawFeuille(f, state->temp, mountain, mountainPos);
 
 	for (int i = 0; i < SIZE; i++)
 		for (int j = 0; j < SIZE; j++)
 			if (state->temp[i][j] != f[i][j])
 				DrawCubeWires((Vector3) { (float)i - SIZE / 2, PLACEMENT_HEIGHT, (float)j - SIZE / 2 }, 1.0f, 1.0f, 1.0f, BORDERCOLOR);
+
+
+	
 
 	GUIdrawGrille();
 	EndMode3D();
@@ -452,19 +311,19 @@ void DrawMapGrid(int slices, float spacing) {
 	}
 }
 
-int GUIplacementDefault(FeuilleCarte f, int  material, Camera3D camera) {
+int GUIplacementDefault(FeuilleCarte f, int  material, Camera3D camera, Model mountains[NOMBREMONTAGNE]) {
 	if (getEmptySpots(f) == 0) return 0;
-	GUIplacementShape(f, POINT, material, camera);
+	GUIplacementShape(f, POINT, material, camera, mountains);
 	return 1;
 }
 
-int GUIplacementDefaultCard(GameState* gs, FeuilleCarte f, const ExploreCard* card, int score, int isRuin, int* coinCount, Camera3D camera) {
+int GUIplacementDefaultCard(GameState* gs, FeuilleCarte f, const ExploreCard* card, int score, int isRuin, int* coinCount, Camera3D camera, Model mountains[NOMBREMONTAGNE]) {
 	if (getEmptySpots(f) == 0) return 0;
 	ExploreCard def = *card;
 	def.pieceA = &POINT;
 	def.iscoinA = 0;
 
-	GUIPlacementCard(gs, f, &def, score, isRuin, coinCount, camera);
+	GUIPlacementCard(gs, f, &def, score, isRuin, coinCount, camera, mountains);
 	return 1;
 }
 
@@ -805,4 +664,69 @@ void multiplyVector(Vector3* vector, double a) {
 	vector->x *= a;
 	vector->y *= a;
 	vector->z *= a;
+}
+
+
+/*****************génération de heighmap ***/ 
+
+
+Model generateMountain(int x, int y) {
+	 // pour éviter d'avoir toujours la même montagne au lancement du jeu
+	Image perlinNoise = GenImagePerlinNoise(PERLIN_SIZE, PERLIN_SIZE, x*100 , y*100 , PERLIN_SCALE);
+	
+
+	for (int y = 0; y < PERLIN_SIZE; y++) {// fallof pour avoir des bords smooths
+		for (int x = 0; x < PERLIN_SIZE; x++) {
+
+			float nx = (float)x / (float)PERLIN_SIZE * 2.0f - 1.0f;
+			float ny = (float)y / (float)PERLIN_SIZE * 2.0f - 1.0f;
+
+			float fx = 1.0f - powf(fabsf((float)x / PERLIN_SIZE * 2.0f - 1.0f), PERLIN_MODEL_SMOOTHING);
+			float fy = 1.0f - powf(fabsf((float)y / PERLIN_SIZE * 2.0f - 1.0f), PERLIN_MODEL_SMOOTHING);
+			float falloff = fx * fy;
+
+			if (falloff < 0) falloff = 0;
+
+			Color c = GetImageColor(perlinNoise, x, y);
+			float height = (float)c.r / 255.0f;
+
+			height *= falloff;
+
+			unsigned char h = (unsigned char)(height * 255.0f);
+			ImageDrawPixel(&perlinNoise, x, y, (Color) { h, h, h, 255 });
+		}
+	}
+	
+
+	ImageDrawLineV(&perlinNoise, (Vector2) { 0, 0 }, (Vector2) { 0, PERLIN_SIZE }, MOUNTAIN_MODEL_COLOR);
+	ImageDrawLineV(&perlinNoise, (Vector2) { PERLIN_SIZE-1, 0 }, (Vector2) { PERLIN_SIZE-1, PERLIN_SIZE }, MOUNTAIN_MODEL_COLOR);// bordure noire pour éviter les artefacts de texture sur les bords du modèle
+	ImageDrawLineV(&perlinNoise, (Vector2) { 0, 0 }, (Vector2) { PERLIN_SIZE, 0}, MOUNTAIN_MODEL_COLOR);
+	ImageDrawLineV(&perlinNoise, (Vector2) { 0, PERLIN_SIZE-1 }, (Vector2) { PERLIN_SIZE, PERLIN_SIZE-1 }, MOUNTAIN_MODEL_COLOR);
+
+	Mesh mesh = GenMeshHeightmap(perlinNoise, (Vector3) { MOUNTAIN_MODEL_SIZE, MOUNTAIN_MODEL_HEIGHT, MOUNTAIN_MODEL_SIZE }); // Generate heightmap mesh (RAM and VRAM)
+	Model model = LoadModelFromMesh(mesh);
+
+	ImageColorBrightness(&perlinNoise, 100);//redresse la couleur des montagnes
+
+	Texture2D texture = LoadTextureFromImage(perlinNoise);
+
+
+	
+
+	                // Load model from generated mesh
+
+	model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture; // Set map diffuse texture          // Define model position
+
+	UnloadImage(perlinNoise);             // Unload heightmap image from RAM, already uploaded to VRAM
+
+	return model;
+
+
+}
+
+void generateMountainsModels(Model mountains[NOMBREMONTAGNE], FeuilleCarte f, int mountainSeed[2]) {
+	Position *pos = getPositionsOfMaterial(f, MONTAGNE);
+	for ( int i=0; i<NOMBREMONTAGNE; i++){
+		mountains[i] = generateMountain(pos[i].x+mountainSeed[1], pos[i].y+mountainSeed[0]);
+	}
 }

@@ -50,7 +50,7 @@
 
 /******************************** Lib3d.h ********************************/
 
-#define BACKGROUND_COLOR LIGHTGRAY
+#define BACKGROUND_COLOR LIGHTBLUE
 #define BGCOLOR RAYWHITE
 
 #define GRIDCOLOR GRAY
@@ -87,6 +87,14 @@
 
 #define MENUX 800
 #define MENUY 600
+
+/********Constantes de montagnes ******/
+#define PERLIN_SIZE 100
+#define MOUNTAIN_MODEL_SIZE 1
+#define MOUNTAIN_MODEL_HEIGHT 1.5
+#define PERLIN_SCALE 0.8
+#define MOUNTAIN_MODEL_COLOR BLACK
+#define PERLIN_MODEL_SMOOTHING 3.0f
 
 
 /******************************** GameManager.h ********************************/
