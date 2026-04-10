@@ -336,7 +336,7 @@ void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera) {
 	normalize(&forward);
 	Vector3 right = crossProduct(forward, camera.up);
 	normalize(&right);
-	
+
 	if (IsKeyPressed(UPP))		fabs(forward.x) > fabs(forward.z) ? (state->pos.x += forward.x > 0 ? 1 : -1) : (state->pos.y += forward.z > 0 ? 1 : -1);
 	if (IsKeyPressed(DOWNP))	fabs(forward.x) > fabs(forward.z) ? (state->pos.x += forward.x > 0 ? -1 : 1) : (state->pos.y += forward.z > 0 ? -1 : 1);
 	if (IsKeyPressed(LEFTP))	fabs(right.x) > fabs(right.z) ? (state->pos.x += right.x > 0 ? -1 : 1) : (state->pos.y += right.z > 0 ? -1 : 1);
@@ -384,6 +384,12 @@ void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera) {
 }
 
 void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state, int score, Camera3D camera) {
+	int midX = GetScreenWidth() / 2;
+	int midY = GetScreenHeight() / 2;
+
+	Rectangle infoPanel = { 0, midY - 700 / 2, 400, 700 };
+	Rectangle playerPanel = { midX * 2 - 400, 0, 400, 250 };
+
 	BeginDrawing();
 	ClearBackground(BACKGROUND_COLOR);
 	BeginMode3D(camera);
@@ -401,27 +407,26 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 	// UI 2D — lecture seule sur state
 
 	// Infos relatives à tous les joueurs
-	DrawRectangle(0, 0, 400, 320, RED);
-	DrawRectangle(2, 2, 396, 316, RAYWHITE);
+	DrawRectangleStroke(infoPanel, 3, WHITE, RED);
 	int y1 = 5;
-	DrawText(TextFormat("Carte : %s", state->card->name), 5, y1, 15, BLACK); y1 += 20;
-	DrawText(TextFormat("2 formes : %d", state->hasTwoShapes), 5, y1, 15, BLACK); y1 += 20;
-	DrawText(TextFormat("2 matériaux : %d", state->hasTwoMat), 5, y1, 15, BLACK); y1 += 20;
-	DrawText(TextFormat("Saison : %s", seasons[gs->currentSeason]->name), 5, y1, 15, BLACK); y1 += 20;
-	DrawText(TextFormat("Edits : %s / %s", gs->edits[seasons[gs->currentSeason]->EditA]->name, gs->edits[seasons[gs->currentSeason]->EditB]->name), 5, y1, 15, BLACK); y1 += 20;
+	DrawText(TextFormat("Carte : %s", state->card->name), 5, infoPanel.y + y1, 25, BLACK); y1 += 30;
+	DrawText(TextFormat("2 formes : %d", state->hasTwoShapes), 5, infoPanel.y + y1, 25, BLACK); y1 += 30;
+	DrawText(TextFormat("2 matériaux : %d", state->hasTwoMat), 5, infoPanel.y + y1, 25, BLACK); y1 += 30;
+	DrawText(TextFormat("Saison : %s", seasons[gs->currentSeason]->name), 5, infoPanel.y + y1, 25, BLACK); y1 += 30;
+	DrawText(TextFormat("Edits : %s / %s", gs->edits[seasons[gs->currentSeason]->EditA]->name, gs->edits[seasons[gs->currentSeason]->EditB]->name), 5, infoPanel.y + y1, 15, BLACK); y1 += 20;
 	for (int i = 0; i < 4; i++) {
-		DrawText(TextFormat("Edit %d : %s", i, gs->edits[i]->name), 5, y1, 15, BLACK); y1 += 20;
+		DrawText(TextFormat("Edit %d : %s", i, gs->edits[i]->name), 5, infoPanel.y + y1, 25, BLACK); y1 += 30;
 	}
-	if (state->isRuin) DrawText("Doit être placé sur une Ruine", 5, y1, 20, RED); y1 += 25;
-	if (state->isRiftLands) DrawText("Tous matériaux disponibles !", 5, y1, 20, RED); y1 += 25;
+	if (state->isRuin) DrawText("Doit être placé sur une Ruine", 5, infoPanel.y + y1, 30, RED); y1 += 35;
+	if (state->isRiftLands) DrawText("Tous matériaux disponibles !", 5, infoPanel.y + y1, 30, RED); y1 += 35;
 
 	// Infos relatives au joueur actuel
 	int y2 = 5;
-	DrawRectangle(1400, 0, 200, 140, PURPLE);
-	DrawText("Joueur : ", 1405, y2, 30, BLACK); y2 += 35;
-	DrawText(gs->players[gs->playerIndex].name, 1405, y2, 30, BLACK); y2 += 35;
-	DrawText(TextFormat("Score : %d", score), 1405, y2, 30, BLACK); y2 += 35;
-	DrawText(TextFormat("Coins : %d", gs->players[gs->playerIndex].coinCount), 1405, y2, 30, BLACK); y2 += 35;
+	DrawRectangleStroke(playerPanel, 3, SKYBLUE, DARKBLUE);
+	DrawText("Joueur : ", playerPanel.x + 5, y2, 30, BLACK); y2 += 35;
+	DrawText(gs->players[gs->playerIndex].name, playerPanel.x + 5, y2, 30, BLACK); y2 += 35;
+	DrawText(TextFormat("Score : %d", score), playerPanel.x + 5, y2, 30, BLACK); y2 += 35;
+	DrawText(TextFormat("Coins : %d", gs->players[gs->playerIndex].coinCount), playerPanel.x + 5, y2, 30, BLACK); y2 += 35;
 
 
 
@@ -527,7 +532,7 @@ bool DisplayMenu(GameState* gs) {
 	char title[16] = "Cartographers !";		int titleFontSize = 60;
 	Rectangle menuBounds = (Rectangle){ 0 };
 
-	int d = 40; // Espacement entre les boutons
+	int d = 30; // Espacement entre les boutons
 	Button startBtn = { .color1 = LIME, .color2 = GRAY, .label = "Start !", .fontSize = 40, .corner = 20, .stroke = 4 };
 	bool addPlayer = 0;
 	char tmppl[33] = "Limite de 100 personnes atteinte";	int tmpplSize = 70;
@@ -538,13 +543,13 @@ bool DisplayMenu(GameState* gs) {
 	while (!WindowShouldClose() && !startBtn.validated && !addPlayer && !stopBtn.validated) {
 		menuBounds = (Rectangle){ (GetScreenWidth() - MENUX) / 2 , (GetScreenHeight() - MENUY) / 2 ,  MENUX, MENUY };
 
-		startBtn.bounds = (Rectangle){ menuBounds.x + 25, menuBounds.y + titleFontSize + 80, MENUX - 50, startBtn.fontSize + 40 };
-		startBtn.hovered = CheckCollisionPointRec(GetMousePosition(), startBtn.bounds);
-
-		addBtn.bounds = (Rectangle){ startBtn.bounds.x, startBtn.bounds.y + startBtn.bounds.height + d, MENUX - 50, startBtn.fontSize + 40 };
+		addBtn.bounds = (Rectangle){ menuBounds.x + 25, menuBounds.y + titleFontSize + 50, MENUX - 50, addBtn.fontSize + 40 };
 		addBtn.hovered = CheckCollisionPointRec(GetMousePosition(), addBtn.bounds);
 
-		stopBtn.bounds = (Rectangle){ startBtn.bounds.x, addBtn.bounds.y + addBtn.bounds.height + d, MENUX - 50, startBtn.fontSize + 40 };
+		startBtn.bounds = (Rectangle){ addBtn.bounds.x, addBtn.bounds.y + addBtn.bounds.height + d, MENUX - 50, startBtn.fontSize + 40 };
+		startBtn.hovered = CheckCollisionPointRec(GetMousePosition(), startBtn.bounds);
+
+		stopBtn.bounds = (Rectangle){ addBtn.bounds.x, startBtn.bounds.y + startBtn.bounds.height + d, MENUX - 50, stopBtn.fontSize + 40 };
 		stopBtn.hovered = CheckCollisionPointRec(GetMousePosition(), stopBtn.bounds);
 
 		BeginDrawing();
@@ -565,7 +570,7 @@ bool DisplayMenu(GameState* gs) {
 		else if (addBtn.validated) addPlayer = 1;
 
 		// afficher le nombre de joueurs
-		DrawText(TextFormat("Il y a %s%d joueurs sur %d", gs->playerNumber > 10 ? "déjà " : "", gs->playerNumber, MAX_PLAYER), addBtn.bounds.x, addBtn.bounds.y + addBtn.bounds.height + 5, 20, WHITE);
+		DrawText(TextFormat("There is %s%d/%d players", gs->playerNumber > 10 ? "already " : "", gs->playerNumber, MAX_PLAYER), addBtn.bounds.x, addBtn.bounds.y + addBtn.bounds.height + 5, 20, WHITE);
 
 		// Ajoute un bouton pour quitter le Jeu
 		DrawButton(&stopBtn);
@@ -775,6 +780,11 @@ void DrawRectangleRoundedStroke(Rectangle rec, float roundness, int segments, Co
 void DrawRectangleRoundedStrokeEx(Rectangle rec, float roundness, int segments, float lineThick, Color rectColor, Color strokeColor) {
 	DrawRectangleRounded(rec, roundness, segments, rectColor);
 	DrawRectangleRoundedLinesEx(rec, roundness, segments, lineThick, strokeColor);
+}
+
+void DrawRectangleStroke(Rectangle rec, float lineThick, Color rectColor, Color strokeColor) {
+	DrawRectangleRec(rec, rectColor);
+	DrawRectangleLinesEx(rec, lineThick, strokeColor);
 }
 
 Color multiplyColor(Color color, float factor) {
