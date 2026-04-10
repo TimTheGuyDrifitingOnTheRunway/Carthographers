@@ -958,17 +958,16 @@ int calcCanalLake(FeuilleCarte f) {
     return somme;
 }
 
-int pointAdjacensce(FeuilleCarte f, int materia1, int material2) {
+int pointAdjacensce(FeuilleCarte f, int material1, int material2) {
     int somme = 0;
 	int valid = 0;
+    Position d[4] = { {0,1}, {0,-1}, {1,0}, {-1,0} };
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
-            if (getMaterialAt(f, i, j) == materia1) {
-                for (int k = -1; k < 2; k++) {
-                    if (getMaterialAt(f, i + k, j) == material2) { valid = 1; break; }
-                }
-                for (int k = -1; k < 2; k++) {
-                    if (getMaterialAt(f, i, j + k) == material2) { valid = 1; break; }
+            valid = 0;
+            if (getMaterialAt(f, i, j) == material1) {
+                for (int k = 0; k < 4; k++) {
+                    if (getMaterialAt(f, i + d[k].x, j + d[k].y)) { valid = 1; break; }
                 }
             }
 			if (valid) somme++;

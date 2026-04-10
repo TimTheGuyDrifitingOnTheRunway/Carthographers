@@ -77,7 +77,7 @@ const ExploreCard* expCards[21] = { &FarmLands, &ForgottenForest, &Hamlet, &Grea
 
 void SetupGame(GameState* gs) { 	// Initialisation du jeu
 	if (gs->playerNumber == 0) {
-		strcpy(gs->players[gs->playerNumber++].name, "Dany");
+		strcpy(gs->players[gs->playerNumber++].name, "Teapot-418");
 	}
 	gs->playerIndex = 0;
 	gs->deckSize = 13;

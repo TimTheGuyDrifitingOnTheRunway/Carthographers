@@ -34,6 +34,7 @@ void DrawStrokeTextEx(const char* text, int x, int y, int fontSize, Color textCo
 void DrawStrokeText(const char* text, int x, int y, int fontSize, Color textColor, Color strokeColor);
 void DrawRectangleRoundedStrokeEx(Rectangle rec, float roundness, int segments, float lineThick, Color rectColor, Color strokeColor);
 void DrawRectangleRoundedStroke(Rectangle rec, float roundness, int segments, Color rectColor, Color strokeColor);
+void DrawRectangleStroke(Rectangle rec, float lineThick, Color rectColor, Color strokeColor);
 
 Color multiplyColor(Color color, float factor);
 
