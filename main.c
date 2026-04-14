@@ -19,7 +19,7 @@ int main()
 
 	InitWindow(screenWidth, screenHeight, "Cartographer");
 
-	ToggleBorderlessWindowed();
+	//ToggleBorderlessWindowed();
 
 	//while (!WindowShouldClose() && !flag) {
 	//	BeginDrawing();

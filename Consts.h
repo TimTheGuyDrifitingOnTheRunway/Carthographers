@@ -50,7 +50,7 @@
 
 /******************************** Lib3d.h ********************************/
 
-#define BACKGROUND_COLOR LIGHTGRAY
+#define BACKGROUND_COLOR LIGHTBLUE
 #define BGCOLOR RAYWHITE
 
 #define GRIDCOLOR GRAY
@@ -91,10 +91,19 @@
 
 #define MAIN_MENU_X 1200
 #define MAIN_MENU_Y 800
+
 #define MAIN_BUTTON_FS 40
 #define MAIN_BUTTON_STROKE 4
-
 #define BUTTON_DELTA 30		// Espacement entre les boutons
+
+/********Constantes de montagnes ******/
+#define PERLIN_SIZE 100
+#define MOUNTAIN_MODEL_SIZE 1
+#define MOUNTAIN_MODEL_HEIGHT 1.5
+#define PERLIN_SCALE 0.8
+#define MOUNTAIN_MODEL_COLOR BLACK
+#define PERLIN_MODEL_SMOOTHING 3.0f
+
 
 
 
