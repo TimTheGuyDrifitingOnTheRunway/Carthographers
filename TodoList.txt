@@ -31,6 +31,7 @@ Ajout de fonction de dessin plus avancées comme dessiner un bouton ou un emplac
 Ajout d'un bouton pour : Ajouter un joueur, lancer la partie, quitter la partie
 Lorsqu'on ajoute un joueur, un menu d'ajout de joueur s'ouvre
 
+Ajout de fichiers UI.c et UI.h pour séparer le Jeu du Menu
 
 
 Fini par Tim (à Math d'effacer) : 

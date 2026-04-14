@@ -83,13 +83,18 @@
 
 #define MAX_NAME_LENGTH 20
 
-/******** Constantes du Menu ********/
-
-#define MENUX 800
-#define MENUY 600
-
-
 /******************************** GameManager.h ********************************/
 
 #define EXP_CARD_NUMBER 34
+
+/******************************** UI.h ********************************/
+
+#define MAIN_MENU_X 1200
+#define MAIN_MENU_Y 800
+#define MAIN_BUTTON_FS 40
+#define MAIN_BUTTON_STROKE 4
+
+#define BUTTON_DELTA 30		// Espacement entre les boutons
+
+
 
