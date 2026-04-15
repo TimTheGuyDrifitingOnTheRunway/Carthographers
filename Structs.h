@@ -137,3 +137,7 @@ typedef struct {
 }ModelList;
 
 
+typedef struct {
+    Image treeImage;
+    
+}Seed;

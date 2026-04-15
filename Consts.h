@@ -13,7 +13,7 @@
 
 
 /*OPTIONS DE DEBOGAGE */
-#define DEBUG_FORET// DEBUG_FORET : affiche la noisemap source de foret
+#define cc// DEBUG_FORET : affiche la noisemap source de foret
 
 /******************************** LibCartographie.h ********************************/
 
@@ -106,20 +106,28 @@
 #define MOUNTAIN_MODEL_COLOR BLACK
 #define PERLIN_MODEL_SMOOTHING 3.0f
 /****Constantes des forets ***************/
-#define FORET_SIZE 1000
-#define FORET_SCALE 20
-#define TREE_SIZE 0.0005f
-#define FOREST_TRESHOLD 0.4f
-#define TREE_DIVIDER 10
 
+#define FORET_SIZE 1000
+#define FORET_SCALE 60
+#define TREE_SIZE 0.025f
+#define FOREST_TRESHOLD 0.45f
+#define TREE_DIVIDER 7
+#define  TREE_Y_OFSET 0.55f
+
+#define BUSH_TRESHOLD 0.66f
 #define BUSH_SIZE 0.05f
 #define  GREEN_POWER 1 // puissance du vert pour faire plus de variation dans les couleurs des arbres, à ajuster en fonction de la noisemap de foret générée
 #define GREEN_OFSET 0.3f // offset du vert pour éviter d'avoir des arbres trop sombre, à ajuster en fonction de la noisemap de foret générée
 
 
+#define WATER_OFSET 0.5f
+#define WATER_POWER 1
+#define WATER_GREEN_FACTOR 0.7f
+#define WATER_RED_FACTOR 0.3f
+
 
 
 /**********Chemin des models 3d **************/
 
-#define PATH_TO_TREE_MODEL "assets/tree2.obj"
+#define PATH_TO_TREE_MODEL "assets/tree.obj"
 #define PATH_TO_BUSH_MODEL "assets/bush.obj"
