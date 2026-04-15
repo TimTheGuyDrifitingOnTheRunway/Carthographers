@@ -85,10 +85,18 @@
 
 #define MAX_NAME_LENGTH 20
 
-/******** Constantes du Menu ********/
+/******************************** GameManager.h ********************************/
 
-#define MENUX 800
-#define MENUY 600
+#define EXP_CARD_NUMBER 34
+
+/******************************** UI.h ********************************/
+
+#define MAIN_MENU_X 1200
+#define MAIN_MENU_Y 800
+
+#define MAIN_BUTTON_FS 40
+#define MAIN_BUTTON_STROKE 4
+#define BUTTON_DELTA 30		// Espacement entre les boutons
 
 /********Constantes de montagnes ******/
 #define PERLIN_SIZE 100
@@ -109,9 +117,7 @@
 #define GREEN_OFSET 0.3f // offset du vert pour éviter d'avoir des arbres trop sombre, à ajuster en fonction de la noisemap de foret générée
 
 
-/******************************** GameManager.h ********************************/
 
-#define EXP_CARD_NUMBER 34
 
 /**********Chemin des models 3d **************/
 

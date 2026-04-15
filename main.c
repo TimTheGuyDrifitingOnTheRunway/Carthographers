@@ -3,6 +3,7 @@
 #include "LibCarthographie.h"
 #include "Lib3d.h"
 #include "GameManager.h"
+#include "UI.h"
 
 void sort_players_by_score(GameState* gs);
 
@@ -49,7 +50,7 @@ int main()
 	printf("\n\n\n\n\n\n Debug 4 \n\n\n\n\n\n");
 	GameState gs = { 0 };
 	//gs.playerNumber = 5;
-	bool start = DisplayMenu(&gs);
+	bool start = RunMenu(&gs);
 
 	printf("\nstart = %d", start);
 

@@ -2,6 +2,7 @@
 
 #include "Data.h"
 #include "LibCarthographie.h"
+#include "UI.h"
 
 
 
@@ -19,25 +20,8 @@ void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera);
 void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state, int score, Camera3D camera, Model mountain[NOMBREMONTAGNE], Position mountainPos[NOMBREMONTAGNE], Image treeImage, ModelList models);
 void ApplyPlacement(FeuilleCarte f, PlacementState* state, int* coinCount);
 
-bool DisplayMenu(GameState* gs);
-bool AddPlayer(GameState* gs);
 
 /** Fonctions utilitaires UI **/
-void DrawButton(Button* btn);
-
-void UpdateInputBox(InputBox* box);
-bool IsCharAllowed(char c);
-void DrawFullInputBoxEx(InputBox* box, int stroke, Color bkgColor, Color strokeColor);
-
-
-void DrawStrokeTextEx(const char* text, int x, int y, int fontSize, Color textColor, Color strokeColor, int thickness);
-void DrawStrokeText(const char* text, int x, int y, int fontSize, Color textColor, Color strokeColor);
-void DrawRectangleRoundedStrokeEx(Rectangle rec, float roundness, int segments, float lineThick, Color rectColor, Color strokeColor);
-void DrawRectangleRoundedStroke(Rectangle rec, float roundness, int segments, Color rectColor, Color strokeColor);
-void DrawRectangleStroke(Rectangle rec, float lineThick, Color rectColor, Color strokeColor);
-
-Color multiplyColor(Color color, float factor);
-
 
 
 /*OPERATIONS vecteurs*/
