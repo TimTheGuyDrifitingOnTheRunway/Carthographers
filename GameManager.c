@@ -201,28 +201,32 @@ void InitScoringCards(GameState* gs) {
 
 void StartGame(GameState* gs, Camera3D camera) {
 	printf("\n\n\n\nLancement du jeu !\n\n\n\n");
-	Season(gs, camera);
+	ModelList models = loadModels();
+	Season(gs, camera, models);
 }
 
 // Saisons
-void Season(GameState* gs, Camera3D camera) {
+void Season(GameState* gs, Camera3D camera, ModelList models) {
 	Model mountains[NOMBREMONTAGNE];
 	int mountainSeed[2] = { randInt(0, 100), randInt(0, 100) };
+	Image treeImage = generateForestImage(mountainSeed[0] * 10, mountainSeed[1] * 10);
 
 	gs->currentTime = 0;
 	int index = 0;
 	int isRuin = 0;
 	while (gs->currentTime < seasons[gs->currentSeason]->maxTime) {
-		const ExploreCard* card = Turn(gs, &index, &isRuin, camera, mountainSeed);
+		const ExploreCard* card = Turn(gs, &index, &isRuin, camera, mountainSeed, models, treeImage);
 		gs->currentTime += card->time;
 	}
-	NextSeason(gs, camera);
+	NextSeason(gs, camera, models);
 }
 
 
 
-void NextSeason(GameState *gs, Camera3D camera) {
+void NextSeason(GameState *gs, Camera3D camera, ModelList models) {
 	InitDeck(gs);
+	
+
 	// calculs des points
 	for (int p = 0; p < gs->playerNumber; p++) {
 		PlayerState* ps = &gs->players[p];
@@ -237,22 +241,25 @@ void NextSeason(GameState *gs, Camera3D camera) {
 		int pts = p1 + p2 + ps->coinCount - Epts;
 		ps->score += pts;
 		printf("\nPoints cette saison : %d\nPoints totaux : %d\n\n", pts, ps->score);
+
 	}
 
-	if (++gs->currentSeason < 4) Season(gs, camera);
+	if (++gs->currentSeason < 4) Season(gs, camera, models);
 }
 
 // Tour de jeu
-const ExploreCard* Turn(GameState* gs, int* index, int* isRuin, Camera3D camera, int mountainSeed[2]) {
+const ExploreCard* Turn(GameState* gs, int* index, int* isRuin, Camera3D camera, int mountainSeed[2], ModelList models, Image treeImage) {
 	const ExploreCard* card = NextExploreCard(gs, index, isRuin);
 
 	for (int p = 0; p < gs->playerNumber; p++) {
 		gs->playerIndex = p;
 		PlayerState* ps = &gs->players[p];
 		Model mountains[NOMBREMONTAGNE];
+		
+		
 		generateMountainsModels(mountains, gs->players[(p + card->rotation + gs->playerNumber) % gs->playerNumber].map, mountainSeed);
 		printf("--- Tour de %s %d/%d---\n", ps->name, p + 1, gs->playerNumber);
-		GUIPlacementCard(gs, gs->players[(p + card->rotation + gs->playerNumber) % gs->playerNumber].map, card, ps->score, (*isRuin && !card->isEnemy), &ps->coinCount, camera, mountains);	// p + card->rotation + gs->playerNumber car -1 % playerNumber renvoie -1
+		GUIPlacementCard(gs, gs->players[(p + card->rotation + gs->playerNumber) % gs->playerNumber].map, card, ps->score, (*isRuin && !card->isEnemy), &ps->coinCount, camera, mountains, treeImage, models);	// p + card->rotation + gs->playerNumber car -1 % playerNumber renvoie -1
 	}
 
 	if (card->isEnemy) gs->deckSize--;

@@ -131,4 +131,9 @@ typedef struct {
 
 
 
+typedef struct {
+    Model tree;
+    Model buisson;
+}ModelList;
+
 
