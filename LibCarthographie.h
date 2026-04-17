@@ -56,7 +56,7 @@ int drawShape(FeuilleCarte f, Piece piec, Position pos, int rotation, int materi
 int placementU(FeuilleCarte f, int material);//DEPRECIée
 int placementDefault(FeuilleCarte f, int material);
 
-int placementShape(FeuilleCarte f, Piece shape, int material);//SP à utiliser pour placer une forme sur une feuilleCarte
+int placementShape(FeuilleCarte f, const Piece shape, int material);//SP à utiliser pour placer une forme sur une feuilleCarte
 
 
 

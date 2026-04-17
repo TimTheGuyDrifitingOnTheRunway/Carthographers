@@ -1,0 +1,54 @@
+# depslib dependency file v1.0
+1776433386 source:e:\pc\documents\carthographers\gamemanager.c
+	"GameManager.h"
+
+1776433386 e:\pc\documents\carthographers\gamemanager.h
+	"Data.h"
+	"LibCarthographie.h"
+	"Lib3d.h"
+	"UI.h"
+
+1776433386 e:\pc\documents\carthographers\data.h
+	"Structs.h"
+
+1776433386 e:\pc\documents\carthographers\structs.h
+	"Consts.h"
+
+1776436490 e:\pc\documents\carthographers\consts.h
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+	<math.h>
+	<string.h>
+	<raylib.h>
+
+1776434874 e:\pc\documents\carthographers\external\raylib\include\raylib.h
+	<stdarg.h>
+	<stdbool.h>
+
+1776435559 e:\pc\documents\carthographers\libcarthographie.h
+	"Data.h"
+
+1776433386 e:\pc\documents\carthographers\lib3d.h
+	"Data.h"
+	"LibCarthographie.h"
+	"UI.h"
+
+1776433386 e:\pc\documents\carthographers\ui.h
+	"Data.h"
+
+1776433386 source:e:\pc\documents\carthographers\lib3d.c
+	"Lib3d.h"
+
+1776433386 source:e:\pc\documents\carthographers\ui.c
+	"UI.h"
+
+1776433386 source:e:\pc\documents\carthographers\libcarthographie.c
+	"LibCarthographie.h"
+
+1776433386 source:e:\pc\documents\carthographers\main.c
+	"LibCarthographie.h"
+	"Lib3d.h"
+	"GameManager.h"
+	"UI.h"
+

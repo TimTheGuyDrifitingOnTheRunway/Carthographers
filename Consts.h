@@ -4,6 +4,10 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 
+#define max(a,b) ((a) > (b) ? (a) : (b))
+#define min(a,b) ((a) < (b) ? (a) : (b))
+#define Sleep _sleep
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -129,5 +133,5 @@
 
 /**********Chemin des models 3d **************/
 
-#define PATH_TO_TREE_MODEL "assets/tree.obj"
-#define PATH_TO_BUSH_MODEL "assets/bush.obj"
+#define PATH_TO_TREE_MODEL "Assets/tree.obj"
+#define PATH_TO_BUSH_MODEL "Assets/bush.obj"
