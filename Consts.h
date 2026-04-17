@@ -4,10 +4,16 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 
+//alias et definitions pour code:blocks
+
+#ifndef max
 #define max(a,b) ((a) > (b) ? (a) : (b))
 #define min(a,b) ((a) < (b) ? (a) : (b))
-#define Sleep _sleep
+#endif // max
+#define Sleep _sleep // codeblock ne reconnais pas sleep parce que code:blocks
 
+
+/********************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
