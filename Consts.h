@@ -52,7 +52,7 @@
 
 /******************************** Lib3d.h ********************************/
 
-#define BACKGROUND_COLOR LIGHTBLUE
+#define BACKGROUND_COLOR SKYBLUE
 #define BGCOLOR (Color){40, 40, 40, 255}
 
 #define GRIDCOLOR GRAY
