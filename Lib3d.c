@@ -3,58 +3,15 @@
 
 /**************************************************Fontions jeux******************************************/
 
-void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Position moutainPos[NOMBREMONTAGNE], Seed s, ModelList models) {
-	Image treeImage = s.treeImage;
+void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Position moutainPos[NOMBREMONTAGNE]) {
 	int nb = 0;
-
-    //rendu de skybox:
-
-    rlDisableBackfaceCulling();
-                rlDisableDepthMask();
-                    DrawModel(models.skybox, (Vector3){0, 0, 0}, 1.0f, WHITE);
-                rlEnableBackfaceCulling();
-                rlEnableDepthMask();
-
-
+	
 	for (int i = 0; i < SIZE; i++) {
 		for (int j = 0; j < SIZE; j++) {
-
-#ifdef DEBUG_FORET
-			{
-				float x = i - (SIZE - 1) / 2.0f;
-				float z = j - (SIZE - 1) / 2.0f;
-				float y = -1;   // Half height so cube sits on grid
-				for (int k = 0; k < TREE_DIVIDER + 1; k++) for (int l = 0; l < TREE_DIVIDER + 1; l++) {
-
-					DrawCube((Vector3) { x - 0.5f + (float)k / TREE_DIVIDER, y + 0.9, z - 0.5 + (float)l / TREE_DIVIDER }, 0.1f, 0.1, 0.1f, GetImageColor(treeImage, j * 10 + l, i * 10 + k));
-				}
-			}
-#else // DEBUG_FORET
-
-//couleur du fond de carte
-			{
-				float x = i - (SIZE - 1) / 2.0f;
-				float z = j - (SIZE - 1) / 2.0f;
-				float y = -1;
-				for (int k = 0; k < TREE_DIVIDER + 1; k++) for (int l = 0; l < TREE_DIVIDER + 1; l++) {
-					float lum = ColorToHSV(GetImageColor(treeImage, j * 10 + l, i * 10 + k)).z;
-					unsigned char blue = (pow((lum), WATER_POWER) + WATER_OFSET) * 255 > 254 ? 254 : ((pow((lum), WATER_POWER) + WATER_OFSET) * 255 < 50) ? 50 : (pow((lum), WATER_POWER) + WATER_OFSET) * 255;
-
-					Color c = (Color){ blue * WATER_RED_FACTOR, blue * WATER_GREEN_FACTOR, blue, 255 };
-					DrawCube((Vector3) { x - 0.5f + (float)k / TREE_DIVIDER, y + 0.9 + lum / 2, z - 0.5 + (float)l / TREE_DIVIDER }, 0.1f, 0.5 * lum, 0.1f, c);
-				}
-			}
-#endif
-
-
-
 			if (temp[i][j] >= RUINE) {
 				float x = i - (SIZE - 1) / 2.0f;
 				float z = j - (SIZE - 1) / 2.0f;
 				float y = -0.5f;   // Half height so cube is under the grid
-
-
-
 				DrawCube((Vector3) { x, y, z }, 1.0f, 1.0f, 1.0f, DARKGRAY);
 				DrawCubeWires((Vector3) { x, y, z }, 1.0f, 1.0f, 1.0f, BLACK);
 			}
@@ -63,8 +20,8 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 				float z = j - (SIZE - 1) / 2.0f;
 				float y = 0.5;   // Half height so cube sits on grid
 				if (temp[i][j] != f[i][j]) y = PLACEMENT_HEIGHT; // Raise cube if it's part of the shape being placed
-
-
+				
+				
 				Color color;
 				switch (getMaterialAtPos(temp, (Position) { i, j })) {
 				case EAU:
@@ -72,26 +29,6 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 					break;
 				case FORET:
 					color = GREEN;
-					for (int k = 0; k < TREE_DIVIDER + 1; k++) for (int l = 0; l < TREE_DIVIDER + 1; l++) {
-						Vector3 color;
-						color = ColorToHSV(GetImageColor(treeImage, j * 10 + l, i * 10 + k));
-
-
-						unsigned char green = (pow((color.z), GREEN_POWER) + GREEN_OFSET) * 255 > 254 ? 254 : ((pow((color.z), GREEN_POWER) + GREEN_OFSET) * 255 < 50) ? 50 : (pow((color.z), GREEN_POWER) + GREEN_OFSET) * 255;
-						Color c = (Color){ (unsigned char)20, green, (unsigned char)10, 255 };//couleur de base pour les arbres
-						Color c2 = (Color){ (unsigned char)150, green, (unsigned char)10, 255 };//couleur de base pour les arbres
-						Color c3 = (Color){ green, green * 0.8f ,(unsigned char)50 , 255 };//couleur de base pour les arbres
-
-
-
-						//choix du type de model à dessiner
-						if (color.z < FOREST_TRESHOLD) DrawModelEx(models.tree, (Vector3) { x - 0.5f + (float)k / TREE_DIVIDER, y + TREE_Y_OFSET, z - 0.5 + (float)l / TREE_DIVIDER }, (Vector3) { 1, 0, 0 }, 0, (Vector3) { TREE_SIZE, TREE_SIZE, TREE_SIZE }, c2);
-
-						else if ((color.z > FOREST_TRESHOLD) && color.z < BUSH_TRESHOLD) DrawModelEx(models.buisson, (Vector3) { x - 0.5f + (float)k / TREE_DIVIDER, y + 0.5, z - 0.5 + (float)l / TREE_DIVIDER }, (Vector3) { 1, 0, 0 }, 0, (Vector3) { BUSH_SIZE, BUSH_SIZE, BUSH_SIZE }, c);
-
-						else DrawModelEx(models.buisson, (Vector3) { x - 0.5f + (float)k / TREE_DIVIDER, y + 0.5, z - 0.5 + (float)l / TREE_DIVIDER }, (Vector3) { 1, 0, 0 }, 0, (Vector3) { BUSH_SIZE, BUSH_SIZE * 1.2f, BUSH_SIZE }, c3);
-
-					}
 					break;
 				case VILLAGE:
 					color = BROWN;
@@ -101,7 +38,7 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 					break;
 				case MONTAGNE:
 					color = GRAY;
-					DrawModel(mountains[nb], (Vector3) { x - 0.5, 0.5f + y, z - 0.5 }, 1, GRAY);
+					DrawModel(mountains[nb], (Vector3) { x - 0.5, 0.5f+y, z - 0.5 }, 1, GRAY);
 					nb++;
 					break;
 				case MONSTRE:
@@ -110,9 +47,9 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 				case CONFLICTVALUE:
 					color = RED;
 					for (int k = 0; k < NOMBREMONTAGNE; k++) {
-						if (moutainPos[k].x == i && moutainPos[k].y == j) {
+						if(moutainPos[k].x == i && moutainPos[k].y == j){
 							nb++;//avance le compte montagne si collision avec une montagne pour ne pas faire spawn une montagne sur une autre
-
+							
 						}
 					}
 					break;
@@ -127,7 +64,7 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 }
 
 
-int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D camera, Model mountains[NOMBREMONTAGNE], Seed s, ModelList models) {
+int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D camera, Model mountains[NOMBREMONTAGNE]) {
 	if (checkShape(f, shape)) {
 		Piece shapeCopy;
 		copyPiece(*shape, shapeCopy);
@@ -150,7 +87,7 @@ int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D
 			BeginDrawing(); // Début de l'affichage
 			ClearBackground(RAYWHITE);
 			BeginMode3D(camera);
-			GUIDrawFeuille(f, temp, mountains, mountainPos, s, models);
+			GUIDrawFeuille(f, temp, mountains, mountainPos);
 
 			for (int i = 0; i < SIZE; i++)
 				for (int j = 0; j < SIZE; j++)
@@ -158,7 +95,6 @@ int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D
 						DrawCubeWires((Vector3) { (float)i - SIZE / 2, PLACEMENT_HEIGHT, (float)j - SIZE / 2 }, 1.0f, 1.0f, 1.0f, BORDERCOLOR);
 
 			GUIdrawGrille();
-
 			// DrawMapGrid(SIZE, 1.0f);
 			EndMode3D();
 			EndDrawing(); // Fin de l'affichage
@@ -194,21 +130,23 @@ int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D
 	}
 	else {
 		printf("IL n'y a pas la place pour rentrer votre piece \n");
-		return GUIplacementDefault(f, material, camera, mountains, s, models);
+		return GUIplacementDefault(f, material, camera, mountains);
 	}
 }
 
 
 
 int GUIPlacementCard(GameState* gs, FeuilleCarte f, const ExploreCard* card,
-	int score, int isRuin, int* coinCount, Camera3D camera, Model mountains[NOMBREMONTAGNE], Seed s, ModelList models) {
+	int score, int isRuin, int* coinCount, Camera3D camera, Model mountains[NOMBREMONTAGNE]) {
 
 	// Vérification placabilité
 	int canFitA = isRuin ? checkShapeOnRuin(f, card->pieceA) : checkShape(f, card->pieceA);
-	int canFitB = card->pieceB ? (isRuin ? checkShapeOnRuin(f, card->pieceB) : checkShape(f, card->pieceB)) : 0;
+	int canFitB = card->pieceB
+		? (isRuin ? checkShapeOnRuin(f, card->pieceB) : checkShape(f, card->pieceB))
+		: 0;
 
 	if (!canFitA && !canFitB)
-		return GUIplacementDefaultCard(gs, f, card, score, 0, coinCount, camera, mountains, s, models);
+		return GUIplacementDefaultCard(gs, f, card, score, 0, coinCount, camera, mountains);
 
 	// Init état
 	PlacementState state = { 0 };
@@ -227,7 +165,7 @@ int GUIPlacementCard(GameState* gs, FeuilleCarte f, const ExploreCard* card,
 	// Boucle principale — logique et rendu séparés
 	while (state.status == 0 && !WindowShouldClose()) {
 		UpdatePlacement(f, &state, camera);
-		RenderPlacement(gs, f, &state, score, camera, mountains, mountainPos, s, models);
+		RenderPlacement(gs, f, &state, score, camera, mountains, mountainPos);
 		GUIUpdateCustomCamera(&camera);
 		camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
 	}
@@ -300,7 +238,7 @@ void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera) {
 		state->status = 1;
 }
 
-void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state, int score, Camera3D camera, Model mountain[NOMBREMONTAGNE], Position mountainPos[NOMBREMONTAGNE], Seed s, ModelList models) {
+void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state, int score, Camera3D camera, Model mountain[NOMBREMONTAGNE], Position mountainPos[NOMBREMONTAGNE]) {
 	int midX = GetScreenWidth() / 2;
 	int midY = GetScreenHeight() / 2;
 
@@ -309,12 +247,10 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 
 	BeginDrawing();
 	ClearBackground(BACKGROUND_COLOR);
-
-
 	BeginMode3D(camera);
+	
 
-
-	GUIDrawFeuille(f, state->temp, mountain, mountainPos, s, models);
+	GUIDrawFeuille(f, state->temp, mountain, mountainPos);
 
 	for (int i = 0; i < SIZE; i++)
 		for (int j = 0; j < SIZE; j++)
@@ -322,7 +258,7 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 				DrawCubeWires((Vector3) { (float)i - SIZE / 2, PLACEMENT_HEIGHT, (float)j - SIZE / 2 }, 1.0f, 1.0f, 1.0f, BORDERCOLOR);
 
 
-
+	
 
 	GUIdrawGrille();
 	EndMode3D();
@@ -380,19 +316,19 @@ void DrawMapGrid(int slices, float spacing) {
 	}
 }
 
-int GUIplacementDefault(FeuilleCarte f, int  material, Camera3D camera, Model mountains[NOMBREMONTAGNE], Seed s, ModelList models) {
+int GUIplacementDefault(FeuilleCarte f, int  material, Camera3D camera, Model mountains[NOMBREMONTAGNE]) {
 	if (getEmptySpots(f) == 0) return 0;
-	GUIplacementShape(f, POINT, material, camera, mountains, s, models);
+	GUIplacementShape(f, POINT, material, camera, mountains);
 	return 1;
 }
 
-int GUIplacementDefaultCard(GameState* gs, FeuilleCarte f, const ExploreCard* card, int score, int isRuin, int* coinCount, Camera3D camera, Model mountains[NOMBREMONTAGNE], Seed s, ModelList models) {
+int GUIplacementDefaultCard(GameState* gs, FeuilleCarte f, const ExploreCard* card, int score, int isRuin, int* coinCount, Camera3D camera, Model mountains[NOMBREMONTAGNE]) {
 	if (getEmptySpots(f) == 0) return 0;
 	ExploreCard def = *card;
 	def.pieceA = &POINT;
 	def.iscoinA = 0;
 
-	GUIPlacementCard(gs, f, &def, score, isRuin, coinCount, camera, mountains, s, models);
+	GUIPlacementCard(gs, f, &def, score, isRuin, coinCount, camera, mountains);
 	return 1;
 }
 
@@ -479,13 +415,13 @@ void multiplyVector(Vector3* vector, double a) {
 }
 
 
-/*****************génération de heighmap et models ***/
+/*****************génération de heighmap ***/ 
 
 
 Model generateMountain(int x, int y) {
-	// pour éviter d'avoir toujours la même montagne au lancement du jeu
-	Image perlinNoise = GenImagePerlinNoise(PERLIN_SIZE, PERLIN_SIZE, x * 100, y * 100, PERLIN_SCALE);
-
+	 // pour éviter d'avoir toujours la même montagne au lancement du jeu
+	Image perlinNoise = GenImagePerlinNoise(PERLIN_SIZE, PERLIN_SIZE, x*100 , y*100 , PERLIN_SCALE);
+	
 
 	for (int y = 0; y < PERLIN_SIZE; y++) {// fallof pour avoir des bords smooths
 		for (int x = 0; x < PERLIN_SIZE; x++) {
@@ -508,12 +444,12 @@ Model generateMountain(int x, int y) {
 			ImageDrawPixel(&perlinNoise, x, y, (Color) { h, h, h, 255 });
 		}
 	}
-
+	
 
 	ImageDrawLineV(&perlinNoise, (Vector2) { 0, 0 }, (Vector2) { 0, PERLIN_SIZE }, MOUNTAIN_MODEL_COLOR);
-	ImageDrawLineV(&perlinNoise, (Vector2) { PERLIN_SIZE - 1, 0 }, (Vector2) { PERLIN_SIZE - 1, PERLIN_SIZE }, MOUNTAIN_MODEL_COLOR);// bordure noire pour éviter les artefacts de texture sur les bords du modèle
-	ImageDrawLineV(&perlinNoise, (Vector2) { 0, 0 }, (Vector2) { PERLIN_SIZE, 0 }, MOUNTAIN_MODEL_COLOR);
-	ImageDrawLineV(&perlinNoise, (Vector2) { 0, PERLIN_SIZE - 1 }, (Vector2) { PERLIN_SIZE, PERLIN_SIZE - 1 }, MOUNTAIN_MODEL_COLOR);
+	ImageDrawLineV(&perlinNoise, (Vector2) { PERLIN_SIZE-1, 0 }, (Vector2) { PERLIN_SIZE-1, PERLIN_SIZE }, MOUNTAIN_MODEL_COLOR);// bordure noire pour éviter les artefacts de texture sur les bords du modèle
+	ImageDrawLineV(&perlinNoise, (Vector2) { 0, 0 }, (Vector2) { PERLIN_SIZE, 0}, MOUNTAIN_MODEL_COLOR);
+	ImageDrawLineV(&perlinNoise, (Vector2) { 0, PERLIN_SIZE-1 }, (Vector2) { PERLIN_SIZE, PERLIN_SIZE-1 }, MOUNTAIN_MODEL_COLOR);
 
 	Mesh mesh = GenMeshHeightmap(perlinNoise, (Vector3) { MOUNTAIN_MODEL_SIZE, MOUNTAIN_MODEL_HEIGHT, MOUNTAIN_MODEL_SIZE }); // Generate heightmap mesh (RAM and VRAM)
 	Model model = LoadModelFromMesh(mesh);
@@ -523,9 +459,9 @@ Model generateMountain(int x, int y) {
 	Texture2D texture = LoadTextureFromImage(perlinNoise);
 
 
+	
 
-
-	// Load model from generated mesh
+	                // Load model from generated mesh
 
 	model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture; // Set map diffuse texture          // Define model position
 
@@ -537,173 +473,8 @@ Model generateMountain(int x, int y) {
 }
 
 void generateMountainsModels(Model mountains[NOMBREMONTAGNE], FeuilleCarte f, int mountainSeed[2]) {
-	Position* pos = getPositionsOfMaterial(f, MONTAGNE);
-	for (int i = 0; i < NOMBREMONTAGNE; i++) {
-		mountains[i] = generateMountain(pos[i].x + mountainSeed[1], pos[i].y + mountainSeed[0]);
+	Position *pos = getPositionsOfMaterial(f, MONTAGNE);
+	for ( int i=0; i<NOMBREMONTAGNE; i++){
+		mountains[i] = generateMountain(pos[i].x+mountainSeed[1], pos[i].y+mountainSeed[0]);
 	}
-}
-
-Image generateForestImage(int x, int y) {
-	Image perlinNoise = GenImagePerlinNoise(FORET_SIZE, FORET_SIZE, x * 100, y * 100, FORET_SCALE);
-
-	return perlinNoise;
-
-}
-
-
-
-ModelList loadModels() {
-	ModelList models;
-	printf("Loading models \n");
-	models.tree = LoadModel(PATH_TO_TREE_MODEL);
-	models.buisson = LoadModel(PATH_TO_BUSH_MODEL);
-	models.skybox = loadSkybox(false);
-	//Texture2D texture = LoadTexture("resources/models/iqm/guytex.png");         // Load model texture and set material
-	//SetMaterialTexture(&(models.tree).materials[0], MATERIAL_MAP_DIFFUSE, texture);
-	return models;
-}
-
-
-Model loadSkybox(bool useHDR){
- Mesh cube = GenMeshCube(1.0f, 1.0f, 1.0f);
-    Model skybox = LoadModelFromMesh(cube);
-
-    // Set this to true to use an HDR Texture
-    // NOTE: raylib must be built with HDR Support for this to work: SUPPORT_FILEFORMAT_HDR
-
-
-    // Load skybox shader and set required locations
-    // NOTE: Some locations are automatically set at shader loading
-    skybox.materials[0].shader = LoadShader(TextFormat(SKYBOX_SHADER_PATH, GLSL_VERSION),
-                                            TextFormat(SKYBOX_SHADER_PATH2, GLSL_VERSION));
-
-                                            #define SKYBOX_SHADER_PATH "Assets/shaders/glsl%i/skybox.vs"
-                                            #define SKYBOX_SHADER_PATH2 "Assets/shaders/glsl%i/skybox.fs"
-                                            #define SKYBOX_CUBEMAP_SHADER_PATH "Assets/shaders/glsl%i/cubemap.vs"
-                                            #define SKYBOX_CUBEMAP_SHADER_PATH "Assets/shaders/glsl%i/cubemap.fs"
-
-    SetShaderValue(skybox.materials[0].shader, GetShaderLocation(skybox.materials[0].shader, "environmentMap"), (int[1]){ MATERIAL_MAP_CUBEMAP }, SHADER_UNIFORM_INT);
-    SetShaderValue(skybox.materials[0].shader, GetShaderLocation(skybox.materials[0].shader, "doGamma"), (int[1]){ useHDR? 1 : 0 }, SHADER_UNIFORM_INT);
-    SetShaderValue(skybox.materials[0].shader, GetShaderLocation(skybox.materials[0].shader, "vflipped"), (int[1]){ useHDR? 1 : 0 }, SHADER_UNIFORM_INT);
-
-    // Load cubemap shader and setup required shader locations
-    Shader shdrCubemap = LoadShader(TextFormat(SKYBOX_CUBEMAP_SHADER_PATH, GLSL_VERSION),
-                                    TextFormat( SKYBOX_CUBEMAP_SHADER_PATH, GLSL_VERSION));
-
-    SetShaderValue(shdrCubemap, GetShaderLocation(shdrCubemap, "equirectangularMap"), (int[1]){ 0 }, SHADER_UNIFORM_INT);
-
-    char skyboxFileName[256] = { 0 };
-
-    if (useHDR)
-    {
-        TextCopy(skyboxFileName, PATH_TO_HDR_SKYBOX);
-
-        // Load HDR panorama (sphere) texture
-        Texture2D panorama = LoadTexture(skyboxFileName);
-
-        // Generate cubemap (texture with 6 quads-cube-mapping) from panorama HDR texture
-        // NOTE 1: New texture is generated rendering to texture, shader calculates the sphere->cube coordinates mapping
-        // NOTE 2: It seems on some Android devices WebGL, fbo does not properly support a FLOAT-based attachment,
-        // despite texture can be successfully created.. so using PIXELFORMAT_UNCOMPRESSED_R8G8B8A8 instead of PIXELFORMAT_UNCOMPRESSED_R32G32B32A32
-        skybox.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture = GenTextureCubemap(shdrCubemap, panorama, 1024, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
-
-        UnloadTexture(panorama);        // Texture not required anymore, cubemap already generated
-    }
-    else
-    {
-
-        Image image = LoadImage(PATH_TO_SKYBOX);
-        skybox.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture = LoadTextureCubemap(image, CUBEMAP_LAYOUT_AUTO_DETECT);
-        UnloadImage(image);
-    }
-    return skybox;
-}
-
-
-static TextureCubemap GenTextureCubemap(Shader shader, Texture2D panorama, int size, int format)//fonctions du tuto raylib
-{
-    TextureCubemap cubemap = { 0 };
-
-    rlDisableBackfaceCulling();     // Disable backface culling to render inside the cube
-
-    // STEP 1: Setup framebuffer
-    //------------------------------------------------------------------------------------------
-    unsigned int rbo = rlLoadTextureDepth(size, size, true);
-    cubemap.id = rlLoadTextureCubemap(0, size, format, 1);
-
-    unsigned int fbo = rlLoadFramebuffer();
-    rlFramebufferAttach(fbo, rbo, RL_ATTACHMENT_DEPTH, RL_ATTACHMENT_RENDERBUFFER, 0);
-    rlFramebufferAttach(fbo, cubemap.id, RL_ATTACHMENT_COLOR_CHANNEL0, RL_ATTACHMENT_CUBEMAP_POSITIVE_X, 0);
-
-    // Check if framebuffer is complete with attachments (valid)
-    if (rlFramebufferComplete(fbo)) TraceLog(LOG_INFO, "FBO: [ID %i] Framebuffer object created successfully", fbo);
-    //------------------------------------------------------------------------------------------
-
-    // STEP 2: Draw to framebuffer
-    //------------------------------------------------------------------------------------------
-    // NOTE: Shader is used to convert HDR equirectangular environment map to cubemap equivalent (6 faces)
-    rlEnableShader(shader.id);
-
-    // Define projection matrix and send it to shader
-    Matrix matFboProjection = MatrixPerspective(90.0*DEG2RAD, 1.0, rlGetCullDistanceNear(), rlGetCullDistanceFar());
-    rlSetUniformMatrix(shader.locs[SHADER_LOC_MATRIX_PROJECTION], matFboProjection);
-
-    // Define view matrix for every side of the cubemap
-    Matrix fboViews[6] = {
-        MatrixLookAt((Vector3){ 0.0f, 0.0f, 0.0f }, (Vector3){  1.0f,  0.0f,  0.0f }, (Vector3){ 0.0f, -1.0f,  0.0f }),
-        MatrixLookAt((Vector3){ 0.0f, 0.0f, 0.0f }, (Vector3){ -1.0f,  0.0f,  0.0f }, (Vector3){ 0.0f, -1.0f,  0.0f }),
-        MatrixLookAt((Vector3){ 0.0f, 0.0f, 0.0f }, (Vector3){  0.0f,  1.0f,  0.0f }, (Vector3){ 0.0f,  0.0f,  1.0f }),
-        MatrixLookAt((Vector3){ 0.0f, 0.0f, 0.0f }, (Vector3){  0.0f, -1.0f,  0.0f }, (Vector3){ 0.0f,  0.0f, -1.0f }),
-        MatrixLookAt((Vector3){ 0.0f, 0.0f, 0.0f }, (Vector3){  0.0f,  0.0f,  1.0f }, (Vector3){ 0.0f, -1.0f,  0.0f }),
-        MatrixLookAt((Vector3){ 0.0f, 0.0f, 0.0f }, (Vector3){  0.0f,  0.0f, -1.0f }, (Vector3){ 0.0f, -1.0f,  0.0f })
-    };
-
-    rlViewport(0, 0, size, size);   // Set viewport to current fbo dimensions
-
-    // Activate and enable texture for drawing to cubemap faces
-    rlActiveTextureSlot(0);
-    rlEnableTexture(panorama.id);
-
-    for (int i = 0; i < 6; i++)
-    {
-        // Set the view matrix for the current cube face
-        rlSetUniformMatrix(shader.locs[SHADER_LOC_MATRIX_VIEW], fboViews[i]);
-
-        // Select the current cubemap face attachment for the fbo
-        // WARNING: This function by default enables->attach->disables fbo!!!
-        rlFramebufferAttach(fbo, cubemap.id, RL_ATTACHMENT_COLOR_CHANNEL0, RL_ATTACHMENT_CUBEMAP_POSITIVE_X + i, 0);
-        rlEnableFramebuffer(fbo);
-
-        // Load and draw a cube, it uses the current enabled texture
-        rlClearScreenBuffers();
-        rlLoadDrawCube();
-
-        // ALTERNATIVE: Try to use internal batch system to draw the cube instead of rlLoadDrawCube
-        // for some reason this method does not work, maybe due to cube triangles definition? normals pointing out?
-        // TODO: Investigate this issue...
-        //rlSetTexture(panorama.id); // WARNING: It must be called after enabling current framebuffer if using internal batch system!
-        //rlClearScreenBuffers();
-        //DrawCubeV(Vector3Zero(), Vector3One(), WHITE);
-        //rlDrawRenderBatchActive();
-    }
-    //------------------------------------------------------------------------------------------
-
-    // STEP 3: Unload framebuffer and reset state
-    //------------------------------------------------------------------------------------------
-    rlDisableShader();          // Unbind shader
-    rlDisableTexture();         // Unbind texture
-    rlDisableFramebuffer();     // Unbind framebuffer
-    rlUnloadFramebuffer(fbo);   // Unload framebuffer (and automatically attached depth texture/renderbuffer)
-
-    // Reset viewport dimensions to default
-    rlViewport(0, 0, rlGetFramebufferWidth(), rlGetFramebufferHeight());
-    rlEnableBackfaceCulling();
-    //------------------------------------------------------------------------------------------
-
-    cubemap.width = size;
-    cubemap.height = size;
-    cubemap.mipmaps = 1;
-    cubemap.format = format;
-
-    return cubemap;
 }
