@@ -4,12 +4,12 @@
 /**************************************************Fontions jeux******************************************/
 
 void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Position moutainPos[NOMBREMONTAGNE], Seed s, ModelList models) {
-	Image treeImage= s.treeImage;
+	Image treeImage = s.treeImage;
 	int nb = 0;
 
 
 
-	
+
 	for (int i = 0; i < SIZE; i++) {
 		for (int j = 0; j < SIZE; j++) {
 
@@ -18,7 +18,7 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 				float x = i - (SIZE - 1) / 2.0f;
 				float z = j - (SIZE - 1) / 2.0f;
 				float y = -1;   // Half height so cube sits on grid
-				for (int k = 0; k < TREE_DIVIDER+1; k++) for (int l = 0; l < TREE_DIVIDER+1; l++) {
+				for (int k = 0; k < TREE_DIVIDER + 1; k++) for (int l = 0; l < TREE_DIVIDER + 1; l++) {
 
 					DrawCube((Vector3) { x - 0.5f + (float)k / TREE_DIVIDER, y + 0.9, z - 0.5 + (float)l / TREE_DIVIDER }, 0.1f, 0.1, 0.1f, GetImageColor(treeImage, j * 10 + l, i * 10 + k));
 				}
@@ -26,24 +26,24 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 #else // DEBUG_FORET
 
 			{
-			float x = i - (SIZE - 1) / 2.0f;
-			float z = j - (SIZE - 1) / 2.0f;
-			float y = -1;
-			for (int k = 0; k < TREE_DIVIDER+1; k++) for (int l = 0; l < TREE_DIVIDER+1; l++) {
-			float lum = ColorToHSV(GetImageColor(treeImage, j * 10 + l, i * 10 + k)).z;
-			unsigned char blue = (pow((lum), WATER_POWER) + WATER_OFSET) * 255 > 254 ? 254 : ((pow((lum), WATER_POWER) + WATER_OFSET) * 255 < 50) ? 50 : (pow((lum), WATER_POWER) + WATER_OFSET) * 255;
+				float x = i - (SIZE - 1) / 2.0f;
+				float z = j - (SIZE - 1) / 2.0f;
+				float y = -1;
+				for (int k = 0; k < TREE_DIVIDER + 1; k++) for (int l = 0; l < TREE_DIVIDER + 1; l++) {
+					float lum = ColorToHSV(GetImageColor(treeImage, j * 10 + l, i * 10 + k)).z;
+					unsigned char blue = (pow((lum), WATER_POWER) + WATER_OFSET) * 255 > 254 ? 254 : ((pow((lum), WATER_POWER) + WATER_OFSET) * 255 < 50) ? 50 : (pow((lum), WATER_POWER) + WATER_OFSET) * 255;
 
-			Color c = (Color){ blue*WATER_RED_FACTOR, blue*WATER_GREEN_FACTOR, blue, 255 };
-			DrawCube((Vector3) { x - 0.5f + (float)k / TREE_DIVIDER, y + 0.9 + lum / 2, z - 0.5 + (float)l / TREE_DIVIDER }, 0.1f, 0.5 * lum, 0.1f, c);
-		}
-	}
+					Color c = (Color){ blue * WATER_RED_FACTOR, blue * WATER_GREEN_FACTOR, blue, 255 };
+					DrawCube((Vector3) { x - 0.5f + (float)k / TREE_DIVIDER, y + 0.9 + lum / 2, z - 0.5 + (float)l / TREE_DIVIDER }, 0.1f, 0.5 * lum, 0.1f, c);
+				}
+			}
 #endif
-		
+
 			if (temp[i][j] >= RUINE) {
 				float x = i - (SIZE - 1) / 2.0f;
 				float z = j - (SIZE - 1) / 2.0f;
 				float y = -0.5f;   // Half height so cube is under the grid
-				
+
 
 
 				DrawCube((Vector3) { x, y, z }, 1.0f, 1.0f, 1.0f, DARKGRAY);
@@ -54,8 +54,8 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 				float z = j - (SIZE - 1) / 2.0f;
 				float y = 0.5;   // Half height so cube sits on grid
 				if (temp[i][j] != f[i][j]) y = PLACEMENT_HEIGHT; // Raise cube if it's part of the shape being placed
-				
-				
+
+
 				Color color;
 				switch (getMaterialAtPos(temp, (Position) { i, j })) {
 				case EAU:
@@ -63,24 +63,24 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 					break;
 				case FORET:
 					color = GREEN;
-					for (int k = 0; k < TREE_DIVIDER+1; k++) for (int l = 0; l < TREE_DIVIDER+1; l++) {
+					for (int k = 0; k < TREE_DIVIDER + 1; k++) for (int l = 0; l < TREE_DIVIDER + 1; l++) {
 						Vector3 color;
-						color = ColorToHSV(GetImageColor(treeImage, j * 10 + l  , i * 10 + k ));
+						color = ColorToHSV(GetImageColor(treeImage, j * 10 + l, i * 10 + k));
 
 
 						unsigned char green = (pow((color.z), GREEN_POWER) + GREEN_OFSET) * 255 > 254 ? 254 : ((pow((color.z), GREEN_POWER) + GREEN_OFSET) * 255 < 50) ? 50 : (pow((color.z), GREEN_POWER) + GREEN_OFSET) * 255;
 						Color c = (Color){ (unsigned char)20, green, (unsigned char)10, 255 };//couleur de base pour les arbres
 						Color c2 = (Color){ (unsigned char)150, green, (unsigned char)10, 255 };//couleur de base pour les arbres
-						Color c3 = (Color){ green, green*0.8f ,(unsigned char)50 , 255 };//couleur de base pour les arbres
+						Color c3 = (Color){ green, green * 0.8f ,(unsigned char)50 , 255 };//couleur de base pour les arbres
 
 
 
 						//choix du type de model à dessiner
-						if (color.z < FOREST_TRESHOLD) DrawModelEx(models.tree, (Vector3) { x - 0.5f + (float)k / TREE_DIVIDER, y + TREE_Y_OFSET, z - 0.5 + (float)l / TREE_DIVIDER}, (Vector3) { 1, 0, 0 }, 0, (Vector3) { TREE_SIZE, TREE_SIZE, TREE_SIZE }, c2);
+						if (color.z < FOREST_TRESHOLD) DrawModelEx(models.tree, (Vector3) { x - 0.5f + (float)k / TREE_DIVIDER, y + TREE_Y_OFSET, z - 0.5 + (float)l / TREE_DIVIDER }, (Vector3) { 1, 0, 0 }, 0, (Vector3) { TREE_SIZE, TREE_SIZE, TREE_SIZE }, c2);
 
-						else if ((color.z > FOREST_TRESHOLD)&& color.z< BUSH_TRESHOLD) DrawModelEx(models.buisson, (Vector3) { x - 0.5f + (float)k / TREE_DIVIDER, y + 0.5, z - 0.5 + (float)l / TREE_DIVIDER }, (Vector3) { 1, 0, 0 }, 0, (Vector3) { BUSH_SIZE, BUSH_SIZE, BUSH_SIZE }, c);
+						else if ((color.z > FOREST_TRESHOLD) && color.z < BUSH_TRESHOLD) DrawModelEx(models.buisson, (Vector3) { x - 0.5f + (float)k / TREE_DIVIDER, y + 0.5, z - 0.5 + (float)l / TREE_DIVIDER }, (Vector3) { 1, 0, 0 }, 0, (Vector3) { BUSH_SIZE, BUSH_SIZE, BUSH_SIZE }, c);
 
-						else DrawModelEx(models.buisson, (Vector3) { x - 0.5f + (float)k / TREE_DIVIDER, y + 0.5, z - 0.5 + (float)l / TREE_DIVIDER }, (Vector3) { 1, 0, 0 }, 0, (Vector3) { BUSH_SIZE, BUSH_SIZE*1.2f, BUSH_SIZE }, c3);
+						else DrawModelEx(models.buisson, (Vector3) { x - 0.5f + (float)k / TREE_DIVIDER, y + 0.5, z - 0.5 + (float)l / TREE_DIVIDER }, (Vector3) { 1, 0, 0 }, 0, (Vector3) { BUSH_SIZE, BUSH_SIZE * 1.2f, BUSH_SIZE }, c3);
 
 					}
 					break;
@@ -92,7 +92,7 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 					break;
 				case MONTAGNE:
 					color = GRAY;
-					DrawModel(mountains[nb], (Vector3) { x - 0.5, 0.5f+y, z - 0.5 }, 1, GRAY);
+					DrawModel(mountains[nb], (Vector3) { x - 0.5, 0.5f + y, z - 0.5 }, 1, GRAY);
 					nb++;
 					break;
 				case MONSTRE:
@@ -101,9 +101,9 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 				case CONFLICTVALUE:
 					color = RED;
 					for (int k = 0; k < NOMBREMONTAGNE; k++) {
-						if(moutainPos[k].x == i && moutainPos[k].y == j){
+						if (moutainPos[k].x == i && moutainPos[k].y == j) {
 							nb++;//avance le compte montagne si collision avec une montagne pour ne pas faire spawn une montagne sur une autre
-							
+
 						}
 					}
 					break;
@@ -149,7 +149,7 @@ int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D
 						DrawCubeWires((Vector3) { (float)i - SIZE / 2, PLACEMENT_HEIGHT, (float)j - SIZE / 2 }, 1.0f, 1.0f, 1.0f, BORDERCOLOR);
 
 			GUIdrawGrille();
-			
+
 			// DrawMapGrid(SIZE, 1.0f);
 			EndMode3D();
 			EndDrawing(); // Fin de l'affichage
@@ -196,9 +196,7 @@ int GUIPlacementCard(GameState* gs, FeuilleCarte f, const ExploreCard* card,
 
 	// Vérification placabilité
 	int canFitA = isRuin ? checkShapeOnRuin(f, card->pieceA) : checkShape(f, card->pieceA);
-	int canFitB = card->pieceB
-		? (isRuin ? checkShapeOnRuin(f, card->pieceB) : checkShape(f, card->pieceB))
-		: 0;
+	int canFitB = card->pieceB ? (isRuin ? checkShapeOnRuin(f, card->pieceB) : checkShape(f, card->pieceB)) : 0;
 
 	if (!canFitA && !canFitB)
 		return GUIplacementDefaultCard(gs, f, card, score, 0, coinCount, camera, mountains, s, models);
@@ -293,7 +291,6 @@ void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera) {
 		state->status = 1;
 }
 
-
 void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state, int score, Camera3D camera, Model mountain[NOMBREMONTAGNE], Position mountainPos[NOMBREMONTAGNE], Seed s, ModelList models) {
 	int midX = GetScreenWidth() / 2;
 	int midY = GetScreenHeight() / 2;
@@ -304,9 +301,9 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 	BeginDrawing();
 	ClearBackground(BACKGROUND_COLOR);
 
-	
+
 	BeginMode3D(camera);
-	
+
 
 	GUIDrawFeuille(f, state->temp, mountain, mountainPos, s, models);
 
@@ -316,7 +313,7 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 				DrawCubeWires((Vector3) { (float)i - SIZE / 2, PLACEMENT_HEIGHT, (float)j - SIZE / 2 }, 1.0f, 1.0f, 1.0f, BORDERCOLOR);
 
 
-	
+
 
 	GUIdrawGrille();
 	EndMode3D();
@@ -347,7 +344,7 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 
 
 
-	
+
 	EndDrawing();
 }
 
@@ -473,13 +470,13 @@ void multiplyVector(Vector3* vector, double a) {
 }
 
 
-/*****************génération de heighmap et models ***/ 
+/*****************génération de heighmap et models ***/
 
 
 Model generateMountain(int x, int y) {
-	 // pour éviter d'avoir toujours la même montagne au lancement du jeu
-	Image perlinNoise = GenImagePerlinNoise(PERLIN_SIZE, PERLIN_SIZE, x*100 , y*100 , PERLIN_SCALE);
-	
+	// pour éviter d'avoir toujours la même montagne au lancement du jeu
+	Image perlinNoise = GenImagePerlinNoise(PERLIN_SIZE, PERLIN_SIZE, x * 100, y * 100, PERLIN_SCALE);
+
 
 	for (int y = 0; y < PERLIN_SIZE; y++) {// fallof pour avoir des bords smooths
 		for (int x = 0; x < PERLIN_SIZE; x++) {
@@ -502,12 +499,12 @@ Model generateMountain(int x, int y) {
 			ImageDrawPixel(&perlinNoise, x, y, (Color) { h, h, h, 255 });
 		}
 	}
-	
+
 
 	ImageDrawLineV(&perlinNoise, (Vector2) { 0, 0 }, (Vector2) { 0, PERLIN_SIZE }, MOUNTAIN_MODEL_COLOR);
-	ImageDrawLineV(&perlinNoise, (Vector2) { PERLIN_SIZE-1, 0 }, (Vector2) { PERLIN_SIZE-1, PERLIN_SIZE }, MOUNTAIN_MODEL_COLOR);// bordure noire pour éviter les artefacts de texture sur les bords du modèle
-	ImageDrawLineV(&perlinNoise, (Vector2) { 0, 0 }, (Vector2) { PERLIN_SIZE, 0}, MOUNTAIN_MODEL_COLOR);
-	ImageDrawLineV(&perlinNoise, (Vector2) { 0, PERLIN_SIZE-1 }, (Vector2) { PERLIN_SIZE, PERLIN_SIZE-1 }, MOUNTAIN_MODEL_COLOR);
+	ImageDrawLineV(&perlinNoise, (Vector2) { PERLIN_SIZE - 1, 0 }, (Vector2) { PERLIN_SIZE - 1, PERLIN_SIZE }, MOUNTAIN_MODEL_COLOR);// bordure noire pour éviter les artefacts de texture sur les bords du modèle
+	ImageDrawLineV(&perlinNoise, (Vector2) { 0, 0 }, (Vector2) { PERLIN_SIZE, 0 }, MOUNTAIN_MODEL_COLOR);
+	ImageDrawLineV(&perlinNoise, (Vector2) { 0, PERLIN_SIZE - 1 }, (Vector2) { PERLIN_SIZE, PERLIN_SIZE - 1 }, MOUNTAIN_MODEL_COLOR);
 
 	Mesh mesh = GenMeshHeightmap(perlinNoise, (Vector3) { MOUNTAIN_MODEL_SIZE, MOUNTAIN_MODEL_HEIGHT, MOUNTAIN_MODEL_SIZE }); // Generate heightmap mesh (RAM and VRAM)
 	Model model = LoadModelFromMesh(mesh);
@@ -517,9 +514,9 @@ Model generateMountain(int x, int y) {
 	Texture2D texture = LoadTextureFromImage(perlinNoise);
 
 
-	
 
-	                // Load model from generated mesh
+
+	// Load model from generated mesh
 
 	model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture; // Set map diffuse texture          // Define model position
 
@@ -531,15 +528,15 @@ Model generateMountain(int x, int y) {
 }
 
 void generateMountainsModels(Model mountains[NOMBREMONTAGNE], FeuilleCarte f, int mountainSeed[2]) {
-	Position *pos = getPositionsOfMaterial(f, MONTAGNE);
-	for ( int i=0; i<NOMBREMONTAGNE; i++){
-		mountains[i] = generateMountain(pos[i].x+mountainSeed[1], pos[i].y+mountainSeed[0]);
+	Position* pos = getPositionsOfMaterial(f, MONTAGNE);
+	for (int i = 0; i < NOMBREMONTAGNE; i++) {
+		mountains[i] = generateMountain(pos[i].x + mountainSeed[1], pos[i].y + mountainSeed[0]);
 	}
 }
 
 Image generateForestImage(int x, int y) {
 	Image perlinNoise = GenImagePerlinNoise(FORET_SIZE, FORET_SIZE, x * 100, y * 100, FORET_SCALE);
-	
+
 	return perlinNoise;
 
 }
