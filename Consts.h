@@ -20,6 +20,8 @@
 #include <math.h>
 #include <string.h>
 #include <raylib.h>
+#include "rlgl.h"
+#include "raymath.h"
 
 
 /*OPTIONS DE DEBOGAGE */
@@ -190,3 +192,18 @@
 
 #define PATH_TO_TREE_MODEL "Assets/tree.obj"
 #define PATH_TO_BUSH_MODEL "Assets/bush.obj"
+#define PATH_TO_HDR_SKYBOX "Assets/skybox.hdr"
+#define PATH_TO_SKYBOX "Assets/skybox2.png"
+
+#define SKYBOX_SHADER_PATH "Assets/shaders/glsl%i/skybox.vs"
+#define SKYBOX_SHADER_PATH2 "Assets/shaders/glsl%i/skybox.fs"
+#define SKYBOX_CUBEMAP_SHADER_PATH "Assets/shaders/glsl%i/cubemap.vs"
+#define SKYBOX_CUBEMAP_SHADER_PATH "Assets/shaders/glsl%i/cubemap.fs"
+
+
+#if defined(PLATFORM_DESKTOP)
+    #define GLSL_VERSION            330
+#else   // PLATFORM_ANDROID, PLATFORM_WEB
+    #define GLSL_VERSION            100
+#endif
+
