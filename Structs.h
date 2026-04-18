@@ -148,10 +148,11 @@ typedef struct Page {
 typedef struct {
     Model tree;
     Model buisson;
+    Model skybox;
 }ModelList;
 
 
 typedef struct {
     Image treeImage;
-    
+
 }Seed;
