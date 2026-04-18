@@ -102,12 +102,13 @@ typedef struct PlacementState {
 } PlacementState;
 
 
-
+// UI.h
 
 typedef struct Button {
     Rectangle bounds;
     char* label;
     int fontSize;
+    Color labelColor;
     int corner;     // Arrondi du Boutton en % (0 si pas d'arrondi)
     int stroke;
     Color color1;   // Couleur du bouton
@@ -128,7 +129,20 @@ typedef struct {
     bool validated;
 } InputBox;
 
+typedef enum {
+    SCREEN_MENU,
+    SCREEN_ADD_PLAYER,
+    SCREEN_RULES,
+    SCREEN_KEYBINDS,
+    SCREEN_LANGUAGE,
+    SCREEN_GAME,
+    SCREEN_EXIT
+} ScreenID;
 
+typedef struct Page {
+    char* Text;
+    char* Title;
+} Page;
 
 
 

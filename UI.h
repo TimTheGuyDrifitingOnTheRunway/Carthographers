@@ -4,16 +4,17 @@
 
 
 
-bool RunMenu(GameState* gs);
-bool RunAddPlayer(GameState* gs);
+ScreenID RunMenu(GameState* gs);
+ScreenID RunAddPlayer(GameState* gs);
+ScreenID RunRules(GameState* gs);
+ScreenID RunKeybinds(GameState* gs);
 
-typedef enum {
-	SCREEN_MENU,
-	SCREEN_ADD_PLAYER,
-	SCREEN_RULES,
-	SCREEN_KEYBINDS,
-	SCREEN_EXIT
-} ScreenID;
+void DrawBackgroudMenu(Rectangle r);
+void DrawTitleEx(Rectangle r);
+int DrawTitle();
+void DrawTextWrapped(const char* text, Rectangle r, int fs, Color textColor);
+void SortRectangles(Rectangle** rlist, int listLen, int pad, float anchorPoint);		// Trie les rectangles de manière à les rendre alignés sur le 1er élément, en fonction du point d'encrage (0 : en colonne à partir de la gauche, .5f : milieu, 1 : droite)
+
 
 void DrawButton(Button* btn);
 

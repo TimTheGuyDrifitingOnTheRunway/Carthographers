@@ -239,7 +239,6 @@ void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera) {
 }
 
 void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state, int score, Camera3D camera, Model mountain[NOMBREMONTAGNE], Position mountainPos[NOMBREMONTAGNE]) {
-void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state, int score, Camera3D camera) {
 	int midX = GetScreenWidth() / 2;
 	int midY = GetScreenHeight() / 2;
 

@@ -50,8 +50,8 @@
 
 /******************************** Lib3d.h ********************************/
 
-#define BACKGROUND_COLOR LIGHTBLUE
-#define BGCOLOR RAYWHITE
+#define BACKGROUND_COLOR SKYBLUE
+#define BGCOLOR (Color){40, 40, 40, 255}
 
 #define GRIDCOLOR GRAY
 #define BORDERCOLOR MAROON
@@ -89,12 +89,61 @@
 
 /******************************** UI.h ********************************/
 
-#define MAIN_MENU_X 1200
-#define MAIN_MENU_Y 800
+// Titre
+#define C_TITLE "CARTOGRAPHERS"
+#define TITLE_FS 100
+
+
+// Main Menu
+
+#define MAIN_MENU_BTN_WIDTH 800
+#define MAIN_MENU_Y 700
 
 #define MAIN_BUTTON_FS 40
-#define MAIN_BUTTON_STROKE 4
+#define MAIN_BUTTON_STROKE 2
 #define BUTTON_DELTA 30		// Espacement entre les boutons
+#define MAIN_BUTTON_CORNER 35
+
+
+// Add Menu
+
+#define ADD_MENU_WIDTH		MAIN_MENU_BTN_WIDTH
+#define ADD_MENU_HEIGHT		300
+
+#define ADD_BUTTON_FS		MAIN_BUTTON_FS
+#define ADD_BUTTON_STROKE	MAIN_BUTTON_STROKE
+
+
+// Rules Menu
+
+#define PAGE_NB 6
+
+#define TEXT_ZONE_WIDTH_MIN 900
+#define TEXT_ZONE_PADDING 10
+
+
+#define OBJECTIF_TEXT "Vous avez été choisi par la Reine pour cartographier les terres sauvages du Nord. Votre mission s'étendra comme la harpe, sur 4 Saisons :-).\nVotre but est simple : accumuler le maximum d'Étoiles de Réputation avant la fin de l'Hiver. Ces étoiles s'obtiennent en répondant aux exigences de la Reine, représentées par 4 Décrets actifs pendant la partie."
+#define TURN_TEXT "À chaque tour, une nouvelle carte 'Exploration' est dévoilée.\nElle vous impose deux choix : un polyomino (forme géométrique) précis, et un type de terrain.\nSelon la carte (sauf carte spécifique) vous aurez la possibilité de switcher entre 2 polyominos OU 2 terrains.\nVous devez placer cette forme sur votre parchemin (la grille).\n  - Manipulation : Vous êtes libre de faire pivoter la forme ou de l'inverser (effet miroir).\n  - Contraintes : La forme doit tenir entièrement dans la grille. Elle ne peut jamais chevaucher une case déjà remplie.\n  - Si une carte Ruine a été révélée précédement, il est impératif de placer ce polyomino sur une case Ruine"
+#define PLACEMENT_TEXT "Vous dessinerez principalement 4 types de terrains : Forêt (Vert), Champ (Jaune), Eau (Bleu) et Village (Rouge). L'emplacement de ces terrains déterminera votre score selon les Décrets de la partie (les détails de chaque Décret sont consultables en jeu).\n  - Les Montagnes : Elles sont déjà présentes sur la carte. Si vous réussissez à remplir les 4 cases qui entourent une Montagne, vous gagnez immédiatement une Pièce d'Or. Chaque Pièce d'Or acquise vous rapportera 1 point supplémentaire à chaque fin de Saison."
+#define RYTHME_TEXT "Chaque carte Exploration qui apparaît possède une 'valeur de temps'.\nUn compteur additionne ce temps au fur et à mesure des tours. Dès que le total atteint la limite de la Saison en cours, la Saison s'arrête immédiatement.\nLe jeu calcule alors automatiquement votre score pour cette Saison, et la Saison suivante commence avec un compteur de temps remis à zéro."
+#define ENEMY_TEXT "Prenez garde : cartographier est dangereux !\nLorsqu'une carte Monstre est piochée, les joueurs ne dessinent plus sur leur parchemin, mais sur le parchemin du voisin (gauche ou droite, en fonction de la carte). Vous êtes libre de placer l'ennemi ou vous voulez, pour embêter votre adversaire le plus possible.\n  - Utilité : les monstres font perdre des points en fin de saison\n  - Les cartes monstre ne sont pas impactées par les cartes ruines\n  - Règle spéciale solo : les monstres sont placés automatiquement par le jeu"
+#define SCORE_TEXT "Il y a 4 Décrets de la Reine actifs durant toute la partie (nommés A, B, C et D). Cependant, ils ne rapportent pas des points tout le temps. À la fin de chaque Saison, seuls deux Décrets spécifiques sont évalués : \n Printemps : Décrets A et B	     Été : Décrets B et C\n Automne : Décrets C et D        Hiver : Décrets D et A\nChaque Décret est donc noté exactement deux fois dans la partie.\nUne fois la Saison terminée, le jeu calcule votre score ainsi :\n + Points des deux Décrets de la saison \n + Votre total actuel de Pièces d'Or \n - Les malus des Monstres (1 point perdu par case vide touchant un monstre)\n\nL'addition de vos 4 scores de Saison donne votre Réputation Finale."
+
+
+// KeyBinds Menu
+
+#define KEY_FS 30
+#define KEY_PAD 30
+#define KEY_LINE_WIDTH 150
+
+
+#define KEY_TEXT_MOVE "Z / Q / S / D : Permet de bouger la pièce"
+#define KEY_TEXT_COLOR_SWITCH "A : Permet de changer la couleur "
+#define KEY_TEXT_SHAPE_SWITCH "E : Permet de changer la forme"
+#define KEY_TEXT_ROTATE "R : Permet de tourner la pièce à 90° sur la droite"
+#define KEY_TEXT_FLIP "F : Permet de faire un symétrie axiale à la pièce, comme un effet miroir"
+#define KEY_TEXT_PLACE "Espace : Permet de placer la pièce"
+#define KEY_TEXT_CAMERA "Flèches Directionelles : Permet de bouger la caméra"
 
 /********Constantes de montagnes ******/
 #define PERLIN_SIZE 100

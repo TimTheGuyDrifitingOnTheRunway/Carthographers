@@ -12,13 +12,17 @@ int main()
 	srand(time(NULL));
 
 	// Initialization
-	int screenWidth = 1600;
-	int screenHeight = 900;
+	int screenWidth = 1280;
+	int screenHeight = 720;
 	int flag = 0;
 	printf("\n\n\n\n\n\n Debug 1 \n\n\n\n\n\n");
 
-	InitWindow(screenWidth, screenHeight, "Cartographer");
 
+	SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_MAXIMIZED);
+	InitWindow(screenWidth, screenHeight, "Cartographer");
+	SetWindowMinSize(1280, 720);
+
+	SetTargetFPS(60);
 	//ToggleBorderlessWindowed();
 
 	//while (!WindowShouldClose() && !flag) {
@@ -49,16 +53,26 @@ int main()
 	int deckSize = 14;*/
 	printf("\n\n\n\n\n\n Debug 4 \n\n\n\n\n\n");
 	GameState gs = { 0 };
-	//gs.playerNumber = 5;
-	bool start = RunMenu(&gs);
+	//gs.playerNumber = 98;
+	ScreenID current = SCREEN_MENU;
 
-	printf("\nstart = %d", start);
+	while (current != SCREEN_GAME && current != SCREEN_EXIT) {
+		switch (current) {
+		case SCREEN_MENU:       current = RunMenu(&gs);       break;
+		case SCREEN_ADD_PLAYER: current = RunAddPlayer(&gs);  break;
+		case SCREEN_RULES:      current = RunRules(&gs);      break;
+		case SCREEN_KEYBINDS:   current = RunKeybinds(&gs);   break;
+		default:                current = SCREEN_EXIT;        break;
+		}
+	}
 
-	if (!start) {
+	if (current == SCREEN_EXIT) {
 		CloseWindow();
 		printf("\n\n\n\n Debug Fin de partie !! \n\n\n\n");
 		return 1;
 	}
+
+	SetMouseCursor(MOUSE_CURSOR_DEFAULT);
 
 	//int PNbre = 2;
 	//printf("Nombre de joueurs : ");     scanf("%d", &PNbre);    PNbre = (PNbre > 0) ? PNbre > MAX_PLAYER ? MAX_PLAYER : PNbre : 1;
@@ -141,7 +155,7 @@ int main()
 	printf("\n\n stoneSideQuest points = %d\n", calcStoneSideQuest(f));
 	Sleep(1000);
 
-	
+
 
 
 
@@ -214,12 +228,12 @@ int main()
 void sort_players_by_score(GameState* gs)
 {
 	PlayerState* arr = gs->players;
-	int          n = gs->playerNumber;
+	int n = gs->playerNumber;
 
 	for (int i = 1; i < n; i++)
 	{
 		PlayerState key = arr[i];
-		int         j = i;
+		int j = i;
 
 		while (j > 0 && arr[j - 1].score < key.score)  /* décroissant */
 		{
