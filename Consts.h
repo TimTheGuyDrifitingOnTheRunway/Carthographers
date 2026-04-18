@@ -4,24 +4,12 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 
-//alias et definitions pour code:blocks
-
-#ifndef max
-#define max(a,b) ((a) > (b) ? (a) : (b))
-#define min(a,b) ((a) < (b) ? (a) : (b))
-#endif // max
-#define Sleep _sleep // codeblock ne reconnais pas sleep parce que code:blocks
-
-
-/********************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
 #include <string.h>
 #include <raylib.h>
-#include "rlgl.h"
-#include "raymath.h"
 
 
 /*OPTIONS DE DEBOGAGE */
@@ -64,7 +52,7 @@
 
 /******************************** Lib3d.h ********************************/
 
-#define BACKGROUND_COLOR SKYBLUE
+#define BACKGROUND_COLOR LIGHTBLUE
 #define BGCOLOR (Color){40, 40, 40, 255}
 
 #define GRIDCOLOR GRAY
@@ -190,20 +178,5 @@
 
 /**********Chemin des models 3d **************/
 
-#define PATH_TO_TREE_MODEL "Assets/tree.obj"
-#define PATH_TO_BUSH_MODEL "Assets/bush.obj"
-#define PATH_TO_HDR_SKYBOX "Assets/skybox.hdr"
-#define PATH_TO_SKYBOX "Assets/skybox2.png"
-
-#define SKYBOX_SHADER_PATH "Assets/shaders/glsl%i/skybox.vs"
-#define SKYBOX_SHADER_PATH2 "Assets/shaders/glsl%i/skybox.fs"
-#define SKYBOX_CUBEMAP_SHADER_PATH "Assets/shaders/glsl%i/cubemap.vs"
-#define SKYBOX_CUBEMAP_SHADER_PATH "Assets/shaders/glsl%i/cubemap.fs"
-
-
-#if defined(PLATFORM_DESKTOP)
-    #define GLSL_VERSION            330
-#else   // PLATFORM_ANDROID, PLATFORM_WEB
-    #define GLSL_VERSION            100
-#endif
-
+#define PATH_TO_TREE_MODEL "assets/tree.obj"
+#define PATH_TO_BUSH_MODEL "assets/bush.obj"

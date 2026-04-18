@@ -145,4 +145,13 @@ typedef struct Page {
 } Page;
 
 
+typedef struct {
+    Model tree;
+    Model buisson;
+}ModelList;
 
+
+typedef struct {
+    Image treeImage;
+    
+}Seed;

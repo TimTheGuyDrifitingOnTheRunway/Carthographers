@@ -30,12 +30,6 @@ Vector3 addVectors(Vector3 vectora, Vector3 vectorb);
 Vector3 crossProduct(Vector3 vectora, Vector3 vectorb);
 void multiplyVector(Vector3* vector, double a);
 
-/*chargements des modeles et génération de textures*/
-
-ModelList loadModels();
-Model loadSkybox(bool useHDR);
-
-static TextureCubemap GenTextureCubemap(Shader shader, Texture2D panorama, int size, int format);
 
 /*G2N2RATIONS procédurale de montagnes*/
 Model generateMountain(int x, int y);
@@ -43,5 +37,8 @@ void generateMountainsModels(Model mountains[NOMBREMONTAGNE], FeuilleCarte f, in
 
 
 /*generation des forets*/
+
+
 Image generateForestImage(int x, int y);
 
+ModelList loadModels();
