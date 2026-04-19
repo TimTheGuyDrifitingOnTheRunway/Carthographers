@@ -228,7 +228,9 @@ void Season(GameState* gs, Camera3D camera, ModelList models) {
 		gs->currentTime += card->time;
 	}
 	pthread_join(thread, (void**)&s2);
-	NextSeason(gs, camera, models, *s2, mountainSeed2);
+	Seed S2 = *s2;
+	free(s2);
+	NextSeason(gs, camera, models, S2, mountainSeed2);
 }
 
 void Season2(GameState* gs, Camera3D camera, ModelList models, Seed s, int mountainSeed[2]) {
@@ -237,7 +239,7 @@ void Season2(GameState* gs, Camera3D camera, ModelList models, Seed s, int mount
 	
 	Seed* s2;
 	pthread_t thread;
-	pthread_create(&thread, NULL, generateSeedThread, mountainSeed2);
+	pthread_create(&thread, NULL, generateSeedThread, mountainSeed2);//prégen de la seed de la saison suivante en parallèle pour gagner du temps
 
 	gs->currentTime = 0;
 	int index = 0;
@@ -247,7 +249,9 @@ void Season2(GameState* gs, Camera3D camera, ModelList models, Seed s, int mount
 		gs->currentTime += card->time;
 	}
 	pthread_join(thread, (void**)&s2);
-	NextSeason(gs, camera, models, *s2, mountainSeed2);
+	Seed S2 = *s2;
+	free(s2);
+	NextSeason(gs, camera, models, S2, mountainSeed2);
 }
 
 

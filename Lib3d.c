@@ -749,6 +749,8 @@ Seed generateSeed(int mountainSeed[2]) {//génère une seed aléatoire pour les 
 
 	s.OfsetImagex = *pResult1;
 	s.OfsetImagey = *pResult2;
+	free(pResult1);
+	free(pResult2);
 	
 	return s;
 }
