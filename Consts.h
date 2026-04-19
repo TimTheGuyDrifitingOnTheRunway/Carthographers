@@ -10,7 +10,10 @@
 #define max(a,b) ((a) > (b) ? (a) : (b))
 #define min(a,b) ((a) < (b) ? (a) : (b))
 #endif // max
-#define Sleep _sleep // codeblock ne reconnais pas sleep parce que code:blocks
+
+
+
+
 
 
 /********************/
