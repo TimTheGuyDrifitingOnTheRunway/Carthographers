@@ -154,5 +154,7 @@ typedef struct {
 
 typedef struct {
     Image treeImage;
+	Image OfsetImagex;
+    Image OfsetImagey;
 
 }Seed;

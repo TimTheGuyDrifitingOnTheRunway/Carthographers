@@ -209,8 +209,10 @@ void StartGame(GameState* gs, Camera3D camera) {
 void Season(GameState* gs, Camera3D camera, ModelList models) {
 	Model mountains[NOMBREMONTAGNE];
 	int mountainSeed[2] = { randInt(0, 100), randInt(0, 100) };
-	Seed s;
-	s.treeImage = generateForestImage(mountainSeed[0] * 10, mountainSeed[1] * 10);
+	clock_t begin = clock();
+	printf("generating seed data\n");
+	Seed s = generateSeed(mountainSeed);
+	printf("seed data generated en : %.2f secondes \n", (double)(clock() - begin)/1000);
 
 	gs->currentTime = 0;
 	int index = 0;

@@ -40,8 +40,8 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 					float lum = ColorToHSV(GetImageColor(treeImage, j * 10 + l, i * 10 + k)).z;
 					unsigned char blue = (pow((lum), WATER_POWER) + WATER_OFSET) * 255 > 254 ? 254 : ((pow((lum), WATER_POWER) + WATER_OFSET) * 255 < 50) ? 50 : (pow((lum), WATER_POWER) + WATER_OFSET) * 255;
 
-					Color c = (Color){ blue * WATER_RED_FACTOR, blue * WATER_GREEN_FACTOR, blue, 255 };
-					DrawCube((Vector3) { x - 0.5f + (float)k / TREE_DIVIDER, y + 0.9 + lum / 2, z - 0.5 + (float)l / TREE_DIVIDER }, 0.1f, 0.5 * lum, 0.1f, c);
+					Color c = (Color){ blue * WATER_RED_FACTOR, blue * WATER_GREEN_FACTOR, blue,  WATER_TRANSPARENCY };
+					DrawCube((Vector3) { x - 0.5f + (float)k / TREE_DIVIDER, y + 0.9 + lum / 2 +WATER_CUBE_OFSET, z - 0.5 + (float)l / TREE_DIVIDER }, 0.1f, 0.5 * lum* WATER_CUBE_HEIGHT_MULTIPLYER, 0.1f, c);
 				}
 			}
 #endif
@@ -82,14 +82,22 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 						Color c2 = (Color){ (unsigned char)150, green, (unsigned char)10, 255 };//couleur de base pour les arbres
 						Color c3 = (Color){ green, green * 0.8f ,(unsigned char)50 , 255 };//couleur de base pour les arbres
 
+						//calcul des ofset d'arbres
+						float rxOfset = (ColorToHSV(GetImageColor(s.OfsetImagex, j * 10 + l, i * 10 + k)).z-0.5f)*0.5f;
+						float rzOfset = (ColorToHSV(GetImageColor(s.OfsetImagey, j * 10 + l, i * 10 + k)).z - 0.5f) * 0.5f;
 
+						clamp(rxOfset, -0.1f, 0.1f);
+						clamp(rzOfset, -0.1f, 0.1f);
 
+#define FOREST_BORDER 0.5f
 						//choix du type de model à dessiner
-						if (color.z < FOREST_TRESHOLD) DrawModelEx(models.tree, (Vector3) { x - 0.5f + (float)k / TREE_DIVIDER, y + TREE_Y_OFSET, z - 0.5 + (float)l / TREE_DIVIDER }, (Vector3) { 1, 0, 0 }, 0, (Vector3) { TREE_SIZE, TREE_SIZE, TREE_SIZE }, c2);
+						if ((-0.5f + (float)k / TREE_DIVIDER + rxOfset < FOREST_BORDER) && (-0.5f + (float)k / TREE_DIVIDER + rxOfset) > -FOREST_BORDER && (-0.5 + (float)l / TREE_DIVIDER + rzOfset) < FOREST_BORDER && (-0.5 + (float)l / TREE_DIVIDER + rzOfset) > -FOREST_BORDER) {
+							if (color.z < FOREST_TRESHOLD) DrawModelEx(models.tree, (Vector3) { x - 0.5f + (float)k / TREE_DIVIDER + rxOfset, y + TREE_Y_OFSET, z - 0.5 + (float)l / TREE_DIVIDER + rzOfset }, (Vector3) { 1, 0, 0 }, 0, (Vector3) { TREE_SIZE, TREE_SIZE, TREE_SIZE }, c2);
 
-						else if ((color.z > FOREST_TRESHOLD) && color.z < BUSH_TRESHOLD) DrawModelEx(models.buisson, (Vector3) { x - 0.5f + (float)k / TREE_DIVIDER, y + 0.5, z - 0.5 + (float)l / TREE_DIVIDER }, (Vector3) { 1, 0, 0 }, 0, (Vector3) { BUSH_SIZE, BUSH_SIZE, BUSH_SIZE }, c);
+							else if ((color.z > FOREST_TRESHOLD) && color.z < BUSH_TRESHOLD) DrawModelEx(models.buisson, (Vector3) { x - 0.5f + (float)k / TREE_DIVIDER + rxOfset, y + 0.5, z - 0.5 + (float)l / TREE_DIVIDER + rzOfset }, (Vector3) { 1, 0, 0 }, 0, (Vector3) { BUSH_SIZE, BUSH_SIZE, BUSH_SIZE }, c);
 
-						else DrawModelEx(models.buisson, (Vector3) { x - 0.5f + (float)k / TREE_DIVIDER, y + 0.5, z - 0.5 + (float)l / TREE_DIVIDER }, (Vector3) { 1, 0, 0 }, 0, (Vector3) { BUSH_SIZE, BUSH_SIZE * 1.2f, BUSH_SIZE }, c3);
+							else if (color.z > BUSH_TRESHOLD && color.z < FOREST_END_TRESHOLD)DrawModelEx(models.buisson, (Vector3) { x - 0.5f + (float)k / TREE_DIVIDER + rxOfset, y + 0.5, z - 0.5 + (float)l / TREE_DIVIDER + rzOfset }, (Vector3) { 1, 0, 0 }, 0, (Vector3) { BUSH_SIZE, BUSH_SIZE * 1.2f, BUSH_SIZE }, c3);
+						}
 
 					}
 					break;
@@ -558,8 +566,6 @@ ModelList loadModels() {
 	models.tree = LoadModel(PATH_TO_TREE_MODEL);
 	models.buisson = LoadModel(PATH_TO_BUSH_MODEL);
 	models.skybox = loadSkybox(false);
-	//Texture2D texture = LoadTexture("resources/models/iqm/guytex.png");         // Load model texture and set material
-	//SetMaterialTexture(&(models.tree).materials[0], MATERIAL_MAP_DIFFUSE, texture);
 	return models;
 }
 
@@ -706,4 +712,42 @@ static TextureCubemap GenTextureCubemap(Shader shader, Texture2D panorama, int s
 	cubemap.format = format;
 
 	return cubemap;
+}
+
+
+Image generateOffsetImage(int x, int y) {
+	printf("generating perlin noise Ofset \n");
+	Image perlinNoise = GenImagePerlinNoise(OFSET_IMAGE_SIZE, OFSET_IMAGE_SIZE, x * 100, y * 100, OFSET_IMAGE_SCALE);
+	
+	return perlinNoise;
+
+
+}
+
+void *generateRandomOfsetImagesThread(void* arg) {
+	Image *img = malloc(sizeof(Image) );
+	do {
+		*img = generateOffsetImage(randInt(0, 100) * 10, randInt(0, 100) * 10);
+	} while (img == NULL);
+	return img;
+}
+
+Seed generateSeed(int mountainSeed[2]) {//génère une seed aléatoire pour les montagnes et les images d'offset, en utilisant un thread pour générer les images d'offset en parallèle
+	Seed s;
+	pthread_t thread1, thread2;
+	Image* pResult1, *pResult2;
+	pthread_create(&thread1, NULL, generateRandomOfsetImagesThread, NULL);
+	pthread_create(&thread2, NULL, generateRandomOfsetImagesThread, NULL);
+
+	s.treeImage = generateForestImage(mountainSeed[0] * 10, mountainSeed[1] * 10);
+
+	pthread_join(thread2, (void**)&pResult2);
+	pthread_join(thread1, (void**)&pResult1);
+	
+
+
+	s.OfsetImagex = *pResult1;
+	s.OfsetImagey = *pResult2;
+	
+	return s;
 }

@@ -4,12 +4,6 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 
-//alias et definitions pour code:blocks
-
-#ifndef max
-#define max(a,b) ((a) > (b) ? (a) : (b))
-#define min(a,b) ((a) < (b) ? (a) : (b))
-#endif // max
 
 
 
@@ -23,12 +17,18 @@
 #include <math.h>
 #include <string.h>
 #include <raylib.h>
-#include "rlgl.h"
-#include "raymath.h"
+#include <rlgl.h>
+#include <raymath.h>
+#include <pthread.h>
 
 
 /*OPTIONS DE DEBOGAGE */
 #define cc// DEBUG_FORET : affiche la noisemap source de foret
+
+
+/*****MACROS****/
+
+#define clamp(x, min, max) ((x < min) ? min : (x > max) ? max : x)
 
 /******************************** LibCartographie.h ********************************/
 
@@ -175,6 +175,7 @@
 #define FORET_SCALE 60
 #define TREE_SIZE 0.025f
 #define FOREST_TRESHOLD 0.45f
+#define FOREST_END_TRESHOLD 0.85f
 #define TREE_DIVIDER 7
 #define  TREE_Y_OFSET 0.55f
 
@@ -184,12 +185,17 @@
 #define GREEN_OFSET 0.3f // offset du vert pour éviter d'avoir des arbres trop sombre, à ajuster en fonction de la noisemap de foret générée
 
 
-#define WATER_OFSET 0.5f
+#define WATER_OFSET 0.2f
 #define WATER_POWER 1
-#define WATER_GREEN_FACTOR 0.7f
-#define WATER_RED_FACTOR 0.3f
+#define WATER_GREEN_FACTOR 0.0f
+#define WATER_RED_FACTOR 0.5f
+#define WATER_CUBE_OFSET -0.5f
+#define WATER_TRANSPARENCY 255
+#define WATER_CUBE_HEIGHT_MULTIPLYER 2
 
 
+#define OFSET_IMAGE_SIZE 1000
+#define OFSET_IMAGE_SCALE 500
 
 /**********Chemin des models 3d **************/
 
