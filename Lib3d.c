@@ -739,6 +739,7 @@ Seed generateSeed(int mountainSeed[2]) {//génère une seed aléatoire pour les 
 	pthread_create(&thread1, NULL, generateRandomOfsetImagesThread, NULL);
 	pthread_create(&thread2, NULL, generateRandomOfsetImagesThread, NULL);
 
+	s.isGenerated = 1;
 	s.treeImage = generateForestImage(mountainSeed[0] * 10, mountainSeed[1] * 10);
 
 	pthread_join(thread2, (void**)&pResult2);
@@ -751,3 +752,13 @@ Seed generateSeed(int mountainSeed[2]) {//génère une seed aléatoire pour les 
 	
 	return s;
 }
+
+
+void* generateSeedThread(void* arg) {
+	int* mountainSeed = (int*)arg;
+	Seed* s = malloc(sizeof(Seed));
+	*s = generateSeed(mountainSeed);
+	return s;
+}
+
+

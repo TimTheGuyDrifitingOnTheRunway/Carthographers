@@ -153,6 +153,7 @@ typedef struct {
 
 
 typedef struct {
+	bool isGenerated;
     Image treeImage;
 	Image OfsetImagex;
     Image OfsetImagey;

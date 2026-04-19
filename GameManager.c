@@ -209,9 +209,15 @@ void StartGame(GameState* gs, Camera3D camera) {
 void Season(GameState* gs, Camera3D camera, ModelList models) {
 	Model mountains[NOMBREMONTAGNE];
 	int mountainSeed[2] = { randInt(0, 100), randInt(0, 100) };
+	int mountainSeed2[2] = { randInt(0, 100), randInt(0, 100) };
 	clock_t begin = clock();
 	printf("generating seed data\n");
 	Seed s = generateSeed(mountainSeed);
+	//prégen de la seed de la saison suivante en parallèle pour gagner du temps
+	Seed* s2;
+	pthread_t thread;
+	pthread_create(&thread, NULL, generateSeedThread, mountainSeed2);
+
 	printf("seed data generated en : %.2f secondes \n", (double)(clock() - begin)/1000);
 
 	gs->currentTime = 0;
@@ -221,12 +227,32 @@ void Season(GameState* gs, Camera3D camera, ModelList models) {
 		const ExploreCard* card = Turn(gs, &index, &isRuin, camera, mountainSeed, models, s);
 		gs->currentTime += card->time;
 	}
-	NextSeason(gs, camera, models);
+	pthread_join(thread, (void**)&s2);
+	NextSeason(gs, camera, models, *s2, mountainSeed2);
+}
+
+void Season2(GameState* gs, Camera3D camera, ModelList models, Seed s, int mountainSeed[2]) {
+	Model mountains[NOMBREMONTAGNE];
+	int mountainSeed2[2] = { randInt(0, 100), randInt(0, 100) };
+	
+	Seed* s2;
+	pthread_t thread;
+	pthread_create(&thread, NULL, generateSeedThread, mountainSeed2);
+
+	gs->currentTime = 0;
+	int index = 0;
+	int isRuin = 0;
+	while (gs->currentTime < seasons[gs->currentSeason]->maxTime) {
+		const ExploreCard* card = Turn(gs, &index, &isRuin, camera, mountainSeed, models, s);
+		gs->currentTime += card->time;
+	}
+	pthread_join(thread, (void**)&s2);
+	NextSeason(gs, camera, models, *s2, mountainSeed2);
 }
 
 
 
-void NextSeason(GameState *gs, Camera3D camera, ModelList models) {
+void NextSeason(GameState *gs, Camera3D camera, ModelList models, Seed s2, int mountainSeed[2]) {
 	InitDeck(gs);
 	
 
@@ -247,7 +273,7 @@ void NextSeason(GameState *gs, Camera3D camera, ModelList models) {
 
 	}
 
-	if (++gs->currentSeason < 4) Season(gs, camera, models);
+	if (++gs->currentSeason < 4) Season2(gs, camera, models, s2, mountainSeed);
 }
 
 // Tour de jeu
