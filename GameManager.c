@@ -14,55 +14,28 @@ const Saison* seasons[4] = { &Spring, &Summer, &Autumn, &Winter };
 
 // Cartes Scoring
 
-// 🌳 Cartes liées à la Forêt
-const ScoringCard SentinelWood = { 1, calcSentinelWood, "Sentinel Wood", "Gagnez une Étoile de Réputation pour chaque case Forêt adjacente au bord de la Carte." };
-const ScoringCard TreeTower = { 1, calcTreeTower, "Tree Tower", "Gagnez une Étoile de Réputation pour chaque case Forêt entourée des quatre côtés par des cases remplies ou le bord de la Carte." };
-const ScoringCard GreenBough = { 1, calcGreenBough, "Green Bough", "Gagnez une Étoile de Réputation pour chaque ligne et colonne avec au moins une case Forêt. La même case Forêt peut compter pour une rangée et une colonne." };
-const ScoringCard StoneSideQuest = { 1, calcStoneSideQuest, "Stone Side Quest", "Gagnez trois Étoiles de Réputation pour chaque case Montagne connectée à une autre case Montagne par un Groupe de cases Forêt." };
+const ScoringCard SentinelWood = { 1, calcSentinelWood, "SentinelWood"};
+const ScoringCard TreeTower = { 1, calcTreeTower, "TreeTower"};
+const ScoringCard GreenBough = { 1, calcGreenBough, "GreenBough"};
+const ScoringCard StoneSideQuest = { 1, calcStoneSideQuest, "StoneSideQuest"};
 
-// 🌾 Cartes liées à l'Eau et aux Champs
-const ScoringCard CanalLake = { 2, calcCanalLake, "Canal Lake", "Gagnez une Étoile de Réputation pour chaque case Eau adjacente à au moins une case Champs. Gagnez une Étoile de Réputation pour chaque case Champs adjacente à au moins une case Eau." }; 
-const ScoringCard ShoreSideExpanse = { 2, calcShoreSideExpanse, "Shore Side Expanse", "Gagnez trois Étoiles de Réputation pour chaque Groupe de cases Champs non adjacents à une case Eau ou au bord de la Carte. Gagnez trois Étoiles de Réputation pour chaque Groupe de cases Eau non adjacents à une case Champs ou au bord de la Carte." };
-const ScoringCard GoldenGranary = { 2, calcGoldenGranary, "The Golden Granary", "Gagnez une Étoile de Réputation pour chaque case Eau adjacente à une case Ruine. Gagnez trois Étoiles de Réputation pour chaque case Champs sur une case Ruines." }; 
-const ScoringCard MagesValley = { 2, calcMagesValley, "Mages Valley", "Gagnez deux Étoiles de Réputation pour chaque case Eau adjacente à une case Montagne. Gagnez une Étoile de Réputation pour chaque case Champs adjacente à une case Montagne." };
+const ScoringCard CanalLake = { 2, calcCanalLake, "CanalLake"};
+const ScoringCard ShoreSideExpanse = { 2, calcShoreSideExpanse, "ShoreSideExpanse"};
+const ScoringCard GoldenGranary = { 2, calcGoldenGranary, "TheGoldenGranary"};
+const ScoringCard MagesValley = { 2, calcMagesValley, "MagesValley"};
 
-// 🏠 Cartes liées aux Villages
-const ScoringCard Wildholds = { 3, calcWildholds, "Wildholds", "Gagnez huit Étoiles de Réputation pour chaque Groupe de six Villages ou plus." };
-const ScoringCard GreengoldPlains = { 3, calcGreengoldPlains, "Greengold Plains", "Gagnez trois Étoiles de Réputation pour chaque Groupe de Villages adjacents à trois types de terrain différents ou plus." };
-const ScoringCard GreatCity = { 3, calcGreatCity, "Great City", "Gagnez une Étoile de Réputation pour chaque case Village dans le plus grand Groupe de Village non adjacents à une case Montagne." };
-const ScoringCard Shieldgate = { 3, calcShieldgate, "Shieldgate", "Gagnez deux Étoiles de Réputation pour chaque case Village dans le deuxième plus grand Groupe de Village." };
+const ScoringCard Wildholds = { 3, calcWildholds, "Wildholds"};
+const ScoringCard GreengoldPlains = { 3, calcGreengoldPlains, "GreengoldPlains"};
+const ScoringCard GreatCity = { 3, calcGreatCity, "GreatCity"};
+const ScoringCard Shieldgate = { 3, calcShieldgate, "Shieldgate"};
 
-// 🗺️ Cartes liées à la Structure et au Remplissage Global
-const ScoringCard Borderlands = { 4, calcBorderlands, "Borderlands", "Gagnez six Étoiles de Réputation pour chaque ligne ou colonne complète (cases remplies)." };
-const ScoringCard BrokenRoad = { 4, calcBrokenRoad, "The Broken Road", "Gagnez trois Étoiles de Réputation pour chaque ligne diagonale complète (cases remplies) qui touche les bords gauche et inférieur de la Carte." };
-const ScoringCard LostBarony = { 4, calcLostBarony, "Lost Barony", "Gagnez trois Étoiles de Réputation pour chaque case d'un côté du plus grand carré de cases remplies (ex: un carré de 4x4=12 Étoiles)." };
-const ScoringCard TheCauldrons = { 4, calcTheCauldrons, "The Cauldrons", "Gagnez une Étoile de Réputation pour chaque case vide entouré des quatre côtés par des cases remplies ou le bord de la Carte." };
-//
-//// 🌳 Cartes liees a la Foret
-//const ScoringCard SentinelWood = { 1, calcSentinelWood, "Sentinel Wood", "Gagnez une Etoile de Reputation pour chaque case Foret adjacente au bord de la Carte." };
-//const ScoringCard TreeTower = { 1, calcTreeTower, "Tree Tower", "Gagnez une Etoile de Reputation pour chaque case Foret entouree des quatre cotes par des cases remplies ou le bord de la Carte." };
-//const ScoringCard GreenBough = { 1, calcGreenBough, "Green Bough", "Gagnez une Etoile de Reputation pour chaque ligne et colonne avec au moins une case Foret. La meme case Foret peut compter pour une rangee et une colonne." };
-//const ScoringCard StoneSideQuest = { 1, calcStoneSideQuest, "Stone Side Quest", "Gagnez trois Etoiles de Reputation pour chaque case Montagne connectee a une autre case Montagne par un Groupe de cases Foret." };
-//
-//// 🌾 Cartes liees a l'Eau et aux Champs
-//const ScoringCard CanalLake = { 2, calcCanalLake, "Canal Lake", "Gagnez une Etoile de Reputation pour chaque case Eau adjacente a au moins une case Champs. Gagnez une Etoile de Reputation pour chaque case Champs adjacente a au moins une case Eau." };
-//const ScoringCard ShoreSideExpanse = { 2, calcShoreSideExpanse, "Shore Side Expanse", "Gagnez trois Etoiles de Reputation pour chaque Groupe de cases Champs non adjacents a une case Eau ou au bord de la Carte. Gagnez trois Etoiles de Reputation pour chaque Groupe de cases Eau non adjacents a une case Champs ou au bord de la Carte." };
-//const ScoringCard GoldenGranary = { 2, calcGoldenGranary, "The Golden Granary", "Gagnez une Etoile de Reputation pour chaque case Eau adjacente a une case Ruine. Gagnez trois Etoiles de Reputation pour chaque case Champs sur une case Ruines." };
-//const ScoringCard MagesValley = { 2, calcMagesValley, "Mages Valley", "Gagnez deux Etoiles de Reputation pour chaque case Eau adjacente a une case Montagne. Gagnez une Etoile de Reputation pour chaque case Champs adjacente a une case Montagne." };
-//
-//// 🏠 Cartes liees aux Villages
-//const ScoringCard Wildholds = { 3, calcWildholds, "Wildholds", "Gagnez huit Etoiles de Reputation pour chaque Groupe de six Villages ou plus." };
-//const ScoringCard GreengoldPlains = { 3, calcGreengoldPlains, "Greengold Plains", "Gagnez trois Etoiles de Reputation pour chaque Groupe de Villages adjacents a trois types de terrain differents ou plus." };
-//const ScoringCard GreatCity = { 3, calcGreatCity, "Great City", "Gagnez une Etoile de Reputation pour chaque case Village dans le plus grand Groupe de Village non adjacents a une case Montagne." };
-//const ScoringCard Shieldgate = { 3, calcShieldgate, "Shieldgate", "Gagnez deux Etoiles de Reputation pour chaque case Village dans le deuxieme plus grand Groupe de Village." };
-//
-//// 🗺️ Cartes liees a la Structure et au Remplissage Global
-//const ScoringCard Borderlands = { 4, calcBorderlands, "Borderlands", "Gagnez six Etoiles de Reputation pour chaque ligne ou colonne complete (cases remplies)." };
-//const ScoringCard BrokenRoad = { 4, calcBrokenRoad, "The Broken Road", "Gagnez trois Etoiles de Reputation pour chaque ligne diagonale complete (cases remplies) qui touche les bords gauche et inferieur de la Carte." };
-//const ScoringCard LostBarony = { 4, calcLostBarony, "Lost Barony", "Gagnez trois Etoiles de Reputation pour chaque case d'un cote du plus grand carre de cases remplies (ex: un carre de 4x4=12 Etoiles)." };
-//const ScoringCard TheCauldrons = { 4, calcTheCauldrons, "The Cauldrons", "Gagnez une Etoile de Reputation pour chaque case vide entoure des quatre cotes par des cases remplies ou le bord de la Carte." };
+const ScoringCard Borderlands = { 4, calcBorderlands, "Borderlands"};
+const ScoringCard BrokenRoad = { 4, calcBrokenRoad, "TheBrokenRoad"};
+const ScoringCard LostBarony = { 4, calcLostBarony, "LostBarony"};
+const ScoringCard TheCauldrons = { 4, calcTheCauldrons, "TheCauldrons"};
 
 const ScoringCard* scoringCards[16] = { &SentinelWood, &TreeTower, &GreenBough, &StoneSideQuest, &CanalLake, &ShoreSideExpanse, &GoldenGranary, &MagesValley, &Wildholds, &GreengoldPlains, &GreatCity, &Shieldgate, &Borderlands, &BrokenRoad, &LostBarony, &TheCauldrons };
+
 
 // Cartes Exploration
 const ExploreCard FarmLands = { .name = "Farm Lands", .time = 1, .pieceA = &L_LINE, .iscoinA = 1, .pieceB = &CROSS, .terrainA = CHAMPS };
@@ -77,21 +50,21 @@ const ExploreCard TreetopVillage = { .name = "Treetop Village", .time = 2, .piec
 const ExploreCard FishingVillage = { .name = "Fishing Village", .time = 2, .pieceA = &B_Z, .terrainA = EAU, .terrainB = VILLAGE };
 
 // Cartes Ennemis
-const ExploreCard GoblinAttack = { .name = "Goblin Attack", .isEnemy = 1, .rotation = -1, .pieceA = &DIAG,  };
 const ExploreCard BugbearAssault = { .name = "Bugbear Assault", .isEnemy = 1, .rotation = 1, .pieceA = &RECT_WITH_HOLE };
-const ExploreCard KoboldOnslaught = { .name = "Kobold Onslaught", .isEnemy = 1, .rotation = 1, .pieceA = &L_T };
-const ExploreCard GnollRaid = { .name = "Gnoll Raid", .isEnemy = 1, .rotation = -1, .pieceA = &U };
-const ExploreCard OgreCharge = { .name = "Ogre Charge", .isEnemy = 1, .rotation = -1, .pieceA = &CUBE };
-const ExploreCard InsectoidInvasion = { .name = "Insectoid Invasion", .isEnemy = 1, .rotation = 1, .pieceA = &Z };
-const ExploreCard RatmanStrike = { .name = "Ratman Strike", .isEnemy = 1, .rotation = 1, .pieceA = &LINE };
+const ExploreCard GoblinAttack = { .name = "Goblin Attack", .isEnemy = 1, .rotation = -1, .pieceA = &DIAG };
 const ExploreCard FlayerIncursion = { .name = "Flayer Incursion", .isEnemy = 1, .rotation = -1, .pieceA = &L_L };
+const ExploreCard GnollRaid = { .name = "Gnoll Raid", .isEnemy = 1, .rotation = -1, .pieceA = &U };
+const ExploreCard InsectoidInvasion = { .name = "Insectoid Invasion", .isEnemy = 1, .rotation = 1, .pieceA = &Z };
+const ExploreCard OgreCharge = { .name = "Ogre Charge", .isEnemy = 1, .rotation = -1, .pieceA = &CUBE };
+const ExploreCard RatmanStrike = { .name = "Ratman Strike", .isEnemy = 1, .rotation = 1, .pieceA = &LINE };
+const ExploreCard KoboldOnlaught = { .name = "Kobold Onslaught", .isEnemy = 1, .rotation = 1, .pieceA = &L_T };
 
 // Ruines et RiftLands
 const ExploreCard OutpostRuins = { .name = "Outpost Ruins", .isRuin = 1 };
 const ExploreCard TempleRuins = { .name = "Temple Ruins", .isRuin = 1 };
 const ExploreCard RiftLands = { .pieceA = &POINT, .terrainA = FORET, .name = "Rift Lands", .isRiftLands = 1 };
 
-const ExploreCard* expCards[21] = { &FarmLands, &ForgottenForest, &Hamlet, &GreatRiver, &HinterlandStream, &Homestead, &Orchard, &Marshlands, &TreetopVillage, &FishingVillage, &OutpostRuins, &TempleRuins, &RiftLands, &BugbearAssault, &GoblinAttack, &FlayerIncursion, &GnollRaid, &InsectoidInvasion, &OgreCharge, &RatmanStrike, &KoboldOnslaught };
+const ExploreCard* expCards[21] = { &FarmLands, &ForgottenForest, &Hamlet, &GreatRiver, &HinterlandStream, &Homestead, &Orchard, &Marshlands, &TreetopVillage, &FishingVillage, &OutpostRuins, &TempleRuins, &RiftLands, &BugbearAssault, &GoblinAttack, &FlayerIncursion, &GnollRaid, &InsectoidInvasion, &OgreCharge, &RatmanStrike, &KoboldOnlaught };
 
 /*TODO: 
 * Mise en place du jeu complet
@@ -236,16 +209,8 @@ void StartGame(GameState* gs, Camera3D camera) {
 void Season(GameState* gs, Camera3D camera, ModelList models) {
 	Model mountains[NOMBREMONTAGNE];
 	int mountainSeed[2] = { randInt(0, 100), randInt(0, 100) };
-	int mountainSeed2[2] = { randInt(0, 100), randInt(0, 100) };
-	clock_t begin = clock();
-	printf("generating seed data\n");
-	Seed s = generateSeed(mountainSeed);
-	//prégen de la seed de la saison suivante en parallèle pour gagner du temps
-	Seed* s2;
-	pthread_t thread;
-	pthread_create(&thread, NULL, generateSeedThread, mountainSeed2);
-
-	printf("seed data generated en : %.2f secondes \n", (double)(clock() - begin)/1000);
+	Seed s;
+	s.treeImage = generateForestImage(mountainSeed[0] * 10, mountainSeed[1] * 10);
 
 	gs->currentTime = 0;
 	int index = 0;
@@ -254,36 +219,12 @@ void Season(GameState* gs, Camera3D camera, ModelList models) {
 		const ExploreCard* card = Turn(gs, &index, &isRuin, camera, mountainSeed, models, s);
 		gs->currentTime += card->time;
 	}
-	pthread_join(thread, (void**)&s2);
-	Seed S2 = *s2;
-	free(s2);
-	NextSeason(gs, camera, models, S2, mountainSeed2);
-}
-
-void Season2(GameState* gs, Camera3D camera, ModelList models, Seed s, int mountainSeed[2]) {
-	Model mountains[NOMBREMONTAGNE];
-	int mountainSeed2[2] = { randInt(0, 100), randInt(0, 100) };
-	
-	Seed* s2;
-	pthread_t thread;
-	pthread_create(&thread, NULL, generateSeedThread, mountainSeed2);//prégen de la seed de la saison suivante en parallèle pour gagner du temps
-
-	gs->currentTime = 0;
-	int index = 0;
-	int isRuin = 0;
-	while (gs->currentTime < seasons[gs->currentSeason]->maxTime) {
-		const ExploreCard* card = Turn(gs, &index, &isRuin, camera, mountainSeed, models, s);
-		gs->currentTime += card->time;
-	}
-	pthread_join(thread, (void**)&s2);
-	Seed S2 = *s2;
-	free(s2);
-	NextSeason(gs, camera, models, S2, mountainSeed2);
+	NextSeason(gs, camera, models);
 }
 
 
 
-void NextSeason(GameState *gs, Camera3D camera, ModelList models, Seed s2, int mountainSeed[2]) {
+void NextSeason(GameState *gs, Camera3D camera, ModelList models) {
 	InitDeck(gs);
 	
 
@@ -304,7 +245,7 @@ void NextSeason(GameState *gs, Camera3D camera, ModelList models, Seed s2, int m
 
 	}
 
-	if (++gs->currentSeason < 4) Season2(gs, camera, models, s2, mountainSeed);
+	if (++gs->currentSeason < 4) Season(gs, camera, models);
 }
 
 // Tour de jeu
