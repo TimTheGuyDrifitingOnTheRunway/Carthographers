@@ -27,20 +27,20 @@
 					<Add directory="external/raylib/include" />
 				</Compiler>
 				<Linker>
-					<Add library="winmm.lib" />
-					<Add library="comctl32.lib" />
-					<Add library="kernel32.lib" />
-					<Add library="user32.lib" />
-					<Add library="gdi32.lib" />
-					<Add library="winspool.lib" />
-					<Add library="comdlg32.lib" />
-					<Add library="advapi32.lib" />
-					<Add library="shell32.lib" />
-					<Add library="ole32.lib" />
-					<Add library="oleaut32.lib" />
-					<Add library="uuid.lib" />
-					<Add library="odbc32.lib" />
-					<Add library="odbccp32.lib" />
+					<Add library="winmm" />
+					<Add library="comctl32" />
+					<Add library="kernel32" />
+					<Add library="user32" />
+					<Add library="gdi32" />
+					<Add library="winspool" />
+					<Add library="comdlg32" />
+					<Add library="advapi32" />
+					<Add library="shell32" />
+					<Add library="ole32" />
+					<Add library="oleaut32" />
+					<Add library="uuid" />
+					<Add library="odbc32" />
+					<Add library="odbccp32" />
 					<Add directory="external/raylib/lib" />
 				</Linker>
 			</Target>

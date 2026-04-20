@@ -1,20 +1,20 @@
 # depslib dependency file v1.0
-1776433386 source:e:\pc\documents\carthographers\gamemanager.c
+1776713718 source:e:\pc\documents\carthographers\gamemanager.c
 	"GameManager.h"
 
-1776433386 e:\pc\documents\carthographers\gamemanager.h
+1776713718 e:\pc\documents\carthographers\gamemanager.h
 	"Data.h"
 	"LibCarthographie.h"
 	"Lib3d.h"
 	"UI.h"
 
-1776433386 e:\pc\documents\carthographers\data.h
+1776713718 e:\pc\documents\carthographers\data.h
 	"Structs.h"
 
-1776538303 e:\pc\documents\carthographers\structs.h
+1776713718 e:\pc\documents\carthographers\structs.h
 	"Consts.h"
 
-1776541353 e:\pc\documents\carthographers\consts.h
+1776714427 e:\pc\documents\carthographers\consts.h
 	<stdio.h>
 	<stdlib.h>
 	<time.h>
@@ -24,37 +24,37 @@
 	"rlgl.h"
 	"raymath.h"
 
-1776434874 e:\pc\documents\carthographers\external\raylib\include\raylib.h
+1776714427 e:\pc\documents\carthographers\external\raylib\include\raylib.h
 	<stdarg.h>
 	<stdbool.h>
 
-1776435559 e:\pc\documents\carthographers\libcarthographie.h
+1776714427 e:\pc\documents\carthographers\libcarthographie.h
 	"Data.h"
 
-1776539246 e:\pc\documents\carthographers\lib3d.h
+1776713718 e:\pc\documents\carthographers\lib3d.h
 	"Data.h"
 	"LibCarthographie.h"
 	"UI.h"
 
-1776537907 e:\pc\documents\carthographers\ui.h
+1776713718 e:\pc\documents\carthographers\ui.h
 	"Data.h"
 
-1776540419 source:e:\pc\documents\carthographers\lib3d.c
+1776713718 source:e:\pc\documents\carthographers\lib3d.c
 	"Lib3d.h"
 
-1776537907 source:e:\pc\documents\carthographers\ui.c
+1776713718 source:e:\pc\documents\carthographers\ui.c
 	"UI.h"
 
 1776433386 source:e:\pc\documents\carthographers\libcarthographie.c
 	"LibCarthographie.h"
 
-1776537907 source:e:\pc\documents\carthographers\main.c
+1776713718 source:e:\pc\documents\carthographers\main.c
 	"LibCarthographie.h"
 	"Lib3d.h"
 	"GameManager.h"
 	"UI.h"
 
-1776434874 e:\pc\documents\carthographers\external\raylib\include\rlgl.h
+1776714427 e:\pc\documents\carthographers\external\raylib\include\rlgl.h
 	<stdbool.h>
 	<OpenGL/gl.h>
 	<OpenGL/glext.h>
@@ -69,6 +69,6 @@
 	<string.h>
 	<math.h>
 
-1776434874 e:\pc\documents\carthographers\external\raylib\include\raymath.h
+1776714427 e:\pc\documents\carthographers\external\raylib\include\raymath.h
 	<math.h>
 
