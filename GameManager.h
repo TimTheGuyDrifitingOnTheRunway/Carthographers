@@ -15,9 +15,10 @@ void EndGame(GameState* gs, int nbPlayers);
 
 
 void StartGame(GameState* gs, Camera3D camera);
-// Saison
-void NextSeason(GameState* gs, Camera3D camera, ModelList models);
-void Season(GameState* gs, Camera3D camera, ModelList models);
+// Saison 
+void NextSeason(GameState* gs, Camera3D camera, ModelList models, Seed s2, int mountainSeed[2]);
+void Season(GameState* gs, Camera3D camera, ModelList models);//première saison
+void Season2(GameState* gs, Camera3D camera, ModelList models, Seed s, int mountainSeed[2]);// 2ème saison et autre
 
 
 // Tour de jeu

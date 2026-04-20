@@ -11,6 +11,8 @@ int main()
 {
 	srand(time(NULL));
 
+
+
 	// Initialization
 	int screenWidth = 1280;
 	int screenHeight = 720;
@@ -81,6 +83,11 @@ int main()
 
 	SetupGame(&gs);
 
+	/*gs.edits[0] = &StoneSideQuest;
+	gs.edits[1] = &ShoreSideExpanse;
+	gs.edits[2] = &GreengoldPlains;
+	gs.edits[3] = &BrokenRoad;*/
+
 	DebugGameStats(&gs);
 
 
@@ -104,11 +111,11 @@ int main()
 	camera.fovy = 45.0f;                                // Camera field-of-view Y
 	camera.projection = CAMERA_PERSPECTIVE;             // Camera mode type
 
-	printf("\n\n\n\n Debug BSG \n\n\n\n");
+	//printf("\n\n\n\n Debug BSG \n\n\n\n");
 
 	StartGame(&gs, camera);
 
-	printf("\n\n\n\n Debug ASG \n\n\n\n");
+	//printf("\n\n\n\n Debug ASG \n\n\n\n");
 
 
 	sort_players_by_score(&gs);

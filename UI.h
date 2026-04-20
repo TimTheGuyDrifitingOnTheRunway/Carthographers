@@ -12,9 +12,10 @@ ScreenID RunKeybinds(GameState* gs);
 void DrawBackgroudMenu(Rectangle r);
 void DrawTitleEx(Rectangle r);
 int DrawTitle();
-void DrawTextWrapped(const char* text, Rectangle r, int fs, Color textColor);
 void SortRectangles(Rectangle** rlist, int listLen, int pad, float anchorPoint);		// Trie les rectangles de manière à les rendre alignés sur le 1er élément, en fonction du point d'encrage (0 : en colonne à partir de la gauche, .5f : milieu, 1 : droite)
 
+Vector2 MeasureTextWrapped(const char* text, Rectangle r, int fs, Color textColor);
+Vector2 DrawTextWrapped(const char* text, Rectangle r, int fs, Color textColor);
 
 void DrawButton(Button* btn);
 
