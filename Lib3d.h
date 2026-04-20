@@ -44,7 +44,4 @@ void generateMountainsModels(Model mountains[NOMBREMONTAGNE], FeuilleCarte f, in
 
 /*generation des forets*/
 Image generateForestImage(int x, int y);
-Image generateOffsetImage(int x, int y);//génère une noisemap pour faire les décalages de texture des arbres et éviter les répétitions visibles
-void* generateRandomOfsetImagesThread(void* arg);
-Seed generateSeed(int mountainSeed[2]);
-void* generateSeedThread(void* arg);//génération parallèle de la seed
+
