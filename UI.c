@@ -28,7 +28,7 @@ ScreenID RunMenu(GameState* gs) {
 		addBtn.bounds = (Rectangle){ midX - MAIN_MENU_BTN_WIDTH / 2, posY + 30, MAIN_MENU_BTN_WIDTH - 50, addBtn.fontSize + 40 };
 
 		SortRectangles(btns, 5, BUTTON_DELTA, 0.5f);
-
+		
 		addBtn.hovered = CheckCollisionPointRec(GetMousePosition(), addBtn.bounds);
 		ruleBtn.hovered = CheckCollisionPointRec(GetMousePosition(), ruleBtn.bounds);
 		keyBtn.hovered = CheckCollisionPointRec(GetMousePosition(), keyBtn.bounds);
@@ -569,7 +569,7 @@ Color multiplyColor(Color color, float factor) {
 	return (Color) { fminf(color.r * factor, 255), fminf(color.g * factor, 255), fminf(color.b * factor, 255), color.a };
 }
 
-Texture2D LoadTextureRounded(const char* fileName, float radius, int width, int height) {// a finir (j'ai du ajouter le flag no-mismatch pour ignorer les retours no correspondants)
+Texture2D LoadTextureRounded(const char* fileName, float radius, int width, int height) {
 
 	return;
 
