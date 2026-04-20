@@ -51,27 +51,11 @@
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
+					<Add option="-Wall" />
 					<Add option="-g" />
 					<Add option="-D_DEBUG" />
 					<Add option="-D_CONSOLE" />
-					<Add option="-Wall" />
 				</Compiler>
-				<Linker>
-					<Add library="winmm.lib" />
-					<Add library="comctl32.lib" />
-					<Add library="kernel32.lib" />
-					<Add library="user32.lib" />
-					<Add library="gdi32.lib" />
-					<Add library="winspool.lib" />
-					<Add library="comdlg32.lib" />
-					<Add library="advapi32.lib" />
-					<Add library="shell32.lib" />
-					<Add library="ole32.lib" />
-					<Add library="oleaut32.lib" />
-					<Add library="uuid.lib" />
-					<Add library="odbc32.lib" />
-					<Add library="odbccp32.lib" />
-				</Linker>
 			</Target>
 			<Target title="Release x64">
 				<Option output="Release/TesteCarthographie" prefix_auto="1" extension_auto="1" />
@@ -80,26 +64,12 @@
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
+					<Add option="-Wall" />
+					<Add option="-Wno-unused-variable" />
+					<Add option="-Wno-unused-but-set-variable" />
 					<Add option="-DNDEBUG" />
 					<Add option="-D_CONSOLE" />
-					<Add option="-Wall" />
 				</Compiler>
-				<Linker>
-					<Add library="winmm.lib" />
-					<Add library="comctl32.lib" />
-					<Add library="kernel32.lib" />
-					<Add library="user32.lib" />
-					<Add library="gdi32.lib" />
-					<Add library="winspool.lib" />
-					<Add library="comdlg32.lib" />
-					<Add library="advapi32.lib" />
-					<Add library="shell32.lib" />
-					<Add library="ole32.lib" />
-					<Add library="oleaut32.lib" />
-					<Add library="uuid.lib" />
-					<Add library="odbc32.lib" />
-					<Add library="odbccp32.lib" />
-				</Linker>
 			</Target>
 			<Target title="Release Win32">
 				<Option output="Release/TesteCarthographie" prefix_auto="1" extension_auto="1" />
@@ -108,29 +78,25 @@
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
+					<Add option="-Wall" />
+					<Add option="-Wno-unused-variable" />
+					<Add option="-Wno-unused-but-set-variable" />
 					<Add option="-DWIN32" />
 					<Add option="-DNDEBUG" />
 					<Add option="-D_CONSOLE" />
-					<Add option="-Wall" />
 				</Compiler>
-				<Linker>
-					<Add library="winmm.lib" />
-					<Add library="comctl32.lib" />
-					<Add library="kernel32.lib" />
-					<Add library="user32.lib" />
-					<Add library="gdi32.lib" />
-					<Add library="winspool.lib" />
-					<Add library="comdlg32.lib" />
-					<Add library="advapi32.lib" />
-					<Add library="shell32.lib" />
-					<Add library="ole32.lib" />
-					<Add library="oleaut32.lib" />
-					<Add library="uuid.lib" />
-					<Add library="odbc32.lib" />
-					<Add library="odbccp32.lib" />
-				</Linker>
 			</Target>
 		</Build>
+		<Compiler>
+			<Add option="-Wno-format" />
+			<Add option="-Wno-switch" />
+			<Add option="-Wno-return-type" />
+			<Add option="-Wno-int-to-pointer-cast" />
+			<Add option="-Wno-pointer-to-int-cast" />
+			<Add option="-Wno-incompatible-pointer-types" />
+			<Add option="-Wno-return-mismatch" />
+			<Add directory="external/raylib/include" />
+		</Compiler>
 		<Linker>
 			<Add library="libraylib.a" />
 			<Add library="winmm" />
@@ -139,6 +105,16 @@
 			<Add library="kernel32" />
 			<Add library="user32" />
 			<Add library="shell32" />
+			<Add library="comctl32" />
+			<Add library="winspool" />
+			<Add library="comdlg32" />
+			<Add library="advapi32" />
+			<Add library="ole32" />
+			<Add library="oleaut32" />
+			<Add library="uuid" />
+			<Add library="odbc32" />
+			<Add library="odbccp32" />
+			<Add directory="external/raylib/lib" />
 		</Linker>
 		<Unit filename="Consts.h" />
 		<Unit filename="Data.h" />

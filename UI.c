@@ -28,7 +28,7 @@ ScreenID RunMenu(GameState* gs) {
 		addBtn.bounds = (Rectangle){ midX - MAIN_MENU_BTN_WIDTH / 2, posY + 30, MAIN_MENU_BTN_WIDTH - 50, addBtn.fontSize + 40 };
 
 		SortRectangles(btns, 5, BUTTON_DELTA, 0.5f);
-		
+
 		addBtn.hovered = CheckCollisionPointRec(GetMousePosition(), addBtn.bounds);
 		ruleBtn.hovered = CheckCollisionPointRec(GetMousePosition(), ruleBtn.bounds);
 		keyBtn.hovered = CheckCollisionPointRec(GetMousePosition(), keyBtn.bounds);
@@ -269,8 +269,8 @@ ScreenID RunKeybinds(GameState* gs) {
 		Exit.hovered = CheckCollisionPointRec(GetMousePosition(), Exit.bounds);
 
 
-		if (Exit.hovered) SetMouseCursor(MOUSE_CURSOR_DEFAULT);
-		else SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
+		if (Exit.hovered) SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
+		else SetMouseCursor(MOUSE_CURSOR_DEFAULT);
 
 		BeginDrawing();
 		ClearBackground(BGCOLOR);
@@ -329,25 +329,67 @@ void DrawBackgroudMenu(Rectangle r) {
 	DrawTitleEx(tr);
 }
 
-void DrawTextWrapped(const char* text, Rectangle r, int fs, Color textColor) {
+Vector2 MeasureTextWrapped(const char* text, Rectangle r, int fs, Color textColor) {
 	float curX = r.x;									// Curseur en X
 	float curY = r.y;									// Curseur en Y
 	float maxX = r.x + r.width;							// Taille max à ne pas dépasser
 	float lineHeight = fs * 1.1f;						// Hauteur de ligne
-	int spaceW = (int)(MeasureText(" ", fs) * 1.5f);	// Taille d'espace
-	char word[30] = "";
+	int spaceW = (int)(MeasureText(" ", fs) * 1.2f);	// Taille d'espace
+	char word[64] = "";
 	int wordSize = 0;
 	char c = 'a';										// Char actuel
 	int drawSize = 0;									// Taille dessinée
 	int len = strlen(text);
 
+	float maxReachedX = r.x;  // ← suivi du X max atteint
+
 	for (int i = 0; i < len; i++) {
-		strcpy(word, "");
-		c = text[i];					
+		word[0] = '\0';
+		c = text[i];
 		wordSize = 0;
-		while (i < len && c != ' ' && c != '\n') {
-			word[wordSize++] = c;
-			word[wordSize] = '\0';
+		while (i < len - 1 && c != ' ' && c != '\n') {
+			word[wordSize] = c;
+			word[++wordSize] = '\0';
+			c = text[++i];
+		}
+		drawSize = MeasureText(word, fs);
+		if (curX + drawSize > maxX) {
+			curY += lineHeight;
+			curX = r.x;
+		}
+
+		curX += drawSize + spaceW;
+		if (curX > maxReachedX) maxReachedX = curX;
+		if (c == '\n') {
+			curY += lineHeight;
+			curX = r.x;
+		}
+	}
+
+	return (Vector2) { maxReachedX - r.x, (curY - r.y) + lineHeight };
+}
+
+Vector2 DrawTextWrapped(const char* text, Rectangle r, int fs, Color textColor) {
+	float curX = r.x;									// Curseur en X
+	float curY = r.y;									// Curseur en Y
+	float maxX = r.x + r.width;							// Taille max à ne pas dépasser
+	float lineHeight = fs * 1.1f;						// Hauteur de ligne
+	int spaceW = (int)(MeasureText(" ", fs) * 1.2f);	// Taille d'espace
+	char word[64] = "";
+	int wordSize = 0;
+	char c = 'a';										// Char actuel
+	int drawSize = 0;									// Taille dessinée
+	int len = strlen(text);
+
+	float maxReachedX = r.x;  // ← suivi du X max atteint
+
+	for (int i = 0; i < len; i++) {
+		word[0] = '\0';
+		c = text[i];
+		wordSize = 0;
+		while (i < len - 1 && c != ' ' && c != '\n') {
+			word[wordSize] = c;
+			word[++wordSize] = '\0';
 			c = text[++i];
 		}
 		drawSize = MeasureText(word, fs);
@@ -357,12 +399,16 @@ void DrawTextWrapped(const char* text, Rectangle r, int fs, Color textColor) {
 		}
 		DrawText(word, curX, curY, fs, textColor);
 		curX += drawSize + spaceW;
+		if (curX > maxReachedX) maxReachedX = curX;
 		if (c == '\n') {
 			curY += lineHeight;
 			curX = r.x;
 		}
 	}
+
+	return (Vector2) { maxReachedX - r.x, (curY - r.y) + lineHeight };
 }
+
 
 void SortRectangles(Rectangle** rlist, int listLen, int pad, float anchorPoint) {
 	int delta = 0;
@@ -523,4 +569,15 @@ Color multiplyColor(Color color, float factor) {
 	return (Color) { fminf(color.r * factor, 255), fminf(color.g * factor, 255), fminf(color.b * factor, 255), color.a };
 }
 
+Texture2D LoadTextureRounded(const char* fileName, float radius, int width, int height) {// a finir (j'ai du ajouter le flag no-mismatch pour ignorer les retours no correspondants)
+
+	return;
+
+
+
+
+
+
+
+}
 

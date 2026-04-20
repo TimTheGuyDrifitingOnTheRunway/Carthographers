@@ -7,13 +7,13 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 	Image treeImage = s.treeImage;
 	int nb = 0;
 
-    //rendu de skybox:
+	//rendu de skybox:
 
-    rlDisableBackfaceCulling();
-                rlDisableDepthMask();
-                    DrawModel(models.skybox, (Vector3){0, 0, 0}, 1.0f, WHITE);
-                rlEnableBackfaceCulling();
-                rlEnableDepthMask();
+	rlDisableBackfaceCulling();
+	rlDisableDepthMask();
+	DrawModel(models.skybox, (Vector3) { 0, 0, 0 }, 1.0f, WHITE);
+	rlEnableBackfaceCulling();
+	rlEnableDepthMask();
 
 
 	for (int i = 0; i < SIZE; i++) {
@@ -31,7 +31,7 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 			}
 #else // DEBUG_FORET
 
-//couleur du fond de carte
+			//couleur du fond de carte
 			{
 				float x = i - (SIZE - 1) / 2.0f;
 				float z = j - (SIZE - 1) / 2.0f;
@@ -40,8 +40,8 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 					float lum = ColorToHSV(GetImageColor(treeImage, j * 10 + l, i * 10 + k)).z;
 					unsigned char blue = (pow((lum), WATER_POWER) + WATER_OFSET) * 255 > 254 ? 254 : ((pow((lum), WATER_POWER) + WATER_OFSET) * 255 < 50) ? 50 : (pow((lum), WATER_POWER) + WATER_OFSET) * 255;
 
-					Color c = (Color){ blue * WATER_RED_FACTOR, blue * WATER_GREEN_FACTOR, blue, 255 };
-					DrawCube((Vector3) { x - 0.5f + (float)k / TREE_DIVIDER, y + 0.9 + lum / 2, z - 0.5 + (float)l / TREE_DIVIDER }, 0.1f, 0.5 * lum, 0.1f, c);
+					Color c = (Color){ blue * WATER_RED_FACTOR, blue * WATER_GREEN_FACTOR, blue,  WATER_TRANSPARENCY };
+					DrawCube((Vector3) { x - 0.5f + (float)k / TREE_DIVIDER, y + 0.9 + lum / 2 +WATER_CUBE_OFSET, z - 0.5 + (float)l / TREE_DIVIDER }, 0.1f, 0.5 * lum* WATER_CUBE_HEIGHT_MULTIPLYER, 0.1f, c);
 				}
 			}
 #endif
@@ -82,14 +82,22 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 						Color c2 = (Color){ (unsigned char)150, green, (unsigned char)10, 255 };//couleur de base pour les arbres
 						Color c3 = (Color){ green, green * 0.8f ,(unsigned char)50 , 255 };//couleur de base pour les arbres
 
+						//calcul des ofset d'arbres
+						float rxOfset = (ColorToHSV(GetImageColor(s.OfsetImagex, j * 10 + l, i * 10 + k)).z-0.5f)*0.5f;
+						float rzOfset = (ColorToHSV(GetImageColor(s.OfsetImagey, j * 10 + l, i * 10 + k)).z - 0.5f) * 0.5f;
 
+						clamp(rxOfset, -0.1f, 0.1f);
+						clamp(rzOfset, -0.1f, 0.1f);
 
+#define FOREST_BORDER 0.5f
 						//choix du type de model à dessiner
-						if (color.z < FOREST_TRESHOLD) DrawModelEx(models.tree, (Vector3) { x - 0.5f + (float)k / TREE_DIVIDER, y + TREE_Y_OFSET, z - 0.5 + (float)l / TREE_DIVIDER }, (Vector3) { 1, 0, 0 }, 0, (Vector3) { TREE_SIZE, TREE_SIZE, TREE_SIZE }, c2);
+						if ((-0.5f + (float)k / TREE_DIVIDER + rxOfset < FOREST_BORDER) && (-0.5f + (float)k / TREE_DIVIDER + rxOfset) > -FOREST_BORDER && (-0.5 + (float)l / TREE_DIVIDER + rzOfset) < FOREST_BORDER && (-0.5 + (float)l / TREE_DIVIDER + rzOfset) > -FOREST_BORDER) {
+							if (color.z < FOREST_TRESHOLD) DrawModelEx(models.tree, (Vector3) { x - 0.5f + (float)k / TREE_DIVIDER + rxOfset, y + TREE_Y_OFSET, z - 0.5 + (float)l / TREE_DIVIDER + rzOfset }, (Vector3) { 1, 0, 0 }, 0, (Vector3) { TREE_SIZE, TREE_SIZE, TREE_SIZE }, c2);
 
-						else if ((color.z > FOREST_TRESHOLD) && color.z < BUSH_TRESHOLD) DrawModelEx(models.buisson, (Vector3) { x - 0.5f + (float)k / TREE_DIVIDER, y + 0.5, z - 0.5 + (float)l / TREE_DIVIDER }, (Vector3) { 1, 0, 0 }, 0, (Vector3) { BUSH_SIZE, BUSH_SIZE, BUSH_SIZE }, c);
+							else if ((color.z > FOREST_TRESHOLD) && color.z < BUSH_TRESHOLD) DrawModelEx(models.buisson, (Vector3) { x - 0.5f + (float)k / TREE_DIVIDER + rxOfset, y + 0.5, z - 0.5 + (float)l / TREE_DIVIDER + rzOfset }, (Vector3) { 1, 0, 0 }, 0, (Vector3) { BUSH_SIZE, BUSH_SIZE, BUSH_SIZE }, c);
 
-						else DrawModelEx(models.buisson, (Vector3) { x - 0.5f + (float)k / TREE_DIVIDER, y + 0.5, z - 0.5 + (float)l / TREE_DIVIDER }, (Vector3) { 1, 0, 0 }, 0, (Vector3) { BUSH_SIZE, BUSH_SIZE * 1.2f, BUSH_SIZE }, c3);
+							else if (color.z > BUSH_TRESHOLD && color.z < FOREST_END_TRESHOLD)DrawModelEx(models.buisson, (Vector3) { x - 0.5f + (float)k / TREE_DIVIDER + rxOfset, y + 0.5, z - 0.5 + (float)l / TREE_DIVIDER + rzOfset }, (Vector3) { 1, 0, 0 }, 0, (Vector3) { BUSH_SIZE, BUSH_SIZE * 1.2f, BUSH_SIZE }, c3);
+						}
 
 					}
 					break;
@@ -303,14 +311,69 @@ void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera) {
 void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state, int score, Camera3D camera, Model mountain[NOMBREMONTAGNE], Position mountainPos[NOMBREMONTAGNE], Seed s, ModelList models) {
 	int midX = GetScreenWidth() / 2;
 	int midY = GetScreenHeight() / 2;
+	static bool openPlayerPanel = 0;
 
 	Rectangle infoPanel = { 0, midY - 700 / 2, 400, 700 };
-	Rectangle playerPanel = { midX * 2 - 400, 0, 400, 250 };
+	//Rectangle playerPanel = { midX * 2 - 400, 100, 400, 250 };
+
+	Rectangle editsRec = (Rectangle){ midX - 40, -60, 80, 120 };
+
+	// Calcul de la largeur de chaque edit séparément
+	const char* editLabels[4];
+	Rectangle editRects[4];
+
+	{
+		int len;		// réduction de la portée car nom commun
+		for (int i = 0; i < 4; i++) {
+			len = strlen(gs->edits[i]->name) + 8;
+			editLabels[i] = (char*)malloc(len * sizeof(char));
+			snprintf(editLabels[i], len, "  [%c] %s  ", 'A' + i, gs->edits[i]->name);
+			//printf("%d\n", (int)strlen(gs->edits[i]->name));
+			editRects[i].width = MeasureText(editLabels[i], EDITS_FS);
+			editRects[i].height = editsRec.height / 2;
+			editsRec.width += editRects[i].width;
+			editsRec.x -= editRects[i].width / 2;
+		}
+	}
+
+	// Les positionner côte à côte
+	int startX = midX - editsRec.width / 2;
+	for (int i = 0; i < 4; i++) {
+		editRects[i].x = startX + 40;
+		editRects[i].y = 0;
+		startX += editRects[i].width + 8;
+	}
+
+	// Hover timer
+	static float hoverTime[5] = { 0 };		// Le dernier sert à éviter de désafficher puis réafficher si on bouge vite entre 2 édits
+	Vector2 mouse = GetMousePosition();
+	int tooltipTarget = -1;
+
+	for (int i = 0; i < 4; i++) {
+		if (CheckCollisionPointRec(mouse, editRects[i])) {
+			hoverTime[i] += GetFrameTime();
+			hoverTime[4] = hoverTime[4] > 0 ? 4 * .4f : hoverTime[4] + 4 * GetFrameTime();				// délai de 1 seconde avant de désafficher / réafficher (on multiplie par 4, car le temps est modifié 4 fois par frame, lors des vérifications des autres Edits)
+			printf("\nSet Hover Delta Time = %.4f", hoverTime[4] / 4);
+		} else {
+			hoverTime[i] = 0.f;
+			hoverTime[4] -= GetFrameTime();
+			hoverTime[4] = max(hoverTime[4], -.4f);			
+			printf("\nDec Hover Delta Time = %.4f", hoverTime[4] / 4);
+		}
+
+		if (hoverTime[i] >= .4f || (hoverTime[4] > 0 && hoverTime[i] >= .1f)) // .6 secondes ou .1 sec si déjà hover
+			tooltipTarget = i;
+	}
+
+	const char* seasonLabel = TextFormat("%s", seasons[gs->currentSeason]->name);
+
+	Rectangle seasonRec = (Rectangle){ midX - MeasureText(seasonLabel, EDITS_FS) / 2 - 40, editsRec.y + editsRec.height - 50, MeasureText(seasonLabel, EDITS_FS) + 80, 100 };
+
+	Rectangle playerRec = (Rectangle){ GetScreenWidth() - 50 - (openPlayerPanel ? max(PLAYER_REC_WIDTH, MeasureText(gs->players[gs->playerIndex].name, PLAYER_PANEL_FS + 10) - 20) : 0), midY - PLAYER_REC_HEIGHT / 2, MeasureText(gs->players[gs->playerIndex].name, PLAYER_PANEL_FS + 10) + PLAYER_REC_HEIGHT, PLAYER_REC_HEIGHT };
+	openPlayerPanel = CheckCollisionPointRec(mouse, playerRec);
 
 	BeginDrawing();
 	ClearBackground(BACKGROUND_COLOR);
-
-
 	BeginMode3D(camera);
 
 
@@ -322,8 +385,6 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 				DrawCubeWires((Vector3) { (float)i - SIZE / 2, PLACEMENT_HEIGHT, (float)j - SIZE / 2 }, 1.0f, 1.0f, 1.0f, BORDERCOLOR);
 
 
-
-
 	GUIdrawGrille();
 	EndMode3D();
 
@@ -332,29 +393,64 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 	// Infos relatives à tous les joueurs
 	DrawRectangleStroke(infoPanel, 3, WHITE, RED);
 	int y1 = 5;
-	DrawText(TextFormat("Carte : %s", state->card->name), 5, infoPanel.y + y1, 25, BLACK); y1 += 30;
-	DrawText(TextFormat("2 formes : %d", state->hasTwoShapes), 5, infoPanel.y + y1, 25, BLACK); y1 += 30;
-	DrawText(TextFormat("2 matériaux : %d", state->hasTwoMat), 5, infoPanel.y + y1, 25, BLACK); y1 += 30;
-	DrawText(TextFormat("Saison : %s", seasons[gs->currentSeason]->name), 5, infoPanel.y + y1, 25, BLACK); y1 += 30;
-	DrawText(TextFormat("Edits : %s / %s", gs->edits[seasons[gs->currentSeason]->EditA]->name, gs->edits[seasons[gs->currentSeason]->EditB]->name), 5, infoPanel.y + y1, 15, BLACK); y1 += 20;
-	for (int i = 0; i < 4; i++) {
-		DrawText(TextFormat("Edit %d : %s", i, gs->edits[i]->name), 5, infoPanel.y + y1, 25, BLACK); y1 += 30;
-	}
-	if (state->isRuin) DrawText("Doit être placé sur une Ruine", 5, infoPanel.y + y1, 30, RED); y1 += 35;
-	if (state->isRiftLands) DrawText("Tous matériaux disponibles !", 5, infoPanel.y + y1, 30, RED); y1 += 35;
+	//DrawText(TextFormat("Carte : %s", state->card->name), 5, infoPanel.y + y1, 25, BLACK); y1 += 30;
+	//DrawText(TextFormat("2 formes : %d", state->hasTwoShapes), 5, infoPanel.y + y1, 25, BLACK); y1 += 30;
+	//DrawText(TextFormat("2 matériaux : %d", state->hasTwoMat), 5, infoPanel.y + y1, 25, BLACK); y1 += 30;
+	//DrawText(TextFormat("Saison : %s", seasons[gs->currentSeason]->name), 5, infoPanel.y + y1, 25, BLACK); y1 += 30;
+	//DrawText(TextFormat("Edits : %s / %s", gs->edits[seasons[gs->currentSeason]->EditA]->name, gs->edits[seasons[gs->currentSeason]->EditB]->name), 5, infoPanel.y + y1, 15, BLACK); y1 += 20;
+	//for (int i = 0; i < 4; i++) {
+	//	DrawText(TextFormat("Edit %d : %s", i, gs->edits[i]->name), 5, infoPanel.y + y1, 25, BLACK); y1 += 30;
+	//}
+	//if (state->isRuin) DrawText("Doit être placé sur une Ruine", 5, infoPanel.y + y1, 30, RED); y1 += 35;
+	//if (state->isRiftLands) DrawText("Tous matériaux disponibles !", 5, infoPanel.y + y1, 30, RED); y1 += 35;
+
+
+
 
 	// Infos relatives au joueur actuel
-	int y2 = 5;
-	DrawRectangleStroke(playerPanel, 3, SKYBLUE, DARKBLUE);
-	DrawText("Joueur : ", playerPanel.x + 5, y2, 30, BLACK); y2 += 35;
-	DrawText(gs->players[gs->playerIndex].name, playerPanel.x + 5, y2, 30, BLACK); y2 += 35;
-	DrawText(TextFormat("Score : %d", score), playerPanel.x + 5, y2, 30, BLACK); y2 += 35;
-	DrawText(TextFormat("Coins : %d", gs->players[gs->playerIndex].coinCount), playerPanel.x + 5, y2, 30, BLACK); y2 += 35;
+	int y2 = 20;
+	//DrawRectangleStroke(playerPanel, 3, SKYBLUE, DARKBLUE);
+	//DrawText("Joueur : ", playerPanel.x + 5, y2, 30, BLACK); y2 += 35;
+	//DrawText(gs->players[gs->playerIndex].name, playerPanel.x + 5, y2, 30, BLACK); y2 += 35;
+	//DrawText(TextFormat("Score : %d", score), playerPanel.x + 5, y2, 30, BLACK); y2 += 35;
+	//DrawText(TextFormat("Coins : %d", gs->players[gs->playerIndex].coinCount), playerPanel.x + 5, y2, 30, BLACK); y2 += 35;
+	DrawRectangleRoundedStrokeEx(playerRec, .1f, 10, 3, LIGHTGRAY, BROWN);
+	DrawText(gs->players[gs->playerIndex].name, playerRec.x + 10, playerRec.y + 5, PLAYER_PANEL_FS + 10, BLACK);
+	DrawText(TextFormat("SCORE  %d", score), playerRec.x + 10, playerRec.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, BLACK);										y2 += PLAYER_PANEL_FS + 10;
+	DrawText(TextFormat("COINS  %d", gs->players[gs->playerIndex].coinCount), playerRec.x + 10, playerRec.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, BLACK);	y2 += PLAYER_PANEL_FS + 10;
+	//if (gs->isOnline) { DrawText(TextFormat("COINS  %d", gs->players[gs->playerIndex].coinCount), playerRec.x + 10, playerRec.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, BLACK); }
+
+	// Edits & Saison
+	DrawRectangleRoundedStrokeEx(seasonRec, 1.f, 10, 2, BGCOLOR, GREEN);
+	DrawRectangleRoundedStrokeEx(editsRec, 1.f, 10, 2, BGCOLOR, GOLD);
+	for (int i = 0; i < 4; i++) {
+		DrawStrokeTextEx(editLabels[i], editRects[i].x, editRects[i].y + 10, EDITS_FS, GOLD, BLACK, 1);
+		//DrawRectangleLinesEx(editRects[i], 2, WHITE);
+		//printf("Impression de l'edit %d (nom %s) a la place (%d,%d), taille %d\n", i, editLabels[i], (int)editRects[i].x + 10, (int)editRects[i].y + 10, EDITS_FS);
+	}
+	DrawStrokeTextEx(TextFormat("%s", seasons[gs->currentSeason]->name), seasonRec.x + 40, seasonRec.y + 60, EDITS_FS, GOLD, BLACK, 1);
 
 
+#define A_MID(a,b) (midX < mouse.x ? a : b)
+	if (tooltipTarget != -1) {	// Affiche les tooltips
+		const char* desc = gs->edits[tooltipTarget]->description;
+		Rectangle maxBounds = (Rectangle){ A_MID(20, mouse.x), mouse.y + 20, A_MID(mouse.x, GetScreenWidth() - mouse.x) - 20, 0 };
+		Vector2 recSize = MeasureTextWrapped(desc, maxBounds, 20, WHITE);
+		maxBounds.x = A_MID(mouse.x - recSize.x, maxBounds.x - 20) - 10;
+		maxBounds.y += 5;																											// Augmente le décalage entre la souris et le texte en y
+		maxBounds.width = recSize.x + 40;
+		maxBounds.height = recSize.y + 20;
 
+		DrawRectangleRoundedStrokeEx(maxBounds, 0.3f, 10, 2, Fade(BLACK, 0.65f), BLACK);
+
+		DrawTextWrapped(desc, (Rectangle) { maxBounds.x + 20, maxBounds.y + 10, maxBounds.width - 40, 0 }, 20, WHITE);
+
+	}
+#undef A_MID
 
 	EndDrawing();
+
+	for (int i = 0; i < 4; i++) free(editLabels[i]);
 }
 
 void ApplyPlacement(FeuilleCarte f, PlacementState* state, int* coinCount) {
@@ -558,152 +654,201 @@ ModelList loadModels() {
 	models.tree = LoadModel(PATH_TO_TREE_MODEL);
 	models.buisson = LoadModel(PATH_TO_BUSH_MODEL);
 	models.skybox = loadSkybox(false);
-	//Texture2D texture = LoadTexture("resources/models/iqm/guytex.png");         // Load model texture and set material
-	//SetMaterialTexture(&(models.tree).materials[0], MATERIAL_MAP_DIFFUSE, texture);
 	return models;
 }
 
 
-Model loadSkybox(bool useHDR){
- Mesh cube = GenMeshCube(1.0f, 1.0f, 1.0f);
-    Model skybox = LoadModelFromMesh(cube);
+Model loadSkybox(bool useHDR) {
+	Mesh cube = GenMeshCube(1.0f, 1.0f, 1.0f);
+	Model skybox = LoadModelFromMesh(cube);
 
-    // Set this to true to use an HDR Texture
-    // NOTE: raylib must be built with HDR Support for this to work: SUPPORT_FILEFORMAT_HDR
+	// Set this to true to use an HDR Texture
+	// NOTE: raylib must be built with HDR Support for this to work: SUPPORT_FILEFORMAT_HDR
 
 
-    // Load skybox shader and set required locations
-    // NOTE: Some locations are automatically set at shader loading
-    skybox.materials[0].shader = LoadShader(TextFormat(SKYBOX_SHADER_PATH, GLSL_VERSION),
-                                            TextFormat(SKYBOX_SHADER_PATH2, GLSL_VERSION));
+	// Load skybox shader and set required locations
+	// NOTE: Some locations are automatically set at shader loading
+	skybox.materials[0].shader = LoadShader(TextFormat(SKYBOX_SHADER_PATH, GLSL_VERSION),
+		TextFormat(SKYBOX_SHADER_PATH2, GLSL_VERSION));
 
-                                            #define SKYBOX_SHADER_PATH "Assets/shaders/glsl%i/skybox.vs"
-                                            #define SKYBOX_SHADER_PATH2 "Assets/shaders/glsl%i/skybox.fs"
-                                            #define SKYBOX_CUBEMAP_SHADER_PATH "Assets/shaders/glsl%i/cubemap.vs"
-                                            #define SKYBOX_CUBEMAP_SHADER_PATH "Assets/shaders/glsl%i/cubemap.fs"
+#define SKYBOX_SHADER_PATH "Assets/shaders/glsl%i/skybox.vs"
+#define SKYBOX_SHADER_PATH2 "Assets/shaders/glsl%i/skybox.fs"
+#define SKYBOX_CUBEMAP_SHADER_PATH "Assets/shaders/glsl%i/cubemap.vs"
+#define SKYBOX_CUBEMAP_SHADER_PATH "Assets/shaders/glsl%i/cubemap.fs"
 
-    SetShaderValue(skybox.materials[0].shader, GetShaderLocation(skybox.materials[0].shader, "environmentMap"), (int[1]){ MATERIAL_MAP_CUBEMAP }, SHADER_UNIFORM_INT);
-    SetShaderValue(skybox.materials[0].shader, GetShaderLocation(skybox.materials[0].shader, "doGamma"), (int[1]){ useHDR? 1 : 0 }, SHADER_UNIFORM_INT);
-    SetShaderValue(skybox.materials[0].shader, GetShaderLocation(skybox.materials[0].shader, "vflipped"), (int[1]){ useHDR? 1 : 0 }, SHADER_UNIFORM_INT);
+	SetShaderValue(skybox.materials[0].shader, GetShaderLocation(skybox.materials[0].shader, "environmentMap"), (int[1]) { MATERIAL_MAP_CUBEMAP }, SHADER_UNIFORM_INT);
+	SetShaderValue(skybox.materials[0].shader, GetShaderLocation(skybox.materials[0].shader, "doGamma"), (int[1]) { useHDR ? 1 : 0 }, SHADER_UNIFORM_INT);
+	SetShaderValue(skybox.materials[0].shader, GetShaderLocation(skybox.materials[0].shader, "vflipped"), (int[1]) { useHDR ? 1 : 0 }, SHADER_UNIFORM_INT);
 
-    // Load cubemap shader and setup required shader locations
-    Shader shdrCubemap = LoadShader(TextFormat(SKYBOX_CUBEMAP_SHADER_PATH, GLSL_VERSION),
-                                    TextFormat( SKYBOX_CUBEMAP_SHADER_PATH, GLSL_VERSION));
+	// Load cubemap shader and setup required shader locations
+	Shader shdrCubemap = LoadShader(TextFormat(SKYBOX_CUBEMAP_SHADER_PATH, GLSL_VERSION),
+		TextFormat(SKYBOX_CUBEMAP_SHADER_PATH, GLSL_VERSION));
 
-    SetShaderValue(shdrCubemap, GetShaderLocation(shdrCubemap, "equirectangularMap"), (int[1]){ 0 }, SHADER_UNIFORM_INT);
+	SetShaderValue(shdrCubemap, GetShaderLocation(shdrCubemap, "equirectangularMap"), (int[1]) { 0 }, SHADER_UNIFORM_INT);
 
-    char skyboxFileName[256] = { 0 };
+	char skyboxFileName[256] = { 0 };
 
-    if (useHDR)
-    {
-        TextCopy(skyboxFileName, PATH_TO_HDR_SKYBOX);
+	if (useHDR)
+	{
+		TextCopy(skyboxFileName, PATH_TO_HDR_SKYBOX);
 
-        // Load HDR panorama (sphere) texture
-        Texture2D panorama = LoadTexture(skyboxFileName);
+		// Load HDR panorama (sphere) texture
+		Texture2D panorama = LoadTexture(skyboxFileName);
 
-        // Generate cubemap (texture with 6 quads-cube-mapping) from panorama HDR texture
-        // NOTE 1: New texture is generated rendering to texture, shader calculates the sphere->cube coordinates mapping
-        // NOTE 2: It seems on some Android devices WebGL, fbo does not properly support a FLOAT-based attachment,
-        // despite texture can be successfully created.. so using PIXELFORMAT_UNCOMPRESSED_R8G8B8A8 instead of PIXELFORMAT_UNCOMPRESSED_R32G32B32A32
-        skybox.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture = GenTextureCubemap(shdrCubemap, panorama, 1024, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
+		// Generate cubemap (texture with 6 quads-cube-mapping) from panorama HDR texture
+		// NOTE 1: New texture is generated rendering to texture, shader calculates the sphere->cube coordinates mapping
+		// NOTE 2: It seems on some Android devices WebGL, fbo does not properly support a FLOAT-based attachment,
+		// despite texture can be successfully created.. so using PIXELFORMAT_UNCOMPRESSED_R8G8B8A8 instead of PIXELFORMAT_UNCOMPRESSED_R32G32B32A32
+		skybox.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture = GenTextureCubemap(shdrCubemap, panorama, 1024, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
 
-        UnloadTexture(panorama);        // Texture not required anymore, cubemap already generated
-    }
-    else
-    {
+		UnloadTexture(panorama);        // Texture not required anymore, cubemap already generated
+	}
+	else
+	{
 
-        Image image = LoadImage(PATH_TO_SKYBOX);
-        skybox.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture = LoadTextureCubemap(image, CUBEMAP_LAYOUT_AUTO_DETECT);
-        UnloadImage(image);
-    }
-    return skybox;
+		Image image = LoadImage(PATH_TO_SKYBOX);
+		skybox.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture = LoadTextureCubemap(image, CUBEMAP_LAYOUT_AUTO_DETECT);
+		UnloadImage(image);
+	}
+	return skybox;
 }
 
 
 static TextureCubemap GenTextureCubemap(Shader shader, Texture2D panorama, int size, int format)//fonctions du tuto raylib
 {
-    TextureCubemap cubemap = { 0 };
+	TextureCubemap cubemap = { 0 };
 
-    rlDisableBackfaceCulling();     // Disable backface culling to render inside the cube
+	rlDisableBackfaceCulling();     // Disable backface culling to render inside the cube
 
-    // STEP 1: Setup framebuffer
-    //------------------------------------------------------------------------------------------
-    unsigned int rbo = rlLoadTextureDepth(size, size, true);
-    cubemap.id = rlLoadTextureCubemap(0, size, format, 1);
+	// STEP 1: Setup framebuffer
+	//------------------------------------------------------------------------------------------
+	unsigned int rbo = rlLoadTextureDepth(size, size, true);
+	cubemap.id = rlLoadTextureCubemap(0, size, format, 1);
 
-    unsigned int fbo = rlLoadFramebuffer();
-    rlFramebufferAttach(fbo, rbo, RL_ATTACHMENT_DEPTH, RL_ATTACHMENT_RENDERBUFFER, 0);
-    rlFramebufferAttach(fbo, cubemap.id, RL_ATTACHMENT_COLOR_CHANNEL0, RL_ATTACHMENT_CUBEMAP_POSITIVE_X, 0);
+	unsigned int fbo = rlLoadFramebuffer();
+	rlFramebufferAttach(fbo, rbo, RL_ATTACHMENT_DEPTH, RL_ATTACHMENT_RENDERBUFFER, 0);
+	rlFramebufferAttach(fbo, cubemap.id, RL_ATTACHMENT_COLOR_CHANNEL0, RL_ATTACHMENT_CUBEMAP_POSITIVE_X, 0);
 
-    // Check if framebuffer is complete with attachments (valid)
-    if (rlFramebufferComplete(fbo)) TraceLog(LOG_INFO, "FBO: [ID %i] Framebuffer object created successfully", fbo);
-    //------------------------------------------------------------------------------------------
+	// Check if framebuffer is complete with attachments (valid)
+	if (rlFramebufferComplete(fbo)) TraceLog(LOG_INFO, "FBO: [ID %i] Framebuffer object created successfully", fbo);
+	//------------------------------------------------------------------------------------------
 
-    // STEP 2: Draw to framebuffer
-    //------------------------------------------------------------------------------------------
-    // NOTE: Shader is used to convert HDR equirectangular environment map to cubemap equivalent (6 faces)
-    rlEnableShader(shader.id);
+	// STEP 2: Draw to framebuffer
+	//------------------------------------------------------------------------------------------
+	// NOTE: Shader is used to convert HDR equirectangular environment map to cubemap equivalent (6 faces)
+	rlEnableShader(shader.id);
 
-    // Define projection matrix and send it to shader
-    Matrix matFboProjection = MatrixPerspective(90.0*DEG2RAD, 1.0, rlGetCullDistanceNear(), rlGetCullDistanceFar());
-    rlSetUniformMatrix(shader.locs[SHADER_LOC_MATRIX_PROJECTION], matFboProjection);
+	// Define projection matrix and send it to shader
+	Matrix matFboProjection = MatrixPerspective(90.0 * DEG2RAD, 1.0, rlGetCullDistanceNear(), rlGetCullDistanceFar());
+	rlSetUniformMatrix(shader.locs[SHADER_LOC_MATRIX_PROJECTION], matFboProjection);
 
-    // Define view matrix for every side of the cubemap
-    Matrix fboViews[6] = {
-        MatrixLookAt((Vector3){ 0.0f, 0.0f, 0.0f }, (Vector3){  1.0f,  0.0f,  0.0f }, (Vector3){ 0.0f, -1.0f,  0.0f }),
-        MatrixLookAt((Vector3){ 0.0f, 0.0f, 0.0f }, (Vector3){ -1.0f,  0.0f,  0.0f }, (Vector3){ 0.0f, -1.0f,  0.0f }),
-        MatrixLookAt((Vector3){ 0.0f, 0.0f, 0.0f }, (Vector3){  0.0f,  1.0f,  0.0f }, (Vector3){ 0.0f,  0.0f,  1.0f }),
-        MatrixLookAt((Vector3){ 0.0f, 0.0f, 0.0f }, (Vector3){  0.0f, -1.0f,  0.0f }, (Vector3){ 0.0f,  0.0f, -1.0f }),
-        MatrixLookAt((Vector3){ 0.0f, 0.0f, 0.0f }, (Vector3){  0.0f,  0.0f,  1.0f }, (Vector3){ 0.0f, -1.0f,  0.0f }),
-        MatrixLookAt((Vector3){ 0.0f, 0.0f, 0.0f }, (Vector3){  0.0f,  0.0f, -1.0f }, (Vector3){ 0.0f, -1.0f,  0.0f })
-    };
+	// Define view matrix for every side of the cubemap
+	Matrix fboViews[6] = {
+		MatrixLookAt((Vector3) { 0.0f, 0.0f, 0.0f }, (Vector3) { 1.0f,  0.0f,  0.0f }, (Vector3) { 0.0f, -1.0f,  0.0f }),
+		MatrixLookAt((Vector3) { 0.0f, 0.0f, 0.0f }, (Vector3) { -1.0f,  0.0f,  0.0f }, (Vector3) { 0.0f, -1.0f,  0.0f }),
+		MatrixLookAt((Vector3) { 0.0f, 0.0f, 0.0f }, (Vector3) { 0.0f,  1.0f,  0.0f }, (Vector3) { 0.0f,  0.0f,  1.0f }),
+		MatrixLookAt((Vector3) { 0.0f, 0.0f, 0.0f }, (Vector3) { 0.0f, -1.0f,  0.0f }, (Vector3) { 0.0f,  0.0f, -1.0f }),
+		MatrixLookAt((Vector3) { 0.0f, 0.0f, 0.0f }, (Vector3) { 0.0f,  0.0f,  1.0f }, (Vector3) { 0.0f, -1.0f,  0.0f }),
+		MatrixLookAt((Vector3) { 0.0f, 0.0f, 0.0f }, (Vector3) { 0.0f,  0.0f, -1.0f }, (Vector3) { 0.0f, -1.0f,  0.0f })
+	};
 
-    rlViewport(0, 0, size, size);   // Set viewport to current fbo dimensions
+	rlViewport(0, 0, size, size);   // Set viewport to current fbo dimensions
 
-    // Activate and enable texture for drawing to cubemap faces
-    rlActiveTextureSlot(0);
-    rlEnableTexture(panorama.id);
+	// Activate and enable texture for drawing to cubemap faces
+	rlActiveTextureSlot(0);
+	rlEnableTexture(panorama.id);
 
-    for (int i = 0; i < 6; i++)
-    {
-        // Set the view matrix for the current cube face
-        rlSetUniformMatrix(shader.locs[SHADER_LOC_MATRIX_VIEW], fboViews[i]);
+	for (int i = 0; i < 6; i++)
+	{
+		// Set the view matrix for the current cube face
+		rlSetUniformMatrix(shader.locs[SHADER_LOC_MATRIX_VIEW], fboViews[i]);
 
-        // Select the current cubemap face attachment for the fbo
-        // WARNING: This function by default enables->attach->disables fbo!!!
-        rlFramebufferAttach(fbo, cubemap.id, RL_ATTACHMENT_COLOR_CHANNEL0, RL_ATTACHMENT_CUBEMAP_POSITIVE_X + i, 0);
-        rlEnableFramebuffer(fbo);
+		// Select the current cubemap face attachment for the fbo
+		// WARNING: This function by default enables->attach->disables fbo!!!
+		rlFramebufferAttach(fbo, cubemap.id, RL_ATTACHMENT_COLOR_CHANNEL0, RL_ATTACHMENT_CUBEMAP_POSITIVE_X + i, 0);
+		rlEnableFramebuffer(fbo);
 
-        // Load and draw a cube, it uses the current enabled texture
-        rlClearScreenBuffers();
-        rlLoadDrawCube();
+		// Load and draw a cube, it uses the current enabled texture
+		rlClearScreenBuffers();
+		rlLoadDrawCube();
 
-        // ALTERNATIVE: Try to use internal batch system to draw the cube instead of rlLoadDrawCube
-        // for some reason this method does not work, maybe due to cube triangles definition? normals pointing out?
-        // TODO: Investigate this issue...
-        //rlSetTexture(panorama.id); // WARNING: It must be called after enabling current framebuffer if using internal batch system!
-        //rlClearScreenBuffers();
-        //DrawCubeV(Vector3Zero(), Vector3One(), WHITE);
-        //rlDrawRenderBatchActive();
-    }
-    //------------------------------------------------------------------------------------------
+		// ALTERNATIVE: Try to use internal batch system to draw the cube instead of rlLoadDrawCube
+		// for some reason this method does not work, maybe due to cube triangles definition? normals pointing out?
+		// TODO: Investigate this issue...
+		//rlSetTexture(panorama.id); // WARNING: It must be called after enabling current framebuffer if using internal batch system!
+		//rlClearScreenBuffers();
+		//DrawCubeV(Vector3Zero(), Vector3One(), WHITE);
+		//rlDrawRenderBatchActive();
+	}
+	//------------------------------------------------------------------------------------------
 
-    // STEP 3: Unload framebuffer and reset state
-    //------------------------------------------------------------------------------------------
-    rlDisableShader();          // Unbind shader
-    rlDisableTexture();         // Unbind texture
-    rlDisableFramebuffer();     // Unbind framebuffer
-    rlUnloadFramebuffer(fbo);   // Unload framebuffer (and automatically attached depth texture/renderbuffer)
+	// STEP 3: Unload framebuffer and reset state
+	//------------------------------------------------------------------------------------------
+	rlDisableShader();          // Unbind shader
+	rlDisableTexture();         // Unbind texture
+	rlDisableFramebuffer();     // Unbind framebuffer
+	rlUnloadFramebuffer(fbo);   // Unload framebuffer (and automatically attached depth texture/renderbuffer)
 
-    // Reset viewport dimensions to default
-    rlViewport(0, 0, rlGetFramebufferWidth(), rlGetFramebufferHeight());
-    rlEnableBackfaceCulling();
-    //------------------------------------------------------------------------------------------
+	// Reset viewport dimensions to default
+	rlViewport(0, 0, rlGetFramebufferWidth(), rlGetFramebufferHeight());
+	rlEnableBackfaceCulling();
+	//------------------------------------------------------------------------------------------
 
-    cubemap.width = size;
-    cubemap.height = size;
-    cubemap.mipmaps = 1;
-    cubemap.format = format;
+	cubemap.width = size;
+	cubemap.height = size;
+	cubemap.mipmaps = 1;
+	cubemap.format = format;
 
-    return cubemap;
+	return cubemap;
 }
+
+
+Image generateOffsetImage(int x, int y) {
+	printf("generating perlin noise Ofset \n");
+	Image perlinNoise = GenImagePerlinNoise(OFSET_IMAGE_SIZE, OFSET_IMAGE_SIZE, x * 100, y * 100, OFSET_IMAGE_SCALE);
+	
+	return perlinNoise;
+
+
+}
+
+void *generateRandomOfsetImagesThread(void* arg) {
+	Image *img = malloc(sizeof(Image) );
+	do {
+		*img = generateOffsetImage(randInt(0, 100) * 10, randInt(0, 100) * 10);
+	} while (img == NULL);
+	return img;
+}
+
+Seed generateSeed(int mountainSeed[2]) {//génère une seed aléatoire pour les montagnes et les images d'offset, en utilisant un thread pour générer les images d'offset en parallèle
+	Seed s;
+	pthread_t thread1, thread2;
+	Image* pResult1, *pResult2;
+	pthread_create(&thread1, NULL, generateRandomOfsetImagesThread, NULL);
+	pthread_create(&thread2, NULL, generateRandomOfsetImagesThread, NULL);
+
+	s.isGenerated = 1;
+	s.treeImage = generateForestImage(mountainSeed[0] * 10, mountainSeed[1] * 10);
+
+	pthread_join(thread2, (void**)&pResult2);
+	pthread_join(thread1, (void**)&pResult1);
+	
+
+
+	s.OfsetImagex = *pResult1;
+	s.OfsetImagey = *pResult2;
+	free(pResult1);
+	free(pResult2);
+	
+	return s;
+}
+
+
+void* generateSeedThread(void* arg) {
+	int* mountainSeed = (int*)arg;
+	Seed* s = malloc(sizeof(Seed));
+	*s = generateSeed(mountainSeed);
+	return s;
+}
+
+
