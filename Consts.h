@@ -82,8 +82,13 @@
 
 #define MAXCAMERAHEIGHT 0.8
 
+// Constantes du Menu
 
-#define MAX_NAME_LENGTH 20
+#define EDITS_FS 30
+
+#define PLAYER_REC_WIDTH 250
+#define PLAYER_REC_HEIGHT 500
+#define PLAYER_PANEL_FS 30
 
 /******************************** GameManager.h ********************************/
 
@@ -108,6 +113,8 @@
 
 
 // Add Menu
+
+#define MAX_NAME_LENGTH 20
 
 #define ADD_MENU_WIDTH		MAIN_MENU_BTN_WIDTH
 #define ADD_MENU_HEIGHT		300

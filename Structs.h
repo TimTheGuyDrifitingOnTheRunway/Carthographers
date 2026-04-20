@@ -48,17 +48,21 @@ typedef struct ExploreCard {
 
     int isEnemy;
     int rotation; // 1 = Right, -1 = Left, 0 = None
+    int soloGrid; // pour le placement en solo; 1 : haut gauche, 2 : haut droit, 3 : bas gauche, 4 : Bas droit
 
     int isRuin;
     int isRiftLands;
 
+    char* imageFileName;
     char name[30];
+    int fontSize;
 } ExploreCard;
 
 typedef struct ScoringCard {
     int type;
     int (*fctCaluls)(FeuilleCarte f);
     char name[20];
+    char* description;
 } ScoringCard;
 
 typedef struct PlayerState {
@@ -78,6 +82,8 @@ typedef struct GameState {
     const ScoringCard* edits[4];
     const ExploreCard* exploreDeck[17];
     int deckSize;
+
+    bool isOnline;
 } GameState;
 
 
