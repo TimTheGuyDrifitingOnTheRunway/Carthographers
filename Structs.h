@@ -154,10 +154,14 @@ typedef struct Page {
 typedef struct {
     Model tree;
     Model buisson;
+    Model skybox;
 }ModelList;
 
 
 typedef struct {
+	bool isGenerated;
     Image treeImage;
-    
+	Image OfsetImagex;
+    Image OfsetImagey;
+
 }Seed;

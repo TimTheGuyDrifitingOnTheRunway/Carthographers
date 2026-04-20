@@ -4,16 +4,31 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 
+
+
+
+
+
+
+/********************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
 #include <string.h>
 #include <raylib.h>
+#include <rlgl.h>
+#include <raymath.h>
+#include <pthread.h>
 
 
 /*OPTIONS DE DEBOGAGE */
 #define cc// DEBUG_FORET : affiche la noisemap source de foret
+
+
+/*****MACROS****/
+
+#define clamp(x, min, max) ((x < min) ? min : (x > max) ? max : x)
 
 /******************************** LibCartographie.h ********************************/
 
@@ -167,6 +182,7 @@
 #define FORET_SCALE 60
 #define TREE_SIZE 0.025f
 #define FOREST_TRESHOLD 0.45f
+#define FOREST_END_TRESHOLD 0.85f
 #define TREE_DIVIDER 7
 #define  TREE_Y_OFSET 0.55f
 
@@ -176,14 +192,34 @@
 #define GREEN_OFSET 0.3f // offset du vert pour éviter d'avoir des arbres trop sombre, à ajuster en fonction de la noisemap de foret générée
 
 
-#define WATER_OFSET 0.5f
+#define WATER_OFSET 0.2f
 #define WATER_POWER 1
-#define WATER_GREEN_FACTOR 0.7f
-#define WATER_RED_FACTOR 0.3f
+#define WATER_GREEN_FACTOR 0.0f
+#define WATER_RED_FACTOR 0.5f
+#define WATER_CUBE_OFSET -0.5f
+#define WATER_TRANSPARENCY 255
+#define WATER_CUBE_HEIGHT_MULTIPLYER 2
 
 
+#define OFSET_IMAGE_SIZE 1000
+#define OFSET_IMAGE_SCALE 500
 
 /**********Chemin des models 3d **************/
 
-#define PATH_TO_TREE_MODEL "assets/tree.obj"
-#define PATH_TO_BUSH_MODEL "assets/bush.obj"
+#define PATH_TO_TREE_MODEL "Assets/tree.obj"
+#define PATH_TO_BUSH_MODEL "Assets/bush.obj"
+#define PATH_TO_HDR_SKYBOX "Assets/skybox.hdr"
+#define PATH_TO_SKYBOX "Assets/skybox2.png"
+
+#define SKYBOX_SHADER_PATH "Assets/shaders/glsl%i/skybox.vs"
+#define SKYBOX_SHADER_PATH2 "Assets/shaders/glsl%i/skybox.fs"
+#define SKYBOX_CUBEMAP_SHADER_PATH "Assets/shaders/glsl%i/cubemap.vs"
+#define SKYBOX_CUBEMAP_SHADER_PATH "Assets/shaders/glsl%i/cubemap.fs"
+
+
+#if defined(PLATFORM_DESKTOP)
+    #define GLSL_VERSION            330
+#else   // PLATFORM_ANDROID, PLATFORM_WEB
+    #define GLSL_VERSION            100
+#endif
+
