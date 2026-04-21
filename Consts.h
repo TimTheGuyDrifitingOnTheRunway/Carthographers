@@ -185,6 +185,7 @@
 #define FOREST_END_TRESHOLD 0.85f
 #define TREE_DIVIDER 7
 #define  TREE_Y_OFSET 0.55f
+#define FOREST_BORDER 0.5f
 
 #define BUSH_TRESHOLD 0.66f
 #define BUSH_SIZE 0.05f
