@@ -23,10 +23,12 @@ typedef struct InfoGroupe {
 }InfoGroupe;
 
 typedef enum {
-	FONT_GRENZE_GOTISH,     // Police d'écriture GrenzeGotish
+	FONT_GRENZE_GOTISCH_B,   // Police d'écriture GrenzeGotish Bold
+	FONT_GRENZE_GOTISCH_L,	// Police d'écriture GrenzeGotish Light
 	FONT_PIRATA_ONE,        // Police d'écriture PirataOne
-	FONT_FREDOKA_SB,        // Police d'écriture Fredoka en Semi Bold
+	FONT_FREDOKA_SB,		// Police d'écriture Fredoka en Semi Bold
 	FONT_FREDOKA_CM,        // Police d'écriture Fredoka en Compressed et Medium
+	FONT_METAMORPHOUS,		// Police d'écriture Metamorphous
 	FONT_COUNT				// Nombre de Polices d'écriture
 } FontNames;
 
@@ -121,6 +123,7 @@ typedef struct PlacementState {
 typedef struct Button {
 	Rectangle bounds;
 	char* label;
+	Font labelFont;
 	int fontSize;
 	Color labelColor;
 	int corner;     // Arrondi du Boutton en % (0 si pas d'arrondi)
@@ -134,8 +137,9 @@ typedef struct Button {
 typedef struct {
 	Rectangle bounds;
 	int dx;
-	char text[128];
+	char text[64];
 	int fontSize;
+	Font textFont;
 	int maxLength;
 	int length;
 	bool hovered;
@@ -153,10 +157,10 @@ typedef enum {
 	SCREEN_EXIT
 } ScreenID;
 
-typedef struct Page {
+typedef struct RulePage {
 	char* Text;
 	char* Title;
-} Page;
+} RulePage;
 
 
 typedef struct {

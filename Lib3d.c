@@ -346,7 +346,7 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 			editLabels[i] = (char*)malloc(len * sizeof(char));
 			snprintf(editLabels[i], len, "  [%c] %s  ", 'A' + i, gs->edits[i]->name);
 			//printf("%d\n", (int)strlen(gs->edits[i]->name));
-			editRects[i].width = MeasureText(editLabels[i], EDITS_FS);
+			editRects[i].width = MeasureTextEx(EDITS_FONT, editLabels[i], EDITS_FS, NORMAL_SPACING).x;
 			editRects[i].height = editsRec.height / 2;
 			editsRec.width += editRects[i].width;
 			editsRec.x -= editRects[i].width / 2;
@@ -384,10 +384,12 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 
 	const char* seasonLabel = TextFormat("%s", seasons[gs->currentSeason]->name);
 
-	Rectangle seasonRec = (Rectangle){ midX - MeasureText(seasonLabel, EDITS_FS) / 2 - 40, editsRec.y + editsRec.height - 50, MeasureText(seasonLabel, EDITS_FS) + 80, 100 };
+	Vector2 seasonLabelSize = MeasureTextEx(SEASON_FONT, seasonLabel, EDITS_FS, NORMAL_SPACING);
+	Rectangle seasonRec = (Rectangle){ midX - seasonLabelSize.x / 2 - 40, editsRec.y + editsRec.height - 50, seasonLabelSize.x + 80, 100 };
 
-	Rectangle playerRec = (Rectangle){ GetScreenWidth() - 50 - (openPlayerPanel ? max(PLAYER_REC_WIDTH, MeasureText(gs->players[gs->playerIndex].name, PLAYER_PANEL_FS + 10) - 20) : 0), midY - PLAYER_REC_HEIGHT / 2, MeasureText(gs->players[gs->playerIndex].name, PLAYER_PANEL_FS + 10) + PLAYER_REC_HEIGHT, PLAYER_REC_HEIGHT };
-	openPlayerPanel = CheckCollisionPointRec(mouse, playerRec);
+	Vector2 playerPanelSize = MeasureTextEx(PLAYER_PANEL_FONT, gs->players[gs->playerIndex].name, PLAYER_PANEL_FS + 10, NORMAL_SPACING);
+	Rectangle playerPanel = (Rectangle){ GetScreenWidth() - 50 - (openPlayerPanel ? max(PLAYER_REC_WIDTH, playerPanelSize.x - 20) : 0), midY - PLAYER_REC_HEIGHT / 2, playerPanelSize.x + PLAYER_REC_HEIGHT, PLAYER_REC_HEIGHT };
+	openPlayerPanel = CheckCollisionPointRec(mouse, playerPanel);
 
 	BeginDrawing();
 	ClearBackground(BACKGROUND_COLOR);
@@ -431,36 +433,35 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 	//DrawText(gs->players[gs->playerIndex].name, playerPanel.x + 5, y2, 30, BLACK); y2 += 35;
 	//DrawText(TextFormat("Score : %d", score), playerPanel.x + 5, y2, 30, BLACK); y2 += 35;
 	//DrawText(TextFormat("Coins : %d", gs->players[gs->playerIndex].coinCount), playerPanel.x + 5, y2, 30, BLACK); y2 += 35;
-	DrawRectangleRoundedStrokeEx(playerRec, .1f, 10, 3, LIGHTGRAY, BROWN);
-	DrawText(gs->players[gs->playerIndex].name, playerRec.x + 10, playerRec.y + 5, PLAYER_PANEL_FS + 10, BLACK);
-	DrawText(TextFormat("SCORE  %d", score), playerRec.x + 10, playerRec.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, BLACK);										y2 += PLAYER_PANEL_FS + 10;
-	DrawText(TextFormat("COINS  %d", gs->players[gs->playerIndex].coinCount), playerRec.x + 10, playerRec.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, BLACK);	y2 += PLAYER_PANEL_FS + 10;
-	//if (gs->isOnline) { DrawText(TextFormat("COINS  %d", gs->players[gs->playerIndex].coinCount), playerRec.x + 10, playerRec.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, BLACK); }
+	DrawRectangleRoundedStrokeEx(playerPanel, .1f, 10, 3, LIGHTGRAY, BROWN);
+	DrawText(gs->players[gs->playerIndex].name, playerPanel.x + 10, playerPanel.y + 5, PLAYER_PANEL_FS + 10, BLACK);
+	DrawText(TextFormat("SCORE  %d", score), playerPanel.x + 10, playerPanel.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, BLACK);										y2 += PLAYER_PANEL_FS + 10;
+	DrawText(TextFormat("COINS  %d", gs->players[gs->playerIndex].coinCount), playerPanel.x + 10, playerPanel.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, BLACK);	y2 += PLAYER_PANEL_FS + 10;
+	//if (gs->isOnline) { DrawText(TextFormat("COINS  %d", gs->players[gs->playerIndex].coinCount), playerPanel.x + 10, playerPanel.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, BLACK); }
 
 	// Edits & Saison
 	DrawRectangleRoundedStrokeEx(seasonRec, 1.f, 10, 2, BGCOLOR, GREEN);
 	DrawRectangleRoundedStrokeEx(editsRec, 1.f, 10, 2, BGCOLOR, GOLD);
 	for (int i = 0; i < 4; i++) {
-		DrawStrokeTextEx(editLabels[i], editRects[i].x, editRects[i].y + 10, EDITS_FS, GOLD, BLACK, 1);
-		//DrawRectangleLinesEx(editRects[i], 2, WHITE);
+		DrawStrokeTextEx(gs->fonts[FONT_GRENZE_GOTISCH_L], editLabels[i], editRects[i].x, editRects[i].y + 10 - EDITS_FS / 5, EDITS_FS, NORMAL_SPACING, GOLD, BLACK, 1);
+
 		//printf("Impression de l'edit %d (nom %s) a la place (%d,%d), taille %d\n", i, editLabels[i], (int)editRects[i].x + 10, (int)editRects[i].y + 10, EDITS_FS);
 	}
-	DrawStrokeTextEx(TextFormat("%s", seasons[gs->currentSeason]->name), seasonRec.x + 40, seasonRec.y + 60, EDITS_FS, GOLD, BLACK, 1);
+	DrawStrokeTextEx(SEASON_FONT, TextFormat("%s", seasons[gs->currentSeason]->name), seasonRec.x + 40, editsRec.y + editsRec.height - 3, EDITS_FS, NORMAL_SPACING, GOLD, BLACK, 1);
 
 
 #define A_MID(a,b) (midX < mouse.x ? a : b)
 	if (tooltipTarget != -1) {	// Affiche les tooltips
 		const char* desc = gs->edits[tooltipTarget]->description;
-		Rectangle maxBounds = (Rectangle){ A_MID(20, mouse.x), mouse.y + 20, A_MID(mouse.x, GetScreenWidth() - mouse.x) - 20, 0 };
-		Vector2 recSize = MeasureTextWrapped(desc, maxBounds, 20, WHITE);
+		Rectangle maxBounds = (Rectangle){ A_MID(20, mouse.x), mouse.y + 25, A_MID(mouse.x, GetScreenWidth() - mouse.x) - 20, 0 };
+		Vector2 recSize = MeasureTextWrappedEx(TOOLTIP_FONT, desc, maxBounds, 20);
 		maxBounds.x = A_MID(mouse.x - recSize.x, maxBounds.x - 20) - 10;
-		maxBounds.y += 5;																											// Augmente le décalage entre la souris et le texte en y
 		maxBounds.width = recSize.x + 40;
 		maxBounds.height = recSize.y + 20;
 
 		DrawRectangleRoundedStrokeEx(maxBounds, 0.3f, 10, 2, Fade(BLACK, 0.65f), BLACK);
 
-		DrawTextWrapped(desc, (Rectangle) { maxBounds.x + 20, maxBounds.y + 10, maxBounds.width - 40, 0 }, 20, WHITE);
+		DrawTextWrappedEx(TOOLTIP_FONT, desc, (Rectangle) { maxBounds.x + 20, maxBounds.y + 10, maxBounds.width - 40, 0 }, 20, 1, WHITE, BLACK);
 
 	}
 #undef A_MID
@@ -586,9 +587,9 @@ Vector3 crossProduct(Vector3 vectora, Vector3 vectorb) {
 
 }
 void multiplyVector(Vector3* vector, double a) {
-	vector->x *= a;
-	vector->y *= a;
-	vector->z *= a;
+	vector->x *= (float)a;
+	vector->y *= (float)a;
+	vector->z *= (float)a;
 }
 
 
@@ -730,6 +731,7 @@ Model loadSkybox(bool useHDR) {
 	}
 	return skybox;
 }
+
 
 
 static TextureCubemap GenTextureCubemap(Shader shader, Texture2D panorama, int size, int format)//fonctions du tuto raylib

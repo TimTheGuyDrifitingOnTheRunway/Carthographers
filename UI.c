@@ -7,14 +7,14 @@ ScreenID RunMenu(GameState* gs) {
 	int midY = 0;
 	int posY = GetScreenHeight() / 20 + 30 + TITLE_FS + 20;
 
-	Button startBtn = { .color1 = LIME, .color2 = BLACK, .label = "Start !", .labelColor = BLACK, .fontSize = MAIN_BUTTON_FS, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = {0, 0, MAIN_MENU_BTN_WIDTH - 50, MAIN_BUTTON_FS + 30} };
 	bool addPlayer = 0;
 	char tmppl[33] = "Limite de 100 personnes atteinte";	int tmpplSize = 70;		// tmppl = too many people
-	Button addBtn = { .color1 = SKYBLUE, .color2 = BLACK, .label = "+ Add 1 Player", .labelColor = BLACK, .fontSize = MAIN_BUTTON_FS, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE };
-	Button ruleBtn = { .color1 = GOLD, .color2 = BLACK, .label = "Game Rules", .labelColor = BLACK, .fontSize = MAIN_BUTTON_FS, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = {0, 0, MAIN_MENU_BTN_WIDTH - 50, MAIN_BUTTON_FS + 30} };
-	Button keyBtn = { .color1 = BROWN, .color2 = BLACK, .label = "Key Binds in the Game", .labelColor = BLACK, .fontSize = MAIN_BUTTON_FS, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = {0,0, MAIN_MENU_BTN_WIDTH - 50, MAIN_BUTTON_FS + 30} };
-	//char nbPlayers[]
-	Button stopBtn = { .color1 = RED, .color2 = BLACK, .label = "Exit The Game", .labelColor = BLACK, .fontSize = MAIN_BUTTON_FS - 5, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = {0, 0, MAIN_MENU_BTN_WIDTH - 250, MAIN_BUTTON_FS + 30} };
+	Button addBtn = { .color1 = SKYBLUE, .color2 = BLACK, .label = "+ Add 1 Player", .labelFont = MAIN_BTN_FONT, .labelColor = BLACK, .fontSize = MAIN_BUTTON_FS, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = (Rectangle){ midX - MAIN_MENU_BTN_WIDTH / 2, posY + 30, MAIN_MENU_BTN_WIDTH - 50, MAIN_BUTTON_FS + 10} };
+	Button ruleBtn = { .color1 = GOLD, .color2 = BLACK, .label = "Game Rules", .labelFont = MAIN_BTN_FONT, .labelColor = BLACK, .fontSize = MAIN_BUTTON_FS, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = (Rectangle){0, 0, MAIN_MENU_BTN_WIDTH - 50, MAIN_BUTTON_FS + 10} };
+	Button keyBtn = { .color1 = BROWN, .color2 = BLACK, .label = "Key Binds in the Game", .labelFont = MAIN_BTN_FONT, .labelColor = BLACK, .fontSize = MAIN_BUTTON_FS, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = (Rectangle){0,0, MAIN_MENU_BTN_WIDTH - 50, MAIN_BUTTON_FS + 10} };
+
+	Button startBtn = { .color1 = LIME, .color2 = BLACK, .label = "Start !", .labelFont = MAIN_BTN_FONT, .labelColor = BLACK, .fontSize = MAIN_BUTTON_FS + 10, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = (Rectangle){0, 0, MAIN_MENU_BTN_WIDTH - 50, MAIN_BUTTON_FS + 15} };
+	Button stopBtn = { .color1 = RED, .color2 = BLACK, .label = "Exit The Game", .labelFont = MAIN_BTN_FONT, .labelColor = BLACK, .fontSize = (int)MAIN_BUTTON_FS * 0.8f, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = (Rectangle){0, 0, MAIN_MENU_BTN_WIDTH * 0.6f, MAIN_BUTTON_FS } };
 
 	Rectangle* btns[] = { &addBtn.bounds, &ruleBtn.bounds, &keyBtn.bounds, &startBtn.bounds, &stopBtn.bounds };
 
@@ -22,10 +22,11 @@ ScreenID RunMenu(GameState* gs) {
 		midX = GetScreenWidth() / 2;
 		midY = GetScreenHeight() / 2;
 
-		addBtn.bounds = (Rectangle){ midX - MAIN_MENU_BTN_WIDTH / 2, posY + 30, MAIN_MENU_BTN_WIDTH - 50, addBtn.fontSize + 40 };
+		addBtn.bounds.x = midX - MAIN_MENU_BTN_WIDTH / 2;
+		addBtn.bounds.y = posY + 30, MAIN_MENU_BTN_WIDTH - 50;
 
 		SortRectangles(btns, 5, BUTTON_DELTA, 0.5f);
-		
+
 		addBtn.hovered = CheckCollisionPointRec(GetMousePosition(), addBtn.bounds);
 		ruleBtn.hovered = CheckCollisionPointRec(GetMousePosition(), ruleBtn.bounds);
 		keyBtn.hovered = CheckCollisionPointRec(GetMousePosition(), keyBtn.bounds);
@@ -43,15 +44,15 @@ ScreenID RunMenu(GameState* gs) {
 		ClearBackground(BGCOLOR);
 
 		// DrawBackgroudMenu(menuBounds);
-		posY = DrawTitle();
+		posY = DrawTitle(gs);
 
 		// Ajoute un bouton pour lancer la partie
-		DrawButtonEx(&startBtn, gs->fonts[FONT_FREDOKA_SB]);
+		DrawButton(&startBtn);
 		if (startBtn.validated) printf("Lancement de la partie");
 
 		// Ajoute un bouton pour ajouter un joueur
 		DrawButton(&addBtn);
-		if (gs->playerNumber >= MAX_PLAYER) DrawStrokeText(tmppl, (GetScreenWidth() - MeasureText(tmppl, tmpplSize)) / 2, posY - 15, tmpplSize, RED, multiplyColor(DARKGRAY, 0.4f));
+		if (gs->playerNumber >= MAX_PLAYER) DrawStrokeText(gs->fonts[FONT_FREDOKA_CM], tmppl, (GetScreenWidth() - MeasureTextEx(gs->fonts[FONT_FREDOKA_CM], tmppl, tmpplSize, NORMAL_SPACING).x) / 2, posY - 15, tmpplSize, RED, multiplyColor(DARKGRAY, 0.4f));
 		else if (addBtn.validated) addPlayer = 1;
 
 		// afficher le nombre de joueurs
@@ -102,10 +103,10 @@ ScreenID RunAddPlayer(GameState* gs) {
 	Rectangle iptNameBox = (Rectangle){ 0 };
 	int d = 40; // Espacement entre les boutons
 
-	Button cclBtn = { .color1 = RED, .color2 = GRAY, .label = "Cancel", .labelColor = WHITE, .fontSize = 40, .corner = 90, .stroke = 3 };
-	Button addBtn = { .color1 = LIME, .color2 = GRAY, .label = "Add", .labelColor = WHITE, .fontSize = 40, .corner = 90, .stroke = 3 };
+	Button cclBtn = { .color1 = RED, .color2 = BLACK, .label = "Cancel", .labelFont = gs->fonts[FONT_METAMORPHOUS], .labelColor = BLACK, .fontSize = 40, .corner = 90, .stroke = 3 };
+	Button addBtn = { .color1 = LIME, .color2 = BLACK, .label = "Add", .labelFont = gs->fonts[FONT_METAMORPHOUS], .labelColor = BLACK, .fontSize = 40, .corner = 90, .stroke = 3 };
 
-	InputBox nameIptBox = { .maxLength = MAX_NAME_LENGTH,.dx = 5, .text = "", .length = 0, .fontSize = 20, .active = 1, .validated = 0 };
+	InputBox nameIptBox = { .maxLength = MAX_NAME_LENGTH,.dx = 5, .text = "", .length = 0, .fontSize = 30, .textFont = gs->fonts[FONT_FREDOKA_CM], .active = 1, .validated = 0 };
 	char addLabel[19] = "New player name : ";
 	int addLabelFontSize = 32;
 
@@ -123,7 +124,8 @@ ScreenID RunAddPlayer(GameState* gs) {
 		addBtn.bounds = (Rectangle){ midX + 5, menuBounds.y + menuBounds.height - (addBtn.fontSize + 30) - 10, menuBounds.width / 2 - 10, addBtn.fontSize + 30 };
 		addBtn.hovered = CheckCollisionPointRec(GetMousePosition(), addBtn.bounds);
 
-		nameIptBox.bounds = (Rectangle){ menuBounds.x + 5 + MeasureText(addLabel, addLabelFontSize) + 5 + 2, menuBounds.y + addPplFontSize + 30 + 5, menuBounds.width - (5 + MeasureText(addLabel, addLabelFontSize) + 5) - 15, nameIptBox.fontSize + 2 };
+		int addPplw = MeasureTextEx(nameIptBox.textFont, addLabel, addLabelFontSize, NORMAL_SPACING).x;
+		nameIptBox.bounds = (Rectangle){ menuBounds.x + 5 + addPplw + 5 + 2, menuBounds.y + addPplFontSize + 30 + 10, menuBounds.width - (5 + addPplw + 5) - 15, nameIptBox.fontSize + 8 };
 		nameIptBox.hovered = CheckCollisionPointRec(GetMousePosition(), nameIptBox.bounds);
 
 
@@ -141,13 +143,12 @@ ScreenID RunAddPlayer(GameState* gs) {
 		BeginDrawing();
 		ClearBackground(BGCOLOR);
 		//DrawBackgroudMenu(menuBounds);
-		posY = DrawTitle();
+		posY = DrawTitle(gs);
 
 		// Afficher le menu d'ajout
-		//DrawRectangleRoundedStrokeEx(menuBounds, .1f, 10, 3, BROWN, DARKGRAY);
-		DrawText(addPplLabel, midX - MeasureText(addPplLabel, addPplFontSize) / 2, menuBounds.y + 3, addPplFontSize, WHITE);
+		DrawTextEx(gs->fonts[FONT_PIRATA_ONE], addPplLabel, (Vector2) { midX - MeasureTextEx(gs->fonts[FONT_PIRATA_ONE], addPplLabel, addPplFontSize, NORMAL_SPACING).x / 2, menuBounds.y + 3 }, addPplFontSize, NORMAL_SPACING, WHITE);	// Affiche le titre du menu
 
-		DrawText(addLabel, menuBounds.x + 5, menuBounds.y + addPplFontSize + 30, addLabelFontSize, WHITE);
+		DrawTextEx(nameIptBox.textFont, addLabel, (Vector2) { menuBounds.x + 5, nameIptBox.bounds.y + (nameIptBox.bounds.height - addLabelFontSize) / 2 }, addLabelFontSize, NORMAL_SPACING, WHITE);
 		DrawFullInputBoxEx(&nameIptBox, 2, GRAY, LIGHTGRAY);
 
 		DrawButton(&cclBtn);
@@ -170,20 +171,20 @@ ScreenID RunRules(GameState* gs) {
 	int midY = 0;
 	int posY = GetScreenHeight() / 20 + 30 + TITLE_FS + 20;
 
-	Page pages[PAGE_NB] = {
-		(Page){.Text = OBJECTIF_TEXT, .Title = "Histoire et But du jeu" },
-		(Page){.Text = TURN_TEXT, .Title = "Déroulement d'un tour" },
-		(Page){.Text = PLACEMENT_TEXT, .Title = "Explication des terrains" },
-		(Page){.Text = RYTHME_TEXT, .Title = "Mecanique des Saisons" },
-		(Page){.Text = ENEMY_TEXT, .Title = "Apparitions des Monstres" },
-		(Page){.Text = SCORE_TEXT, .Title = "Comment marquer des points" }
+	RulePage pages[PAGE_NB] = {
+		(RulePage) {.Text = OBJECTIF_TEXT, .Title = "Histoire et But du jeu"},
+		(RulePage) {.Text = TURN_TEXT, .Title = "Déroulement d'un tour"},
+		(RulePage) {.Text = PLACEMENT_TEXT, .Title = "Explication des terrains"},
+		(RulePage) {.Text = RYTHME_TEXT, .Title = "Mecanique des Saisons"},
+		(RulePage) {.Text = ENEMY_TEXT, .Title = "Apparitions des Monstres"},
+		(RulePage) {.Text = SCORE_TEXT, .Title = "Comment marquer des points"}
 	};
 
 	int currentPage = 0;
 
-	Button Next = (Button){ .label = ">", .fontSize = 30, .labelColor = BLACK, .corner = 90, .stroke = 300, .color1 = DARKGRAY, .color2 = LIME };
-	Button Previous = (Button){ .label = "<", .fontSize = 30, .labelColor = BLACK, .corner = 90, .stroke = 3, .color1 = DARKGRAY, .color2 = RED };
-	Button Exit = (Button){ .label = "OK", .fontSize = 30, .labelColor = BLACK, .corner = 80, .stroke = 3, .color1 = DARKGRAY, .color2 = BLUE };
+	Button Next = (Button){ .label = ">", .fontSize = 30, .labelColor = BLACK, .labelFont = GetFontDefault(), .corner = 90, .stroke = 3, .color1 = DARKGRAY, .color2 = LIME };
+	Button Previous = (Button){ .label = "<", .fontSize = 30, .labelColor = BLACK, .labelFont = GetFontDefault(), .corner = 90, .stroke = 3, .color1 = DARKGRAY, .color2 = RED };
+	Button Exit = (Button){ .label = "OK", .fontSize = 30, .labelColor = BLACK, .labelFont = gs->fonts[FONT_FREDOKA_SB], .corner = 80, .stroke = 3, .color1 = DARKGRAY, .color2 = BLUE };
 
 	Rectangle textZone;
 
@@ -193,9 +194,9 @@ ScreenID RunRules(GameState* gs) {
 		midX = GetScreenWidth() / 2;
 		midY = GetScreenHeight() / 2;
 
-		textZone = (Rectangle){ midX - max(GetScreenWidth() * 3 / 4, TEXT_ZONE_WIDTH_MIN) / 2, posY + 50, max(GetScreenWidth() * 3 / 4, TEXT_ZONE_WIDTH_MIN) , GetScreenHeight() * 18 / 20 - 70 - (posY + 50) };
+		textZone = (Rectangle){ midX - max(GetScreenWidth() * 3 / 4, TEXT_ZONE_WIDTH_MIN) / 2, posY + 50, max(GetScreenWidth() * 3 / 4, TEXT_ZONE_WIDTH_MIN) , GetScreenHeight() * 18 / 20 - 80 - (posY + 50) };
 
-		Previous.bounds = (Rectangle){ textZone.x, textZone.y + textZone.height + 20, textZone.width / 3 - 10, Previous.fontSize + 20 };
+		Previous.bounds = (Rectangle){ textZone.x, textZone.y + textZone.height + 25, textZone.width / 3 - 10, Previous.fontSize + 20 };
 		Previous.hovered = CheckCollisionPointRec(GetMousePosition(), Previous.bounds);
 
 		Exit.bounds = (Rectangle){ midX - textZone.width / (4 * 2), Previous.bounds.y + Previous.bounds.height, textZone.width / 4, Exit.fontSize + 20 };
@@ -214,15 +215,14 @@ ScreenID RunRules(GameState* gs) {
 
 		BeginDrawing();
 		ClearBackground(BGCOLOR);
-		posY = DrawTitle();
+		posY = DrawTitle(gs);
+		DrawTextWrappedEx(PAGE_FONT, pages[currentPage].Text, textZone, PAGE_FS, 1, WHITE, BLACK);
 
-		DrawTextWrapped(pages[currentPage].Text, textZone, (int)min(textZone.width / 35, textZone.height / 15), WHITE);
-
-		DrawStrokeTextEx(TextFormat("Page : %s", pages[currentPage].Title), textZone.x + 10, posY, 35, BLACK, GOLD, 1);
+		DrawStrokeTextEx(gs->fonts[FONT_METAMORPHOUS], TextFormat("Page : %s", pages[currentPage].Title), textZone.x + 10, posY, 35, NORMAL_SPACING, BLACK, GOLD, 1);
 
 		DrawRectangleRoundedLinesEx((Rectangle) { textZone.x - TEXT_ZONE_PADDING, textZone.y - TEXT_ZONE_PADDING, textZone.width + 2 * TEXT_ZONE_PADDING, textZone.height + 2 * TEXT_ZONE_PADDING, }, .05, 10, 2, multiplyColor(BROWN, 1.2f));
 
-		DrawStrokeText(TextFormat("%d / %d", currentPage + 1, PAGE_NB), midX - MeasureText(TextFormat("%d / %d", currentPage + 1, PAGE_NB), 40) / 2, Previous.bounds.y, 40, GOLD, BLACK);
+		DrawStrokeText(gs->fonts[FONT_METAMORPHOUS], TextFormat("%d / %d", currentPage + 1, PAGE_NB), midX - MeasureTextEx(gs->fonts[FONT_METAMORPHOUS], TextFormat("%d / %d", currentPage + 1, PAGE_NB), 40, NORMAL_SPACING).x / 2, Previous.bounds.y, 40, GOLD, BLACK);
 
 		DrawButton(&Previous);
 		DrawButton(&Next);
@@ -244,15 +244,15 @@ ScreenID RunKeybinds(GameState* gs) {
 	int midY = 0;
 	int posY = GetScreenHeight() / 20 + 30 + TITLE_FS + 20;
 
-	Rectangle rMove = (Rectangle){ midX - MeasureText(KEY_TEXT_MOVE, KEY_FS) / 2, posY + 20, MeasureText(KEY_TEXT_MOVE, KEY_FS), KEY_FS };
-	Rectangle rColorSwitch = (Rectangle){ 0, 0, MeasureText(KEY_TEXT_COLOR_SWITCH, KEY_FS), KEY_FS };
-	Rectangle rShapeSwitch = (Rectangle){ 0, 0, MeasureText(KEY_TEXT_SHAPE_SWITCH, KEY_FS), KEY_FS };
-	Rectangle rRotate = (Rectangle){ 0, 0, MeasureText(KEY_TEXT_ROTATE, KEY_FS), KEY_FS };
-	Rectangle rFlip= (Rectangle){ 0, 0, MeasureText(KEY_TEXT_FLIP, KEY_FS), KEY_FS };
-	Rectangle rCamera = (Rectangle){ 0, 0, MeasureText(KEY_TEXT_CAMERA, KEY_FS), KEY_FS };
-	Rectangle rPlace = (Rectangle){ 0, 0, MeasureText(KEY_TEXT_PLACE, KEY_FS), KEY_FS };
+	Rectangle rMove = (Rectangle){ midX - MeasureTextEx(KEY_FONT, KEY_TEXT_MOVE, KEY_FS, NORMAL_SPACING).x / 2, posY + 20, MeasureTextEx(KEY_FONT, KEY_TEXT_MOVE, KEY_FS, NORMAL_SPACING).x, KEY_FS };
+	Rectangle rColorSwitch = (Rectangle){ 0, 0, MeasureTextEx(KEY_FONT, KEY_TEXT_COLOR_SWITCH, KEY_FS, NORMAL_SPACING).x, KEY_FS };
+	Rectangle rShapeSwitch = (Rectangle){ 0, 0, MeasureTextEx(KEY_FONT, KEY_TEXT_SHAPE_SWITCH, KEY_FS, NORMAL_SPACING).x, KEY_FS };
+	Rectangle rRotate = (Rectangle){ 0, 0, MeasureTextEx(KEY_FONT, KEY_TEXT_ROTATE, KEY_FS, NORMAL_SPACING).x, KEY_FS };
+	Rectangle rFlip = (Rectangle){ 0, 0, MeasureTextEx(KEY_FONT, KEY_TEXT_FLIP, KEY_FS, NORMAL_SPACING).x, KEY_FS };
+	Rectangle rCamera = (Rectangle){ 0, 0, MeasureTextEx(KEY_FONT, KEY_TEXT_CAMERA, KEY_FS, NORMAL_SPACING).x, KEY_FS };
+	Rectangle rPlace = (Rectangle){ 0, 0, MeasureTextEx(KEY_FONT, KEY_TEXT_PLACE, KEY_FS, NORMAL_SPACING).x, KEY_FS };
 
-	Button Exit = (Button){ .label = "OK", .fontSize = 30, .labelColor = BLACK, .corner = 80, .stroke = 3, .color1 = DARKGRAY, .color2 = BLUE, .bounds = (Rectangle){0, 0, 300, 0} };
+	Button Exit = (Button){ .label = "OK", .fontSize = 30, .labelColor = BLACK, .labelFont = gs->fonts[FONT_METAMORPHOUS], .corner = 80, .stroke = 3, .color1 = DARKGRAY, .color2 = BLUE, .bounds = (Rectangle){0, 0, 300, 0} };
 
 	Rectangle* recTextList[] = { &rMove, &rColorSwitch, &rShapeSwitch, &rRotate, &rFlip, &rCamera, &rPlace, &Exit.bounds };
 
@@ -260,9 +260,9 @@ ScreenID RunKeybinds(GameState* gs) {
 		midX = GetScreenWidth() / 2;
 		midY = GetScreenHeight() / 2;
 
-		rMove = (Rectangle){ midX - MeasureText(KEY_TEXT_MOVE, KEY_FS) / 2, posY + 20, MeasureText(KEY_TEXT_MOVE, KEY_FS), KEY_FS };
+		rMove = (Rectangle){ midX - MeasureTextEx(KEY_FONT, KEY_TEXT_MOVE, KEY_FS, NORMAL_SPACING).x / 2, posY + 20, MeasureTextEx(KEY_FONT, KEY_TEXT_MOVE, KEY_FS, NORMAL_SPACING).x, KEY_FS };
 		SortRectangles(recTextList, 8, KEY_PAD, .5f);
-		Exit.bounds = (Rectangle){ Exit.bounds.x, Exit.bounds.y + KEY_PAD, 300, Exit.fontSize + 20 };
+		Exit.bounds = (Rectangle){ Exit.bounds.x, Exit.bounds.y + KEY_PAD + 30, 300, Exit.fontSize + 20 };
 		Exit.hovered = CheckCollisionPointRec(GetMousePosition(), Exit.bounds);
 
 
@@ -271,35 +271,34 @@ ScreenID RunKeybinds(GameState* gs) {
 
 		BeginDrawing();
 		ClearBackground(BGCOLOR);
-		posY = DrawTitle();
+		posY = DrawTitle(gs);
 
 		// Affichage des Touches par lignes :
-		DrawStrokeTextEx(KEY_TEXT_MOVE, rMove.x, rMove.y, KEY_FS, BLACK, GOLD, 1);
-		DrawLine(midX - KEY_LINE_WIDTH / 2, rMove.y + KEY_FS + KEY_PAD / 2, midX + KEY_LINE_WIDTH / 2, rMove.y + KEY_FS + KEY_PAD / 2, GOLD);
+		DrawStrokeTextEx(KEY_FONT, KEY_TEXT_MOVE, rMove.x, rMove.y, KEY_FS, NORMAL_SPACING, BLACK, GOLD, 1);
+		DrawLine(midX - KEY_LINE_WIDTH / 2, rMove.y + KEY_FS + KEY_PAD / 2 + 5, midX + KEY_LINE_WIDTH / 2, rMove.y + KEY_FS + KEY_PAD / 2 + 5, GOLD);
 
-		DrawStrokeTextEx(KEY_TEXT_COLOR_SWITCH, rColorSwitch.x, rColorSwitch.y, KEY_FS, BLACK, GOLD, 1);
-		DrawLine(midX - KEY_LINE_WIDTH / 2, rColorSwitch.y + KEY_FS + KEY_PAD / 2, midX + KEY_LINE_WIDTH / 2, rColorSwitch.y + KEY_FS + KEY_PAD / 2, GOLD);
+		DrawStrokeTextEx(KEY_FONT, KEY_TEXT_COLOR_SWITCH, rColorSwitch.x, rColorSwitch.y, KEY_FS, NORMAL_SPACING, BLACK, GOLD, 1);
+		DrawLine(midX - KEY_LINE_WIDTH / 2, rColorSwitch.y + KEY_FS + KEY_PAD / 2 + 5, midX + KEY_LINE_WIDTH / 2, rColorSwitch.y + KEY_FS + KEY_PAD / 2 + 5, GOLD);
 
-		DrawStrokeTextEx(KEY_TEXT_SHAPE_SWITCH, rShapeSwitch.x, rShapeSwitch.y, KEY_FS, BLACK, GOLD, 1);
-		DrawLine(midX - KEY_LINE_WIDTH / 2, rShapeSwitch.y + KEY_FS + KEY_PAD / 2, midX + KEY_LINE_WIDTH / 2, rShapeSwitch.y + KEY_FS + KEY_PAD / 2, GOLD);
+		DrawStrokeTextEx(KEY_FONT, KEY_TEXT_SHAPE_SWITCH, rShapeSwitch.x, rShapeSwitch.y, KEY_FS, NORMAL_SPACING, BLACK, GOLD, 1);
+		DrawLine(midX - KEY_LINE_WIDTH / 2, rShapeSwitch.y + KEY_FS + KEY_PAD / 2 + 5, midX + KEY_LINE_WIDTH / 2, rShapeSwitch.y + KEY_FS + KEY_PAD / 2 + 5, GOLD);
 
-		DrawStrokeTextEx(KEY_TEXT_ROTATE, rRotate.x, rRotate.y, KEY_FS, BLACK, GOLD, 1);
-		DrawLine(midX - KEY_LINE_WIDTH / 2, rRotate.y + KEY_FS + KEY_PAD / 2, midX + KEY_LINE_WIDTH / 2, rRotate.y + KEY_FS + KEY_PAD / 2, GOLD);
+		DrawStrokeTextEx(KEY_FONT, KEY_TEXT_ROTATE, rRotate.x, rRotate.y, KEY_FS, NORMAL_SPACING, BLACK, GOLD, 1);
+		DrawLine(midX - KEY_LINE_WIDTH / 2, rRotate.y + KEY_FS + KEY_PAD / 2 + 5, midX + KEY_LINE_WIDTH / 2, rRotate.y + KEY_FS + KEY_PAD / 2 + 5, GOLD);
 
-		DrawStrokeTextEx(KEY_TEXT_FLIP, rFlip.x, rFlip.y, KEY_FS, BLACK, GOLD, 1);
-		DrawLine(midX - KEY_LINE_WIDTH / 2, rFlip.y + KEY_FS + KEY_PAD / 2, midX + KEY_LINE_WIDTH / 2, rFlip.y + KEY_FS + KEY_PAD / 2, GOLD);
+		DrawStrokeTextEx(KEY_FONT, KEY_TEXT_FLIP, rFlip.x, rFlip.y, KEY_FS, NORMAL_SPACING, BLACK, GOLD, 1);
+		DrawLine(midX - KEY_LINE_WIDTH / 2, rFlip.y + KEY_FS + KEY_PAD / 2 + 5, midX + KEY_LINE_WIDTH / 2, rFlip.y + KEY_FS + KEY_PAD / 2 + 5, GOLD);
 
-		DrawStrokeTextEx(KEY_TEXT_CAMERA, rCamera.x, rCamera.y, KEY_FS, BLACK, GOLD, 1);
-		DrawLine(midX - KEY_LINE_WIDTH / 2, rCamera.y + KEY_FS + KEY_PAD / 2, midX + KEY_LINE_WIDTH / 2, rCamera.y + KEY_FS + KEY_PAD / 2, GOLD);
+		DrawStrokeTextEx(KEY_FONT, KEY_TEXT_CAMERA, rCamera.x, rCamera.y, KEY_FS, NORMAL_SPACING, BLACK, GOLD, 1);
+		DrawLine(midX - KEY_LINE_WIDTH / 2, rCamera.y + KEY_FS + KEY_PAD / 2 + 5, midX + KEY_LINE_WIDTH / 2, rCamera.y + KEY_FS + KEY_PAD / 2 + 5, GOLD);
 
-		DrawStrokeTextEx(KEY_TEXT_PLACE, rPlace.x, rPlace.y, KEY_FS, BLACK, GOLD, 1);
-		DrawLine(midX - KEY_LINE_WIDTH / 2, rPlace.y + KEY_FS + KEY_PAD, midX + KEY_LINE_WIDTH / 2, rPlace.y + KEY_FS + KEY_PAD, GOLD);
+		DrawStrokeTextEx(KEY_FONT, KEY_TEXT_PLACE, rPlace.x, rPlace.y, KEY_FS, NORMAL_SPACING, BLACK, GOLD, 1);
+		DrawLine(midX - KEY_LINE_WIDTH / 2, rPlace.y + KEY_FS + KEY_PAD / 2 + 5, midX + KEY_LINE_WIDTH / 2, rPlace.y + KEY_FS + KEY_PAD / 2 + 5, GOLD);
 
 		DrawButton(&Exit);
 
 
 		EndDrawing();
-
 
 	}
 	printf("\n\n%d x %d\n\n", GetScreenHeight(), GetScreenWidth());
@@ -308,30 +307,34 @@ ScreenID RunKeybinds(GameState* gs) {
 	return SCREEN_MENU;
 }
 
-int DrawTitle() {
-	int posY = GetScreenHeight() / 20 + 20;
-	DrawStrokeTextEx(C_TITLE, (GetScreenWidth() - MeasureText(C_TITLE, TITLE_FS)) / 2, posY, TITLE_FS, GOLD, BLACK, 2);
-	return posY + TITLE_FS + 20;
+int DrawTitle(GameState* gs) {
+	int posY = 0;
+	DrawStrokeTextEx(gs->fonts[FONT_GRENZE_GOTISCH_B], C_TITLE, (GetScreenWidth() - MeasureTextEx(gs->fonts[FONT_GRENZE_GOTISCH_B], C_TITLE, TITLE_FS, NORMAL_SPACING).x) / 2, posY, TITLE_FS, TITLE_SPACING, GOLD, BLACK, 2);
+	return posY + TITLE_FS - 10;
 }
 
-void DrawTitleEx(Rectangle r) {
-	DrawStrokeTextEx(C_TITLE, r.x + (r.width - MeasureText(C_TITLE, TITLE_FS)) / 2, r.y, TITLE_FS, GOLD, BLACK, 2);
-}
+//void DrawTitleEx(GameState* gs, Rectangle r) {
+//	DrawStrokeTextEx(gs->fonts[FONT_GRENZE_GOTISCH_B], C_TITLE, r.x + (r.width - MeasureText(C_TITLE, TITLE_FS)) / 2, r.y, TITLE_FS, GOLD, BLACK, 2);
+//}
 
 void DrawBackgroudMenu(Rectangle r) {
 	//DrawRectangleRoundedStrokeEx(r, .2f, 10, 3, BLACK, RED);
 	//DrawRectangleRoundedLinesEx(r, .2f, 10, 3, YELLOW);
 	Rectangle tr = r;
 	tr.y += 10;
-	DrawTitleEx(tr);
+	//DrawTitleEx(tr);
 }
 
-Vector2 MeasureTextWrapped(const char* text, Rectangle r, int fs, Color textColor) {
+Vector2 MeasureTextWrapped(const char* text, Rectangle r, int fs) {
+	return MeasureTextWrappedEx(GetFontDefault(), text, r, fs);
+}
+
+Vector2 MeasureTextWrappedEx(Font font, const char* text, Rectangle r, int fs) {	// Permet de mesurer la place que va prendre le texte avant de le dessiner. Si modif, penser à mofifier le Draw
 	float curX = r.x;									// Curseur en X
 	float curY = r.y;									// Curseur en Y
 	float maxX = r.x + r.width;							// Taille max à ne pas dépasser
 	float lineHeight = fs * 1.1f;						// Hauteur de ligne
-	int spaceW = (int)(MeasureText(" ", fs) * 1.2f);	// Taille d'espace
+	int spaceW = (int)(MeasureTextEx(font, " ", fs, NORMAL_SPACING).x * 1.5f);	// Taille d'espace
 	char word[64] = "";
 	int wordSize = 0;
 	char c = 'a';										// Char actuel
@@ -349,12 +352,13 @@ Vector2 MeasureTextWrapped(const char* text, Rectangle r, int fs, Color textColo
 			word[++wordSize] = '\0';
 			c = text[++i];
 		}
-		drawSize = MeasureText(word, fs);
+		drawSize = MeasureTextEx(font, word, fs, NORMAL_SPACING).x;
 		if (curX + drawSize > maxX) {
 			curY += lineHeight;
 			curX = r.x;
 		}
-
+		//if (stroke > 0) DrawStrokeTextEx(font, word, curX, curY, fs, textColor, strokeColor, stroke);
+		//else DrawTextEx(font, word, (Vector2) { curX, curY }, fs, NORMAL_SPACING, textColor);
 		curX += drawSize + spaceW;
 		if (curX > maxReachedX) maxReachedX = curX;
 		if (c == '\n') {
@@ -364,14 +368,20 @@ Vector2 MeasureTextWrapped(const char* text, Rectangle r, int fs, Color textColo
 	}
 
 	return (Vector2) { maxReachedX - r.x, (curY - r.y) + lineHeight };
+
 }
 
-Vector2 DrawTextWrapped(const char* text, Rectangle r, int fs, Color textColor) {
+
+Vector2 DrawTextWrapped(const char* text, Rectangle r, int fs, Color textColor) {			// Permet d'écrire du texte dans un espace contraint (Il ne s'occupe que de la limite de droite, pas de celle du bas. Si modif, penser à mofifier le Measure
+	return DrawTextWrappedEx(GetFontDefault(), text, r, fs, 0, textColor, BLANK);
+}
+
+Vector2 DrawTextWrappedEx(Font font, const char* text, Rectangle r, int fs, int stroke, Color textColor, Color strokeColor) {
 	float curX = r.x;									// Curseur en X
 	float curY = r.y;									// Curseur en Y
 	float maxX = r.x + r.width;							// Taille max à ne pas dépasser
 	float lineHeight = fs * 1.1f;						// Hauteur de ligne
-	int spaceW = (int)(MeasureText(" ", fs) * 1.2f);	// Taille d'espace
+	int spaceW = (int)(MeasureTextEx(font, " ", fs, NORMAL_SPACING).x * 1.5f);	// Taille d'espace
 	char word[64] = "";
 	int wordSize = 0;
 	char c = 'a';										// Char actuel
@@ -389,12 +399,13 @@ Vector2 DrawTextWrapped(const char* text, Rectangle r, int fs, Color textColor) 
 			word[++wordSize] = '\0';
 			c = text[++i];
 		}
-		drawSize = MeasureText(word, fs);
+		drawSize = MeasureTextEx(font, word, fs, NORMAL_SPACING).x;
 		if (curX + drawSize > maxX) {
 			curY += lineHeight;
 			curX = r.x;
 		}
-		DrawText(word, curX, curY, fs, textColor);
+		if (stroke > 0) DrawStrokeTextEx(font, word, curX, curY, fs, NORMAL_SPACING, textColor, strokeColor, stroke);
+		else DrawTextEx(font, word, (Vector2) { curX, curY }, fs, NORMAL_SPACING, textColor);
 		curX += drawSize + spaceW;
 		if (curX > maxReachedX) maxReachedX = curX;
 		if (c == '\n') {
@@ -404,8 +415,8 @@ Vector2 DrawTextWrapped(const char* text, Rectangle r, int fs, Color textColor) 
 	}
 
 	return (Vector2) { maxReachedX - r.x, (curY - r.y) + lineHeight };
-}
 
+}
 
 void SortRectangles(Rectangle** rlist, int listLen, int pad, float anchorPoint) {
 	int delta = 0;
@@ -418,11 +429,11 @@ void SortRectangles(Rectangle** rlist, int listLen, int pad, float anchorPoint) 
 }
 /**************** Fonctions Utilitaires ****************/
 
-void DrawButton(Button* btn) {
-	DrawButtonEx(btn, GetFontDefault());
-}
+//void DrawButton(Button* btn) {
+//	DrawButtonEx(btn, GetFontDefault());
+//}
 
-void DrawButtonEx(Button* btn, Font font) {
+void DrawButton(Button* btn) {
 	Vector2 mouse = GetMousePosition();
 	bool pressed = btn->hovered && IsMouseButtonDown(MOUSE_BUTTON_LEFT);
 	bool clicked = btn->hovered && IsMouseButtonReleased(MOUSE_BUTTON_LEFT);
@@ -477,7 +488,7 @@ void DrawButtonEx(Button* btn, Font font) {
 
 	// Label centré
 	int fontSize = pressed ? btn->fontSize - 4 : btn->fontSize;
-	DrawTextEx(font, btn->label, (Vector2) { r.x + (r.width - MeasureText(btn->label, fontSize)) / 2, r.y + (r.height - fontSize) / 2 }, fontSize, 2, btn->labelColor);
+	DrawTextEx(btn->labelFont, btn->label, (Vector2) { r.x + (r.width - MeasureTextEx(btn->labelFont, btn->label, fontSize, NORMAL_SPACING).x) / 2, r.y + (r.height - fontSize) / 2 }, fontSize, NORMAL_SPACING, btn->labelColor);
 
 	btn->validated = clicked;
 }
@@ -529,11 +540,13 @@ void DrawFullInputBoxEx(InputBox* box, int stroke, Color bkgColor, Color strokeC
 		DrawRectangleLinesEx(box->bounds, stroke, strokeColor);
 
 	// Texte avec décalage dx et centralisation du texte en y
-	DrawText(box->text, box->bounds.x + box->dx, box->bounds.y + (box->bounds.height - box->fontSize) / 2, box->fontSize, BLACK);
+
+
+	DrawTextEx(box->textFont, box->text, (Vector2) { box->bounds.x + box->dx, box->bounds.y + (box->bounds.height - box->fontSize) / 2 }, box->fontSize, NORMAL_SPACING, BLACK);
 
 	// Curseur clignotant centré en y
 	if (box->active && ((int)(GetTime() * 2) % 2 == 0)) {
-		int tw = MeasureText(box->text, box->fontSize);
+		int tw = (int)MeasureTextEx(box->textFont, box->text, box->fontSize, NORMAL_SPACING).x;
 		DrawText("|", box->bounds.x + box->dx + tw + 2, box->bounds.y + (box->bounds.height - box->fontSize) / 2, box->fontSize, DARKGRAY);
 	}
 
@@ -541,15 +554,15 @@ void DrawFullInputBoxEx(InputBox* box, int stroke, Color bkgColor, Color strokeC
 
 }
 
-void DrawStrokeTextEx(const char* text, int x, int y, int fontSize, Color textColor, Color strokeColor, int thickness) {
+void DrawStrokeTextEx(Font font, const char* text, int x, int y, int fontSize, int spacing, Color textColor, Color strokeColor, int thickness) {
 	for (int dx = -thickness; dx <= thickness; dx++)	for (int dy = -thickness; dy <= thickness; dy++)
-		if (dx != 0 || dy != 0)		DrawText(text, x + dx, y + dy, fontSize, strokeColor);
+		if (dx != 0 || dy != 0)		DrawTextEx(font, text, (Vector2) { x + dx, y + dy }, fontSize, spacing, strokeColor);
 
-	DrawText(text, x, y, fontSize, textColor);
+	DrawTextEx(font, text, (Vector2) { x, y }, fontSize, spacing, textColor);
 }
 
-void DrawStrokeText(const char* text, int x, int y, int fontSize, Color textColor, Color strokeColor) {
-	DrawStrokeTextEx(text, x, y, fontSize, textColor, strokeColor, fontSize / 30);
+void DrawStrokeText(Font font, const char* text, int x, int y, int fontSize, Color textColor, Color strokeColor) {
+	DrawStrokeTextEx(font, text, x, y, fontSize, NORMAL_SPACING, textColor, strokeColor, fontSize / 30);
 }
 
 void DrawRectangleRoundedStroke(Rectangle rec, float roundness, int segments, Color rectColor, Color strokeColor) {

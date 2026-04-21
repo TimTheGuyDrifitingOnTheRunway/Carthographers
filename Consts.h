@@ -97,13 +97,22 @@
 
 #define MAXCAMERAHEIGHT 0.8
 
-// Constantes du Menu
 
-#define EDITS_FS 30
+// Constantes du Menu
+#define SEASON_FS 40
+#define SEASON_FONT gs->fonts[FONT_GRENZE_GOTISCH_B]
+
+#define EDITS_FS 50
+#define EDITS_FONT gs->fonts[FONT_GRENZE_GOTISCH_B]
+#define TOOLTIP_FONT gs->fonts[FONT_FREDOKA_CM]
+
+#define PLAYER_PANEL_FONT gs->fonts[FONT_METAMORPHOUS]
 
 #define PLAYER_REC_WIDTH 250
 #define PLAYER_REC_HEIGHT 500
 #define PLAYER_PANEL_FS 30
+
+
 
 /******************************** GameManager.h ********************************/
 
@@ -111,9 +120,15 @@
 
 /******************************** UI.h ********************************/
 
+// Global
+
+#define NORMAL_SPACING 1
+
+
 // Titre
 #define C_TITLE "CARTOGRAPHERS"
-#define TITLE_FS 100
+#define TITLE_FS 170
+#define TITLE_SPACING 3
 
 
 // Main Menu
@@ -121,7 +136,8 @@
 #define MAIN_MENU_BTN_WIDTH 800
 #define MAIN_MENU_Y 700
 
-#define MAIN_BUTTON_FS 40
+#define MAIN_BTN_FONT gs->fonts[FONT_METAMORPHOUS]
+#define MAIN_BUTTON_FS 50
 #define MAIN_BUTTON_STROKE 2
 #define BUTTON_DELTA 30		// Espacement entre les boutons
 #define MAIN_BUTTON_CORNER 35
@@ -151,15 +167,18 @@
 #define PLACEMENT_TEXT "Vous dessinerez principalement 4 types de terrains : Forêt (Vert), Champ (Jaune), Eau (Bleu) et Village (Rouge). L'emplacement de ces terrains déterminera votre score selon les Décrets de la partie (les détails de chaque Décret sont consultables en jeu).\n  - Les Montagnes : Elles sont déjà présentes sur la carte. Si vous réussissez à remplir les 4 cases qui entourent une Montagne, vous gagnez immédiatement une Pièce d'Or. Chaque Pièce d'Or acquise vous rapportera 1 point supplémentaire à chaque fin de Saison."
 #define RYTHME_TEXT "Chaque carte Exploration qui apparaît possède une 'valeur de temps'.\nUn compteur additionne ce temps au fur et à mesure des tours. Dès que le total atteint la limite de la Saison en cours, la Saison s'arrête immédiatement.\nLe jeu calcule alors automatiquement votre score pour cette Saison, et la Saison suivante commence avec un compteur de temps remis à zéro."
 #define ENEMY_TEXT "Prenez garde : cartographier est dangereux !\nLorsqu'une carte Monstre est piochée, les joueurs ne dessinent plus sur leur parchemin, mais sur le parchemin du voisin (gauche ou droite, en fonction de la carte). Vous êtes libre de placer l'ennemi ou vous voulez, pour embêter votre adversaire le plus possible.\n  - Utilité : les monstres font perdre des points en fin de saison\n  - Les cartes monstre ne sont pas impactées par les cartes ruines\n  - Règle spéciale solo : les monstres sont placés automatiquement par le jeu"
-#define SCORE_TEXT "Il y a 4 Décrets de la Reine actifs durant toute la partie (nommés A, B, C et D). Cependant, ils ne rapportent pas des points tout le temps. À la fin de chaque Saison, seuls deux Décrets spécifiques sont évalués : \n Printemps : Décrets A et B	     Été : Décrets B et C\n Automne : Décrets C et D        Hiver : Décrets D et A\nChaque Décret est donc noté exactement deux fois dans la partie.\nUne fois la Saison terminée, le jeu calcule votre score ainsi :\n + Points des deux Décrets de la saison \n + Votre total actuel de Pièces d'Or \n - Les malus des Monstres (1 point perdu par case vide touchant un monstre)\n\nL'addition de vos 4 scores de Saison donne votre Réputation Finale."
+#define SCORE_TEXT "Il y a 4 Décrets de la Reine actifs durant toute la partie (nommés A, B, C et D). Cependant, ils ne rapportent pas des points tout le temps. À la fin de chaque Saison, seuls deux Décrets spécifiques sont évalués : \n Printemps : Décrets A et B;  Été : Décrets B et C;  Automne : Décrets C et D;  Hiver : Décrets D et A\nChaque Décret est donc noté exactement deux fois dans la partie.\nUne fois la Saison terminée, le jeu calcule votre score ainsi :\n + Points des deux Décrets de la saison \n + Votre total actuel de Pièces d'Or \n - Les malus des Monstres (1 point perdu par case vide touchant un monstre)\nLa somme de vos 4 scores de Saison donne votre Réputation Finale."
 
+#define PAGE_FONT gs->fonts[FONT_GRENZE_GOTISCH_L]
+#define PAGE_FS (int)min(textZone.width / 25, textZone.height / 11)
 
 // KeyBinds Menu
 
-#define KEY_FS 30
-#define KEY_PAD 30
+#define KEY_FS 50
+#define KEY_PAD 0
 #define KEY_LINE_WIDTH 150
 
+#define KEY_FONT gs->fonts[FONT_GRENZE_GOTISCH_L]
 
 #define KEY_TEXT_MOVE "Z / Q / S / D : Permet de bouger la pièce"
 #define KEY_TEXT_COLOR_SWITCH "A : Permet de changer la couleur "

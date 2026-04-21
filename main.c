@@ -46,7 +46,7 @@ int main()
 	printf("\n\n\n\n\n\n Debug 3 \n\n\n\n\n\n");
 	// WaitTime(1.0f);
 
-
+	
 
 
 	// Main game loop
@@ -60,25 +60,37 @@ int main()
 
 	{
 		const char* charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-			".,;:!?()+-/*= \\\n"
+			".,;:!?'°^&()[]{}<>_\"|+-/*= \\\n"
 			"éàèêëîïôûùçÉÀÈÊËÎÏÔÛÙÇ";
 
 		int codepointCount = 0;
 		int* codepoints = LoadCodepoints(charset, &codepointCount);
 
-		gs.fonts[FONT_GRENZE_GOTISH] = LoadFontEx("Assets/Fonts/GrenzeGotisch-Bold.ttf", 72, codepoints, codepointCount);
-		gs.fonts[FONT_PIRATA_ONE] = LoadFontEx("Assets/Fonts/PirataOne.ttf", 72, codepoints, codepointCount);
-		gs.fonts[FONT_FREDOKA_CM] = LoadFontEx("Assets/Fonts/Fredoka_Condensed-Medium.ttf", 72, codepoints, codepointCount);
-		gs.fonts[FONT_FREDOKA_SB] = LoadFontEx("Assets/Fonts/Fredoka-SemiBold.ttf", 72, codepoints, codepointCount);
+		gs.fonts[FONT_GRENZE_GOTISCH_B] = LoadFontEx("Assets/Fonts/GrenzeGotisch-Bold.ttf", 200, codepoints, codepointCount);
+		gs.fonts[FONT_GRENZE_GOTISCH_L] = LoadFontEx("Assets/Fonts/GrenzeGotisch-Light.ttf", 200, codepoints, codepointCount);
+		gs.fonts[FONT_PIRATA_ONE] = LoadFontEx("Assets/Fonts/PirataOne.ttf", 200, codepoints, codepointCount);
+		gs.fonts[FONT_FREDOKA_CM] = LoadFontEx("Assets/Fonts/Fredoka_Condensed-Medium.ttf", 200, codepoints, codepointCount);
+		gs.fonts[FONT_FREDOKA_SB] = LoadFontEx("Assets/Fonts/Fredoka-SemiBold.ttf", 200, codepoints, codepointCount);
+		gs.fonts[FONT_METAMORPHOUS] = LoadFontEx("Assets/Fonts/Metamorphous.ttf", 200, codepoints, codepointCount);
 
 		UnloadCodepoints(codepoints);
 	}
 
-	/*BeginDrawing();
-	ClearBackground(WHITE);
-	DrawTextEx(gs.fonts[FONT_PIRATA_ONE], "Juste pour tester", (Vector2) { 200, 100 }, 40, 3, BLACK);
-	EndDrawing();
-	system("pause");*/
+	//for (int i = 0; i < FONT_COUNT; i++) {
+	//	printf("(%.5f,%.5f) ; ", MeasureTextEx(gs.fonts[i], " ", 30, 2).x, MeasureTextEx(gs.fonts[i], " ", 30, 2).y);
+	//	printf("(%.5f,%.5f)\n", MeasureTextEx(gs.fonts[i], "    \n   \n     ", 30, 2).x, MeasureTextEx(gs.fonts[i], "    \n   \n     ", 30, 2).y);
+	//}
+	//printf("\n");
+	//BeginDrawing();
+	//ClearBackground(WHITE);
+	//DrawTextWrappedEx(gs.fonts[FONT_PIRATA_ONE], "Juste pour tester", (Rectangle) { 200, 100, 600, 800 }, 40, 1, GRAY, BLACK);
+	//EndDrawing();
+	//system("pause");
+	//BeginDrawing();
+	//ClearBackground(WHITE);
+	//DrawTextWrappedEx(gs.fonts[FONT_PIRATA_ONE], "Juste pour tester", (Rectangle) { 200, 100, 600, 800 }, 40, 1, GRAY, BLACK);
+	//EndDrawing();
+	//system("pause");
 
 	//gs.playerNumber = 98;
 	ScreenID current = SCREEN_MENU;
@@ -257,18 +269,15 @@ int main()
 
 }
 
-void sort_players_by_score(GameState* gs)
-{
+void sort_players_by_score(GameState* gs) {
 	PlayerState* arr = gs->players;
 	int n = gs->playerNumber;
 
-	for (int i = 1; i < n; i++)
-	{
+	for (int i = 1; i < n; i++) {
 		PlayerState key = arr[i];
 		int j = i;
 
-		while (j > 0 && arr[j - 1].score < key.score)  /* décroissant */
-		{
+		while (j > 0 && arr[j - 1].score < key.score) { /* décroissant */
 			arr[j] = arr[j - 1];
 			j--;
 		}
