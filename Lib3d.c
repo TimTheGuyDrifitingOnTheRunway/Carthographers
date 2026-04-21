@@ -94,7 +94,7 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 						clamp(rxOfset, -0.1f, 0.1f);
 						clamp(rzOfset, -0.1f, 0.1f);
 
-#define FOREST_BORDER 0.5f
+
 						//choix du type de model à dessiner
 						if ((-0.5f + (float)k / TREE_DIVIDER + rxOfset < FOREST_BORDER) && (-0.5f + (float)k / TREE_DIVIDER + rxOfset) > -FOREST_BORDER && (-0.5 + (float)l / TREE_DIVIDER + rzOfset) < FOREST_BORDER && (-0.5 + (float)l / TREE_DIVIDER + rzOfset) > -FOREST_BORDER) {
 							if (color.z < FOREST_TRESHOLD) DrawModelEx(models.tree, (Vector3) { x - 0.5f + (float)k / TREE_DIVIDER + rxOfset, y + TREE_Y_OFSET, z - 0.5 + (float)l / TREE_DIVIDER + rzOfset }, (Vector3) { 1, 0, 0 }, 0, (Vector3) { TREE_SIZE, TREE_SIZE, TREE_SIZE }, c2);
@@ -292,7 +292,9 @@ void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera) {
 	initCarte(state->feuilleVide, FALSE);
 	state->drawable = drawShape(state->feuilleVide, state->shapeCopy,
 		state->pos, state->rotation, state->material);
+	int OOB = !state->drawable;//out of bounds, pour reset la position si la pièce sort de la carte
 	tryDraw(f, state->feuilleVide, state->temp);
+	
 	state->drawable = state->drawable && isDrawable(f, state->feuilleVide);
 	if (state->isRuin)
 		state->drawable = state->drawable && coversRuin(f, state->feuilleVide);
@@ -346,6 +348,8 @@ void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera) {
 	// Confirmation
 	if (IsKeyPressed(KEY_SPACE) && state->drawable)
 		state->status = 1;
+
+	if (OOB) { state->pos.x = 5; state->pos.y = 5; }// reset si hors limite (se produit rarement, mais peut arriver lors de switch de forme si les 2 formes ne peuvent pas être placées au même endroit)
 }
 
 void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state, int score, Camera3D camera, Model mountain[NOMBREMONTAGNE], Position mountainPos[NOMBREMONTAGNE], Seed s, ModelList models) {
