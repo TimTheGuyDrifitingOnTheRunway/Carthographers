@@ -168,6 +168,12 @@ typedef struct {
     Model buisson;
     Model skybox;
     Model house;
+    Model champs;
+    Model water;
+    Model monster;
+    Model monsterTile;
+    Model forestTile;
+	Model vilageTile;
 }ModelList;
 
 

@@ -106,6 +106,7 @@ int main()
 	}
 
 	if (current == SCREEN_EXIT) {
+
 		EndProgram(&gs);
 		printf("\n\n\n\n Debug Fin de partie !! \n\n\n\n");
 		return 1;
