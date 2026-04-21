@@ -124,6 +124,7 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 
 						}
 					}
+
 					break;
 				case CHAMPS:
 					
@@ -174,6 +175,54 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 	}
 }
 
+
+
+void GUIdisplayFinal(GameState gs, int mountainSeed[2], Seed s, ModelList models, Camera3D camera) {
+	int i = 0;
+    while (i < gs.playerNumber) {
+		gs.playerIndex = i;
+		PlayerState* ps = &gs.players[i];
+		Model mountains[NOMBREMONTAGNE];
+
+		/* Get mountain positions (malloc'd) and generate models once. */
+		Position* mountainPos = getPositionsOfMaterial(ps->map, MONTAGNE);
+		generateMountainsModels(mountains, ps->map, mountainSeed);
+
+		/* Prepare a local temp map for rendering so GUIDrawFeuille sees the
+		   actual placed tiles (and no empty map). */
+		FeuilleCarte tempMap;
+		copyFeuilleCarte(ps->map, tempMap);
+
+        /* Render loop for this player's final view. Break on SPACE. */
+      /* Debug: print non-empty cell count to verify map content */
+		int nonEmpty = SIZE * SIZE - getEmptySpots(ps->map);
+		printf("[GUIdisplayFinal] Player %s non-empty cells = %d\n", ps->name, nonEmpty);
+		while (!WindowShouldClose()) {
+			GUIUpdateCustomCamera(&camera);
+			camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
+
+			BeginDrawing(); // Début de l'affichage
+			ClearBackground(RAYWHITE);
+			BeginMode3D(camera);
+            // Ensure we always pass an array of NOMBREMONTAGNE positions to GUIDrawFeuille
+			Position emptyMountainPos[NOMBREMONTAGNE];
+			for (int mi = 0; mi < NOMBREMONTAGNE; mi++) { emptyMountainPos[mi].x = -100; emptyMountainPos[mi].y = -100; }
+			GUIDrawFeuille(ps->map, tempMap, mountains, mountainPos ? mountainPos : emptyMountainPos, s, models);
+
+			GUIdrawGrille();
+
+			EndMode3D();
+			EndDrawing(); // Fin de l'affichage
+
+			if (IsKeyPressed(KEY_SPACE)) break;
+		}
+
+		if (mountainPos) free(mountainPos);
+		if (WindowShouldClose()) break;
+
+		i++;
+	}
+}
 
 int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D camera, Model mountains[NOMBREMONTAGNE], Seed s, ModelList models) {
 	if (checkShape(f, shape)) {
@@ -677,10 +726,13 @@ Model generateMountain(int x, int y) {
 }
 
 void generateMountainsModels(Model mountains[NOMBREMONTAGNE], FeuilleCarte f, int mountainSeed[2]) {
-	Position* pos = getPositionsOfMaterial(f, MONTAGNE);
-	for (int i = 0; i < NOMBREMONTAGNE; i++) {
+    Position* pos = getPositionsOfMaterial(f, MONTAGNE);
+	int count = getOccurencesOf(f, MONTAGNE);
+	if (pos == NULL || count == 0) return;
+	for (int i = 0; i < count && i < NOMBREMONTAGNE; i++) {
 		mountains[i] = generateMountain(pos[i].x + mountainSeed[1], pos[i].y + mountainSeed[0]);
 	}
+	free(pos);
 }
 
 Image generateForestImage(int x, int y) {

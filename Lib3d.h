@@ -16,6 +16,8 @@ int GUIplacementDefaultCard(GameState* gs, FeuilleCarte f, const ExploreCard* ca
 void GUIdrawGrille();
 void GUIUpdateCustomCamera(Camera3D *camera);
 
+void GUIdisplayFinal(GameState gs, int mountainSeed[2], Seed s, ModelList models, Camera3D camera);
+
 void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera);
 void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state, int score, Camera3D camera, Model mountain[NOMBREMONTAGNE], Position mountainPos[NOMBREMONTAGNE], Seed s, ModelList models);
 void ApplyPlacement(FeuilleCarte f, PlacementState* state, int* coinCount);
