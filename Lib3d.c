@@ -103,6 +103,23 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 					break;
 				case VILLAGE:
 					color = BROWN;
+					for (int k = 0; k < HOUSE_DIVIDER + 1; k++) for (int l = 0; l < HOUSE_DIVIDER + 1; l++) {
+						float lum = ColorToHSV(GetImageColor(s.villageImage, j * 10 + l, i * 10 + k)).z;
+						//calcul des ofset d'arbres
+						float rxOfset = (ColorToHSV(GetImageColor(s.OfsetImagex, j * 10 + l, i * 10 + k)).z - 0.5f) * 0.5f;
+						float rzOfset = (ColorToHSV(GetImageColor(s.OfsetImagey, j * 10 + l, i * 10 + k)).z - 0.5f) * 0.5f;
+
+						clamp(rxOfset, -0.1f, 0.1f);
+						clamp(rzOfset, -0.1f, 0.1f);
+						if ((-0.5f + (float)k / HOUSE_DIVIDER + rxOfset < FOREST_BORDER) && (-0.5f + (float)k / HOUSE_DIVIDER + rxOfset) > -FOREST_BORDER && (-0.5 + (float)l / HOUSE_DIVIDER + rzOfset) < FOREST_BORDER && (-0.5 + (float)l / HOUSE_DIVIDER + rzOfset) > -FOREST_BORDER) {
+							unsigned char red = (pow((lum), RED_POWER) + RED_OFSET) * 255 > 254 ? 254 : ((pow((lum), RED_POWER) + RED_OFSET) * 255 < 50) ? 50 : (pow((lum), RED_POWER) + RED_OFSET) * 255;
+
+							Color c = (Color){ red, red*0.2, red*0.2, 255 };
+
+							if (lum > HOUSE_TRESHOLD) DrawModelEx(models.house, (Vector3) { x - 0.5f + (float)k / HOUSE_DIVIDER + rxOfset, y + 0.5, z - 0.5 + (float)l / HOUSE_DIVIDER + rzOfset }, (Vector3) { 1, 0, 0 }, 0, (Vector3) { HOUSE_SIZE, HOUSE_SIZE, HOUSE_SIZE }, WHITE);
+
+						}
+					}
 					break;
 				case CHAMPS:
 					color = YELLOW;
@@ -654,6 +671,7 @@ ModelList loadModels() {
 	models.tree = LoadModel(PATH_TO_TREE_MODEL);
 	models.buisson = LoadModel(PATH_TO_BUSH_MODEL);
 	models.skybox = loadSkybox(false);
+	models.house = LoadModel(PATH_TO_HOUSE);
 	return models;
 }
 
@@ -813,8 +831,9 @@ Image generateOffsetImage(int x, int y) {
 }
 
 void *generateRandomOfsetImagesThread(void* arg) {
-	Image *img = malloc(sizeof(Image) );
+	Image* img;
 	do {
+		img = malloc(sizeof(Image));
 		*img = generateOffsetImage(randInt(0, 100) * 10, randInt(0, 100) * 10);
 	} while (img == NULL);
 	return img;
@@ -822,21 +841,25 @@ void *generateRandomOfsetImagesThread(void* arg) {
 
 Seed generateSeed(int mountainSeed[2]) {//génère une seed aléatoire pour les montagnes et les images d'offset, en utilisant un thread pour générer les images d'offset en parallèle
 	Seed s;
-	pthread_t thread1, thread2;
-	Image* pResult1, *pResult2;
+	pthread_t thread1, thread2, thread3;
+	Image* pResult1, *pResult2, *pResult3;
 	pthread_create(&thread1, NULL, generateRandomOfsetImagesThread, NULL);
 	pthread_create(&thread2, NULL, generateRandomOfsetImagesThread, NULL);
+	pthread_create(&thread3, NULL, generateRandomVilageImagesThread, NULL);
 
 	s.isGenerated = 1;
 	s.treeImage = generateForestImage(mountainSeed[0] * 10, mountainSeed[1] * 10);
 
 	pthread_join(thread2, (void**)&pResult2);
 	pthread_join(thread1, (void**)&pResult1);
+	pthread_join(thread3, (void**)&pResult3);
 	
 
 
 	s.OfsetImagex = *pResult1;
 	s.OfsetImagey = *pResult2;
+	s.villageImage = *pResult3;
+	free(pResult3);
 	free(pResult1);
 	free(pResult2);
 	
@@ -852,3 +875,23 @@ void* generateSeedThread(void* arg) {
 }
 
 
+
+Image generateVillageImage(int x, int y) {
+	printf("generating perlin noise Ofset \n");
+	Image perlinNoise = GenImagePerlinNoise(VILLAGE_IMAGE_SIZE, VILLAGE_IMAGE_SIZE, x * 100, y * 100, VILLAGE_IMAGE_SCALE);
+
+	return perlinNoise;
+
+
+}
+
+
+
+void* generateRandomVilageImagesThread(void* arg) {
+	Image* img;
+	do {
+		img = malloc(sizeof(Image));
+		*img = generateVillageImage(randInt(0, 100) * 10, randInt(0, 100) * 10);
+	} while (img == NULL);
+	return img;
+}
