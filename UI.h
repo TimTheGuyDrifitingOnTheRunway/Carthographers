@@ -18,6 +18,11 @@ Vector2 MeasureTextWrapped(const char* text, Rectangle r, int fs, Color textColo
 Vector2 DrawTextWrapped(const char* text, Rectangle r, int fs, Color textColor);
 
 void DrawButton(Button* btn);
+void DrawButtonEx(Button* btn, Font font);
+
+void ImageRoundCorner(Image* image, float radius);
+void ImageRoundedCorner(Image* image, float roundness);
+
 
 void UpdateInputBox(InputBox* box);
 bool IsCharAllowed(char c);
