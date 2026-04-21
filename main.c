@@ -11,6 +11,7 @@ int main()
 {
 	srand(time(NULL));
 
+	// Création d'un thread pour charger les images (et les modèles 3D après)
 
 
 	// Initialization
@@ -26,6 +27,7 @@ int main()
 
 	SetTargetFPS(60);
 	//ToggleBorderlessWindowed();
+
 
 	//while (!WindowShouldClose() && !flag) {
 	//	BeginDrawing();
@@ -55,6 +57,29 @@ int main()
 	int deckSize = 14;*/
 	printf("\n\n\n\n\n\n Debug 4 \n\n\n\n\n\n");
 	GameState gs = { 0 };
+
+	{
+		const char* charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+			".,;:!?()+-/*= \\\n"
+			"éàèêëîïôûùçÉÀÈÊËÎÏÔÛÙÇ";
+
+		int codepointCount = 0;
+		int* codepoints = LoadCodepoints(charset, &codepointCount);
+
+		gs.fonts[FONT_GRENZE_GOTISH] = LoadFontEx("Assets/Fonts/GrenzeGotisch-Bold.ttf", 72, codepoints, codepointCount);
+		gs.fonts[FONT_PIRATA_ONE] = LoadFontEx("Assets/Fonts/PirataOne.ttf", 72, codepoints, codepointCount);
+		gs.fonts[FONT_FREDOKA_CM] = LoadFontEx("Assets/Fonts/Fredoka_Condensed-Medium.ttf", 72, codepoints, codepointCount);
+		gs.fonts[FONT_FREDOKA_SB] = LoadFontEx("Assets/Fonts/Fredoka-SemiBold.ttf", 72, codepoints, codepointCount);
+
+		UnloadCodepoints(codepoints);
+	}
+
+	/*BeginDrawing();
+	ClearBackground(WHITE);
+	DrawTextEx(gs.fonts[FONT_PIRATA_ONE], "Juste pour tester", (Vector2) { 200, 100 }, 40, 3, BLACK);
+	EndDrawing();
+	system("pause");*/
+
 	//gs.playerNumber = 98;
 	ScreenID current = SCREEN_MENU;
 
@@ -69,7 +94,7 @@ int main()
 	}
 
 	if (current == SCREEN_EXIT) {
-		CloseWindow();
+		EndProgram(&gs);
 		printf("\n\n\n\n Debug Fin de partie !! \n\n\n\n");
 		return 1;
 	}
@@ -168,7 +193,7 @@ int main()
 
 	// De-Initialization
 	//--------------------------------------------------------------------------------------
-	CloseWindow();        // Close window and OpenGL context
+	EndProgram(&gs);       // Close window and OpenGL context
 	//--------------------------------------------------------------------------------------
 
 
@@ -251,4 +276,10 @@ void sort_players_by_score(GameState* gs)
 	}
 }
 
+void EndProgram(GameState* gs) {
+	for (int i = 0; i < FONT_COUNT; i++) {
+		UnloadFont(gs->fonts[i]);
+	}
+	CloseWindow();
+}
 

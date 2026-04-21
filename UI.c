@@ -2,9 +2,6 @@
 
 
 
-
-
-
 ScreenID RunMenu(GameState* gs) {
 	int midX = 0;
 	int midY = 0;
@@ -49,7 +46,7 @@ ScreenID RunMenu(GameState* gs) {
 		posY = DrawTitle();
 
 		// Ajoute un bouton pour lancer la partie
-		DrawButton(&startBtn);
+		DrawButtonEx(&startBtn, gs->fonts[FONT_FREDOKA_SB]);
 		if (startBtn.validated) printf("Lancement de la partie");
 
 		// Ajoute un bouton pour ajouter un joueur
@@ -184,7 +181,7 @@ ScreenID RunRules(GameState* gs) {
 
 	int currentPage = 0;
 
-	Button Next = (Button){ .label = ">", .fontSize = 30, .labelColor = BLACK, .corner = 90, .stroke = 3, .color1 = DARKGRAY, .color2 = LIME };
+	Button Next = (Button){ .label = ">", .fontSize = 30, .labelColor = BLACK, .corner = 90, .stroke = 300, .color1 = DARKGRAY, .color2 = LIME };
 	Button Previous = (Button){ .label = "<", .fontSize = 30, .labelColor = BLACK, .corner = 90, .stroke = 3, .color1 = DARKGRAY, .color2 = RED };
 	Button Exit = (Button){ .label = "OK", .fontSize = 30, .labelColor = BLACK, .corner = 80, .stroke = 3, .color1 = DARKGRAY, .color2 = BLUE };
 
@@ -422,6 +419,10 @@ void SortRectangles(Rectangle** rlist, int listLen, int pad, float anchorPoint) 
 /**************** Fonctions Utilitaires ****************/
 
 void DrawButton(Button* btn) {
+	DrawButtonEx(btn, GetFontDefault());
+}
+
+void DrawButtonEx(Button* btn, Font font) {
 	Vector2 mouse = GetMousePosition();
 	bool pressed = btn->hovered && IsMouseButtonDown(MOUSE_BUTTON_LEFT);
 	bool clicked = btn->hovered && IsMouseButtonReleased(MOUSE_BUTTON_LEFT);
@@ -452,7 +453,7 @@ void DrawButton(Button* btn) {
 		r.y += (r.height - newHeight) / 2.0f;
 
 		// Calcul du décalage proportionnel pour un effet de profondeur
-		float offset = r.height * depthFactor / 100;
+		float offset = r.height * depthFactor / 100.f;
 
 		// Application
 		r.width = newWidth;
@@ -476,7 +477,7 @@ void DrawButton(Button* btn) {
 
 	// Label centré
 	int fontSize = pressed ? btn->fontSize - 4 : btn->fontSize;
-	DrawText(btn->label, r.x + (r.width - MeasureText(btn->label, fontSize)) / 2, r.y + (r.height - fontSize) / 2, fontSize, btn->labelColor);
+	DrawTextEx(font, btn->label, (Vector2) { r.x + (r.width - MeasureText(btn->label, fontSize)) / 2, r.y + (r.height - fontSize) / 2 }, fontSize, 2, btn->labelColor);
 
 	btn->validated = clicked;
 }
@@ -569,15 +570,48 @@ Color multiplyColor(Color color, float factor) {
 	return (Color) { fminf(color.r * factor, 255), fminf(color.g * factor, 255), fminf(color.b * factor, 255), color.a };
 }
 
-Texture2D LoadTextureRounded(const char* fileName, float radius, int width, int height) {
 
-	return;
+void ImageRoundedCorner(Image* image, float roundness) { ImageRoundCorner(image, (float)(roundness * min(image->width, image->height))); }
 
+void ImageRoundCorner(Image* image, float radius) {
+	ImageFormat(image, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
 
+	int width = image->width;
+	int height = image->height;
+	int rad2 = radius * radius;
 
+	float cx, cy;
 
+	for (int i = 0; i < width; i++)		for (int j = 0; j < height; j++) {
+		cx = cy = -1.f;
 
+		if (i < radius && j < radius) {
+			cx = cy = radius;
+		}
+		else if (i < radius && j > height - radius) {
+			cx = radius;
+			cy = height - radius;
+		}
+		else if (i > width - radius && j < radius) {
+			cx = width - radius;
+			cy = radius;
+		}
+		else if (i > width - radius && j > height - radius) {
+			cx = width - radius;
+			cy = height - radius;
+		}
 
+		if (cx != -1.f && cy != -1.f) {
+			float dx = i - cx;
+			float dy = j - cy;
 
+			if (dx * dx + dy * dy > rad2) {
+				Color pixelColor = GetImageColor(*image, i, j);
+				pixelColor.a = 0; // On rend le pixel totalement transparent
+				ImageDrawPixel(image, i, j, pixelColor);
+			}
+		}
+	}
 }
+
 

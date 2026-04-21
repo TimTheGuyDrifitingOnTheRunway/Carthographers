@@ -210,7 +210,7 @@ int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D
 
 		}
 		if (WindowShouldClose()) {
-			CloseWindow();
+			return 0;
 			exit(1);
 		}
 
@@ -257,7 +257,7 @@ int GUIPlacementCard(GameState* gs, FeuilleCarte f, const ExploreCard* card,
 		camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
 	}
 
-	if (WindowShouldClose()) { CloseWindow(); exit(1); }
+	if (WindowShouldClose()) { EndProgram(gs); exit(1); }
 
 	ApplyPlacement(f, &state, coinCount);
 	return 1;
@@ -370,12 +370,12 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 		if (CheckCollisionPointRec(mouse, editRects[i])) {
 			hoverTime[i] += GetFrameTime();
 			hoverTime[4] = hoverTime[4] > 0 ? 4 * .4f : hoverTime[4] + 4 * GetFrameTime();				// délai de 1 seconde avant de désafficher / réafficher (on multiplie par 4, car le temps est modifié 4 fois par frame, lors des vérifications des autres Edits)
-			printf("\nSet Hover Delta Time = %.4f", hoverTime[4] / 4);
+			//printf("\nSet Hover Delta Time = %.4f", hoverTime[4] / 4);
 		} else {
 			hoverTime[i] = 0.f;
 			hoverTime[4] -= GetFrameTime();
 			hoverTime[4] = max(hoverTime[4], -.4f);			
-			printf("\nDec Hover Delta Time = %.4f", hoverTime[4] / 4);
+			//printf("\nDec Hover Delta Time = %.4f", hoverTime[4] / 4);
 		}
 
 		if (hoverTime[i] >= .4f || (hoverTime[4] > 0 && hoverTime[i] >= .1f)) // .6 secondes ou .1 sec si déjà hover
