@@ -328,14 +328,69 @@ void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera) {
 void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state, int score, Camera3D camera, Model mountain[NOMBREMONTAGNE], Position mountainPos[NOMBREMONTAGNE], Seed s, ModelList models) {
 	int midX = GetScreenWidth() / 2;
 	int midY = GetScreenHeight() / 2;
+	static bool openPlayerPanel = 0;
 
 	Rectangle infoPanel = { 0, midY - 700 / 2, 400, 700 };
-	Rectangle playerPanel = { midX * 2 - 400, 0, 400, 250 };
+	//Rectangle playerPanel = { midX * 2 - 400, 100, 400, 250 };
+
+	Rectangle editsRec = (Rectangle){ midX - 40, -60, 80, 120 };
+
+	// Calcul de la largeur de chaque edit séparément
+	const char* editLabels[4];
+	Rectangle editRects[4];
+
+	{
+		int len;		// réduction de la portée car nom commun
+		for (int i = 0; i < 4; i++) {
+			len = strlen(gs->edits[i]->name) + 8;
+			editLabels[i] = (char*)malloc(len * sizeof(char));
+			snprintf(editLabels[i], len, "  [%c] %s  ", 'A' + i, gs->edits[i]->name);
+			//printf("%d\n", (int)strlen(gs->edits[i]->name));
+			editRects[i].width = MeasureText(editLabels[i], EDITS_FS);
+			editRects[i].height = editsRec.height / 2;
+			editsRec.width += editRects[i].width;
+			editsRec.x -= editRects[i].width / 2;
+		}
+	}
+
+	// Les positionner côte à côte
+	int startX = midX - editsRec.width / 2;
+	for (int i = 0; i < 4; i++) {
+		editRects[i].x = startX + 40;
+		editRects[i].y = 0;
+		startX += editRects[i].width + 8;
+	}
+
+	// Hover timer
+	static float hoverTime[5] = { 0 };		// Le dernier sert à éviter de désafficher puis réafficher si on bouge vite entre 2 édits
+	Vector2 mouse = GetMousePosition();
+	int tooltipTarget = -1;
+
+	for (int i = 0; i < 4; i++) {
+		if (CheckCollisionPointRec(mouse, editRects[i])) {
+			hoverTime[i] += GetFrameTime();
+			hoverTime[4] = hoverTime[4] > 0 ? 4 * .4f : hoverTime[4] + 4 * GetFrameTime();				// délai de 1 seconde avant de désafficher / réafficher (on multiplie par 4, car le temps est modifié 4 fois par frame, lors des vérifications des autres Edits)
+			printf("\nSet Hover Delta Time = %.4f", hoverTime[4] / 4);
+		} else {
+			hoverTime[i] = 0.f;
+			hoverTime[4] -= GetFrameTime();
+			hoverTime[4] = max(hoverTime[4], -.4f);			
+			printf("\nDec Hover Delta Time = %.4f", hoverTime[4] / 4);
+		}
+
+		if (hoverTime[i] >= .4f || (hoverTime[4] > 0 && hoverTime[i] >= .1f)) // .6 secondes ou .1 sec si déjà hover
+			tooltipTarget = i;
+	}
+
+	const char* seasonLabel = TextFormat("%s", seasons[gs->currentSeason]->name);
+
+	Rectangle seasonRec = (Rectangle){ midX - MeasureText(seasonLabel, EDITS_FS) / 2 - 40, editsRec.y + editsRec.height - 50, MeasureText(seasonLabel, EDITS_FS) + 80, 100 };
+
+	Rectangle playerRec = (Rectangle){ GetScreenWidth() - 50 - (openPlayerPanel ? max(PLAYER_REC_WIDTH, MeasureText(gs->players[gs->playerIndex].name, PLAYER_PANEL_FS + 10) - 20) : 0), midY - PLAYER_REC_HEIGHT / 2, MeasureText(gs->players[gs->playerIndex].name, PLAYER_PANEL_FS + 10) + PLAYER_REC_HEIGHT, PLAYER_REC_HEIGHT };
+	openPlayerPanel = CheckCollisionPointRec(mouse, playerRec);
 
 	BeginDrawing();
 	ClearBackground(BACKGROUND_COLOR);
-
-
 	BeginMode3D(camera);
 
 
@@ -347,8 +402,6 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 				DrawCubeWires((Vector3) { (float)i - SIZE / 2, PLACEMENT_HEIGHT, (float)j - SIZE / 2 }, 1.0f, 1.0f, 1.0f, BORDERCOLOR);
 
 
-
-
 	GUIdrawGrille();
 	EndMode3D();
 
@@ -357,29 +410,64 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 	// Infos relatives à tous les joueurs
 	DrawRectangleStroke(infoPanel, 3, WHITE, RED);
 	int y1 = 5;
-	DrawText(TextFormat("Carte : %s", state->card->name), 5, infoPanel.y + y1, 25, BLACK); y1 += 30;
-	DrawText(TextFormat("2 formes : %d", state->hasTwoShapes), 5, infoPanel.y + y1, 25, BLACK); y1 += 30;
-	DrawText(TextFormat("2 matériaux : %d", state->hasTwoMat), 5, infoPanel.y + y1, 25, BLACK); y1 += 30;
-	DrawText(TextFormat("Saison : %s", seasons[gs->currentSeason]->name), 5, infoPanel.y + y1, 25, BLACK); y1 += 30;
-	DrawText(TextFormat("Edits : %s / %s", gs->edits[seasons[gs->currentSeason]->EditA]->name, gs->edits[seasons[gs->currentSeason]->EditB]->name), 5, infoPanel.y + y1, 15, BLACK); y1 += 20;
-	for (int i = 0; i < 4; i++) {
-		DrawText(TextFormat("Edit %d : %s", i, gs->edits[i]->name), 5, infoPanel.y + y1, 25, BLACK); y1 += 30;
-	}
-	if (state->isRuin) DrawText("Doit être placé sur une Ruine", 5, infoPanel.y + y1, 30, RED); y1 += 35;
-	if (state->isRiftLands) DrawText("Tous matériaux disponibles !", 5, infoPanel.y + y1, 30, RED); y1 += 35;
+	//DrawText(TextFormat("Carte : %s", state->card->name), 5, infoPanel.y + y1, 25, BLACK); y1 += 30;
+	//DrawText(TextFormat("2 formes : %d", state->hasTwoShapes), 5, infoPanel.y + y1, 25, BLACK); y1 += 30;
+	//DrawText(TextFormat("2 matériaux : %d", state->hasTwoMat), 5, infoPanel.y + y1, 25, BLACK); y1 += 30;
+	//DrawText(TextFormat("Saison : %s", seasons[gs->currentSeason]->name), 5, infoPanel.y + y1, 25, BLACK); y1 += 30;
+	//DrawText(TextFormat("Edits : %s / %s", gs->edits[seasons[gs->currentSeason]->EditA]->name, gs->edits[seasons[gs->currentSeason]->EditB]->name), 5, infoPanel.y + y1, 15, BLACK); y1 += 20;
+	//for (int i = 0; i < 4; i++) {
+	//	DrawText(TextFormat("Edit %d : %s", i, gs->edits[i]->name), 5, infoPanel.y + y1, 25, BLACK); y1 += 30;
+	//}
+	//if (state->isRuin) DrawText("Doit être placé sur une Ruine", 5, infoPanel.y + y1, 30, RED); y1 += 35;
+	//if (state->isRiftLands) DrawText("Tous matériaux disponibles !", 5, infoPanel.y + y1, 30, RED); y1 += 35;
+
+
+
 
 	// Infos relatives au joueur actuel
-	int y2 = 5;
-	DrawRectangleStroke(playerPanel, 3, SKYBLUE, DARKBLUE);
-	DrawText("Joueur : ", playerPanel.x + 5, y2, 30, BLACK); y2 += 35;
-	DrawText(gs->players[gs->playerIndex].name, playerPanel.x + 5, y2, 30, BLACK); y2 += 35;
-	DrawText(TextFormat("Score : %d", score), playerPanel.x + 5, y2, 30, BLACK); y2 += 35;
-	DrawText(TextFormat("Coins : %d", gs->players[gs->playerIndex].coinCount), playerPanel.x + 5, y2, 30, BLACK); y2 += 35;
+	int y2 = 20;
+	//DrawRectangleStroke(playerPanel, 3, SKYBLUE, DARKBLUE);
+	//DrawText("Joueur : ", playerPanel.x + 5, y2, 30, BLACK); y2 += 35;
+	//DrawText(gs->players[gs->playerIndex].name, playerPanel.x + 5, y2, 30, BLACK); y2 += 35;
+	//DrawText(TextFormat("Score : %d", score), playerPanel.x + 5, y2, 30, BLACK); y2 += 35;
+	//DrawText(TextFormat("Coins : %d", gs->players[gs->playerIndex].coinCount), playerPanel.x + 5, y2, 30, BLACK); y2 += 35;
+	DrawRectangleRoundedStrokeEx(playerRec, .1f, 10, 3, LIGHTGRAY, BROWN);
+	DrawText(gs->players[gs->playerIndex].name, playerRec.x + 10, playerRec.y + 5, PLAYER_PANEL_FS + 10, BLACK);
+	DrawText(TextFormat("SCORE  %d", score), playerRec.x + 10, playerRec.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, BLACK);										y2 += PLAYER_PANEL_FS + 10;
+	DrawText(TextFormat("COINS  %d", gs->players[gs->playerIndex].coinCount), playerRec.x + 10, playerRec.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, BLACK);	y2 += PLAYER_PANEL_FS + 10;
+	//if (gs->isOnline) { DrawText(TextFormat("COINS  %d", gs->players[gs->playerIndex].coinCount), playerRec.x + 10, playerRec.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, BLACK); }
+
+	// Edits & Saison
+	DrawRectangleRoundedStrokeEx(seasonRec, 1.f, 10, 2, BGCOLOR, GREEN);
+	DrawRectangleRoundedStrokeEx(editsRec, 1.f, 10, 2, BGCOLOR, GOLD);
+	for (int i = 0; i < 4; i++) {
+		DrawStrokeTextEx(editLabels[i], editRects[i].x, editRects[i].y + 10, EDITS_FS, GOLD, BLACK, 1);
+		//DrawRectangleLinesEx(editRects[i], 2, WHITE);
+		//printf("Impression de l'edit %d (nom %s) a la place (%d,%d), taille %d\n", i, editLabels[i], (int)editRects[i].x + 10, (int)editRects[i].y + 10, EDITS_FS);
+	}
+	DrawStrokeTextEx(TextFormat("%s", seasons[gs->currentSeason]->name), seasonRec.x + 40, seasonRec.y + 60, EDITS_FS, GOLD, BLACK, 1);
 
 
+#define A_MID(a,b) (midX < mouse.x ? a : b)
+	if (tooltipTarget != -1) {	// Affiche les tooltips
+		const char* desc = gs->edits[tooltipTarget]->description;
+		Rectangle maxBounds = (Rectangle){ A_MID(20, mouse.x), mouse.y + 20, A_MID(mouse.x, GetScreenWidth() - mouse.x) - 20, 0 };
+		Vector2 recSize = MeasureTextWrapped(desc, maxBounds, 20, WHITE);
+		maxBounds.x = A_MID(mouse.x - recSize.x, maxBounds.x - 20) - 10;
+		maxBounds.y += 5;																											// Augmente le décalage entre la souris et le texte en y
+		maxBounds.width = recSize.x + 40;
+		maxBounds.height = recSize.y + 20;
 
+		DrawRectangleRoundedStrokeEx(maxBounds, 0.3f, 10, 2, Fade(BLACK, 0.65f), BLACK);
+
+		DrawTextWrapped(desc, (Rectangle) { maxBounds.x + 20, maxBounds.y + 10, maxBounds.width - 40, 0 }, 20, WHITE);
+
+	}
+#undef A_MID
 
 	EndDrawing();
+
+	for (int i = 0; i < 4; i++) free(editLabels[i]);
 }
 
 void ApplyPlacement(FeuilleCarte f, PlacementState* state, int* coinCount) {

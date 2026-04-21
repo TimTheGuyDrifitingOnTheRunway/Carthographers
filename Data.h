@@ -37,7 +37,7 @@ extern const Piece Z;
 extern const Piece B_Z;
 
 
-/******************************** Lib3d.h ********************************/
+/******************************** GameManager.c ********************************/
 
 // Cartes Saison
 
@@ -97,7 +97,7 @@ extern const ExploreCard GnollRaid;
 extern const ExploreCard InsectoidInvasion;
 extern const ExploreCard OgreCharge;
 extern const ExploreCard RatmanStrike;
-extern const ExploreCard KoboldOnlaught;
+extern const ExploreCard KoboldOnslaught;
 
 
 // Ruines et RiftLands
