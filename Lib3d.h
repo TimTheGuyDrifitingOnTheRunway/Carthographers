@@ -50,3 +50,7 @@ Seed generateSeed(int mountainSeed[2]);
 void* generateSeedThread(void* arg);//génération parallèle de la seed
 void* generateRandomVilageImagesThread(void* arg);
 Image generateVillageImage(int x, int y);
+
+/*fonctions de décharge*/
+void UnloadSeed(Seed* s);
+void UnloadModels(ModelList* models);

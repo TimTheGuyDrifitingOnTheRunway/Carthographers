@@ -213,13 +213,22 @@
 #define RED_POWER 1.0f
 #define RED_OFSET 0.0f
 
+#define MONSTER_SIZE 0.05f
+#define MONSTER_TRESHOLD 0.7f
 /**********Chemin des models 3d **************/
 
 #define PATH_TO_TREE_MODEL "Assets/tree.obj"
 #define PATH_TO_BUSH_MODEL "Assets/bush.obj"
 #define PATH_TO_HOUSE "Assets/maison.obj"
+#define PATH_TO_MONSTER "Assets/monster.obj"
+
 #define PATH_TO_HDR_SKYBOX "Assets/skybox.hdr"
 #define PATH_TO_SKYBOX "Assets/skybox2.png"
+#define PATH_TO_CHAMPS_TEXTURE "Assets/champs.png"
+#define PATH_TO_WATER_TEXTURE "Assets/water.png"
+#define PATH_TO_MONSTER_TEXTURE "Assets/monster.png"
+#define PATH_TO_FORET_TEXTURE "Assets/foret.png"
+#define PATH_TO_VILLAGE_TEXTURE "Assets/village.png"
 
 #define SKYBOX_SHADER_PATH "Assets/shaders/glsl%i/skybox.vs"
 #define SKYBOX_SHADER_PATH2 "Assets/shaders/glsl%i/skybox.fs"
