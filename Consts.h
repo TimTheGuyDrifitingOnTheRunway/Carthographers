@@ -197,10 +197,20 @@
 #define OFSET_IMAGE_SIZE 1000
 #define OFSET_IMAGE_SCALE 500
 
+
+#define VILLAGE_IMAGE_SIZE 1000
+#define  VILLAGE_IMAGE_SCALE 100
+#define HOUSE_TRESHOLD 0.7f 
+#define HOUSE_DIVIDER 5
+#define HOUSE_SIZE 0.05f
+#define RED_POWER 1.0f
+#define RED_OFSET 0.0f
+
 /**********Chemin des models 3d **************/
 
 #define PATH_TO_TREE_MODEL "Assets/tree.obj"
 #define PATH_TO_BUSH_MODEL "Assets/bush.obj"
+#define PATH_TO_HOUSE "Assets/maison.obj"
 #define PATH_TO_HDR_SKYBOX "Assets/skybox.hdr"
 #define PATH_TO_SKYBOX "Assets/skybox2.png"
 

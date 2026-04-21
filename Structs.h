@@ -149,6 +149,7 @@ typedef struct {
     Model tree;
     Model buisson;
     Model skybox;
+    Model house;
 }ModelList;
 
 
@@ -157,5 +158,6 @@ typedef struct {
     Image treeImage;
 	Image OfsetImagex;
     Image OfsetImagey;
+    Image villageImage;
 
 }Seed;

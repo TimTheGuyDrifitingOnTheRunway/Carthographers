@@ -48,3 +48,5 @@ Image generateOffsetImage(int x, int y);//génère une noisemap pour faire les d
 void* generateRandomOfsetImagesThread(void* arg);
 Seed generateSeed(int mountainSeed[2]);
 void* generateSeedThread(void* arg);//génération parallèle de la seed
+void* generateRandomVilageImagesThread(void* arg);
+Image generateVillageImage(int x, int y);
