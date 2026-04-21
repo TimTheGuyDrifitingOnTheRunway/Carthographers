@@ -66,12 +66,17 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 
 
 				Color color;
+				int drawcube = 1;
 				switch (getMaterialAtPos(temp, (Position) { i, j })) {
 				case EAU:
 					color = BLUE;
+					DrawModel(models.water, (Vector3) { x, y + 0.51f, z }, 1, WHITE);//dessin de la tyles avant tout 
+
 					break;
 				case FORET:
 					color = GREEN;
+					DrawModel(models.forestTile, (Vector3) { x, y + 0.51f, z }, 1, WHITE);
+
 					for (int k = 0; k < TREE_DIVIDER + 1; k++) for (int l = 0; l < TREE_DIVIDER + 1; l++) {
 						Vector3 color;
 						color = ColorToHSV(GetImageColor(treeImage, j * 10 + l, i * 10 + k));
@@ -103,6 +108,8 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 					break;
 				case VILLAGE:
 					color = BROWN;
+					DrawModel(models.vilageTile, (Vector3) { x, y + 0.51f, z }, 1, WHITE);
+
 					for (int k = 0; k < HOUSE_DIVIDER + 1; k++) for (int l = 0; l < HOUSE_DIVIDER + 1; l++) {
 						float lum = ColorToHSV(GetImageColor(s.villageImage, j * 10 + l, i * 10 + k)).z;
 						//calcul des ofset d'arbres
@@ -112,18 +119,18 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 						clamp(rxOfset, -0.1f, 0.1f);
 						clamp(rzOfset, -0.1f, 0.1f);
 						if ((-0.5f + (float)k / HOUSE_DIVIDER + rxOfset < FOREST_BORDER) && (-0.5f + (float)k / HOUSE_DIVIDER + rxOfset) > -FOREST_BORDER && (-0.5 + (float)l / HOUSE_DIVIDER + rzOfset) < FOREST_BORDER && (-0.5 + (float)l / HOUSE_DIVIDER + rzOfset) > -FOREST_BORDER) {
-							unsigned char red = (pow((lum), RED_POWER) + RED_OFSET) * 255 > 254 ? 254 : ((pow((lum), RED_POWER) + RED_OFSET) * 255 < 50) ? 50 : (pow((lum), RED_POWER) + RED_OFSET) * 255;
 
-							Color c = (Color){ red, red*0.2, red*0.2, 255 };
-
-							if (lum > HOUSE_TRESHOLD) DrawModelEx(models.house, (Vector3) { x - 0.5f + (float)k / HOUSE_DIVIDER + rxOfset, y + 0.5, z - 0.5 + (float)l / HOUSE_DIVIDER + rzOfset }, (Vector3) { 1, 0, 0 }, 0, (Vector3) { HOUSE_SIZE, HOUSE_SIZE, HOUSE_SIZE }, WHITE);
+							if (lum > HOUSE_TRESHOLD) DrawModelEx(models.house, (Vector3) { x - 0.5f + (float)k / HOUSE_DIVIDER + rxOfset, y + 0.53f, z - 0.5 + (float)l / HOUSE_DIVIDER + rzOfset }, (Vector3) { 0, 1, 0 }, 0, (Vector3) { HOUSE_SIZE, HOUSE_SIZE, HOUSE_SIZE }, WHITE);
 
 						}
 					}
 					break;
 				case CHAMPS:
+					
+					DrawModel(models.champs, (Vector3) { x, y+0.51f, z}, 1, WHITE);
 					color = YELLOW;
 					break;
+					
 				case MONTAGNE:
 					color = GRAY;
 					DrawModel(mountains[nb], (Vector3) { x - 0.5, 0.5f + y, z - 0.5 }, 1, GRAY);
@@ -131,6 +138,22 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 					break;
 				case MONSTRE:
 					color = PURPLE;
+					DrawModel(models.monsterTile, (Vector3) { x, y + 0.51f, z }, 1, WHITE);
+
+					for (int k = 0; k < HOUSE_DIVIDER + 1; k++) for (int l = 0; l < HOUSE_DIVIDER + 1; l++) {//dessine les monstres comme les mainsos
+						float lum = ColorToHSV(GetImageColor(s.villageImage, j * 10 + l, i * 10 + k)).z;
+						//calcul des ofset d'arbres
+						float rxOfset = (ColorToHSV(GetImageColor(s.OfsetImagex, j * 10 + l, i * 10 + k)).z - 0.5f) * 0.5f;
+						float rzOfset = (ColorToHSV(GetImageColor(s.OfsetImagey, j * 10 + l, i * 10 + k)).z - 0.5f) * 0.5f;
+
+						clamp(rxOfset, -0.1f, 0.1f);
+						clamp(rzOfset, -0.1f, 0.1f);
+						if ((-0.5f + (float)k / HOUSE_DIVIDER + rxOfset < FOREST_BORDER) && (-0.5f + (float)k / HOUSE_DIVIDER + rxOfset) > -FOREST_BORDER && (-0.5 + (float)l / HOUSE_DIVIDER + rzOfset) < FOREST_BORDER && (-0.5 + (float)l / HOUSE_DIVIDER + rzOfset) > -FOREST_BORDER) {
+
+							if (lum > MONSTER_TRESHOLD) DrawModelEx(models.monster, (Vector3) { x - 0.5f + (float)k / HOUSE_DIVIDER + rxOfset, y + 0.53f, z - 0.5 + (float)l / HOUSE_DIVIDER + rzOfset }, (Vector3) { 0, 1, 0 }, (k+l)*30, (Vector3) { MONSTER_SIZE, MONSTER_SIZE, MONSTER_SIZE}, DARKPURPLE);
+
+						}
+					}
 					break;
 				case CONFLICTVALUE:
 					color = RED;
@@ -144,7 +167,7 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 				default:
 					color = WHITE;
 				}
-				DrawCube((Vector3) { x, y, z }, 1.0f, 1.0f, 1.0f, color);
+				if(drawcube)DrawCube((Vector3) { x, y, z }, 1.0f, 1.0f, 1.0f, color);
 				DrawCubeWires((Vector3) { x, y, z }, 1.0f, 1.0f, 1.0f, BLACK);
 			}
 		}
@@ -672,6 +695,61 @@ ModelList loadModels() {
 	models.buisson = LoadModel(PATH_TO_BUSH_MODEL);
 	models.skybox = loadSkybox(false);
 	models.house = LoadModel(PATH_TO_HOUSE);
+	models.monster = LoadModel(PATH_TO_MONSTER);
+	// génération du plan pour afficher la texture de champs
+
+	Mesh plane = GenMeshPlane(1.0f, 1.0f, 1, 1);//plan unique pour générer plusieurs modèles différents, pour éviter de générer plusieurs meshes identiques
+
+
+	Texture2D textureChamps = LoadTexture(PATH_TO_CHAMPS_TEXTURE);	
+	models.champs = LoadModelFromMesh(plane);
+	SetTextureWrap(textureChamps, TEXTURE_WRAP_CLAMP);
+	SetTextureFilter(textureChamps, TEXTURE_FILTER_POINT);
+	models.champs.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textureChamps;
+
+	//idem mais pour l'eau :
+
+	
+	Texture2D textureWater = LoadTexture(PATH_TO_WATER_TEXTURE);
+	models.water = LoadModelFromMesh(plane);
+	SetTextureWrap(textureWater, TEXTURE_WRAP_CLAMP);
+	SetTextureFilter(textureWater, TEXTURE_FILTER_POINT);
+	models.water.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textureWater;
+
+	//idem mais pour le sol des monstres :
+	{
+		
+		Texture2D texture = LoadTexture(PATH_TO_MONSTER_TEXTURE);
+		models.monsterTile = LoadModelFromMesh(plane);
+		SetTextureWrap(texture, TEXTURE_WRAP_CLAMP);
+		SetTextureFilter(texture, TEXTURE_FILTER_POINT);
+		models.monsterTile.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture;
+	}
+
+	//idem mais pour le sol de la foret
+	{
+	
+		Texture2D texture = LoadTexture(PATH_TO_FORET_TEXTURE);
+		models.forestTile = LoadModelFromMesh(plane);
+		SetTextureWrap(texture, TEXTURE_WRAP_CLAMP);
+		SetTextureFilter(texture, TEXTURE_FILTER_POINT);
+		models.forestTile.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture;
+	}
+
+	//idem mais pour le sol de la foret
+	{
+
+		Texture2D texture = LoadTexture(PATH_TO_VILLAGE_TEXTURE);
+		models.vilageTile = LoadModelFromMesh(plane);
+		SetTextureWrap(texture, TEXTURE_WRAP_CLAMP);
+		SetTextureFilter(texture, TEXTURE_FILTER_POINT);
+		models.vilageTile.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture;
+	}
+
+
+
+
+	printf("models succesfully laoded\n");
 	return models;
 }
 
@@ -822,7 +900,7 @@ static TextureCubemap GenTextureCubemap(Shader shader, Texture2D panorama, int s
 
 
 Image generateOffsetImage(int x, int y) {
-	printf("generating perlin noise Ofset \n");
+	printf("generating perlin noise map \n");
 	Image perlinNoise = GenImagePerlinNoise(OFSET_IMAGE_SIZE, OFSET_IMAGE_SIZE, x * 100, y * 100, OFSET_IMAGE_SCALE);
 	
 	return perlinNoise;
@@ -894,4 +972,24 @@ void* generateRandomVilageImagesThread(void* arg) {
 		*img = generateVillageImage(randInt(0, 100) * 10, randInt(0, 100) * 10);
 	} while (img == NULL);
 	return img;
+}
+
+void UnloadSeed(Seed* s) {
+	UnloadImage(s->OfsetImagex);
+	UnloadImage(s->OfsetImagey);
+	UnloadImage(s->villageImage);
+	UnloadImage(s->treeImage);
+	s->isGenerated = 0;
+	printf("[INFO] seed unloaded \n");
+}
+void UnloadModels(ModelList* models) {
+	UnloadModel(models->tree);
+	UnloadModel(models->buisson);
+	UnloadModel(models->skybox);
+	UnloadModel(models->house);
+	UnloadModel(models->monster);
+	UnloadModel(models->champs);
+	UnloadModel(models->water);
+	UnloadModel(models->monsterTile);
+	printf("[INFO] models unloaded \n");
 }

@@ -305,6 +305,7 @@ void NextSeason(GameState *gs, Camera3D camera, ModelList models, Seed s2, int m
 	}
 
 	if (++gs->currentSeason < 4) Season2(gs, camera, models, s2, mountainSeed);
+	
 }
 
 // Tour de jeu
