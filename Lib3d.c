@@ -341,7 +341,6 @@ void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera) {
 	initCarte(state->feuilleVide, FALSE);
 	state->drawable = drawShape(state->feuilleVide, state->shapeCopy,
 		state->pos, state->rotation, state->material);
-	int OOB = !state->drawable;//out of bounds, pour reset la position si la pièce sort de la carte
 	tryDraw(f, state->feuilleVide, state->temp);
 	
 	state->drawable = state->drawable && isDrawable(f, state->feuilleVide);
@@ -394,21 +393,29 @@ void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera) {
 		}
 	}
 
-	// Confirmation
-	if (IsKeyPressed(KEY_SPACE) && state->drawable)
-		state->status = 1;
+	//// Recalcul de la preview après les changements
+	//initCarte(state->feuilleVide, FALSE);
+	//state->drawable = state->drawable && isDrawable(f, state->feuilleVide);
+	//if (state->isRuin)
+	//	state->drawable = state->drawable && coversRuin(f, state->feuilleVide);
 
-	if (OOB) {
+
+	if (!drawShape(state->feuilleVide, state->shapeCopy, state->pos, state->rotation, state->material)) {	//out of bounds, pour reset la position si la pièce sort de la carte
 		if (state->pos.x < 1)        state->pos.x += 1;
 		if (state->pos.x > SIZE - 2) state->pos.x -= 1;
 		if (state->pos.y < 1)        state->pos.y += 1;
 		if (state->pos.y > SIZE - 2) state->pos.y -= 1;
 	}
 
+	if (IsKeyPressed(KEY_SPACE) && state->drawable)
+		state->status = 1;
+
+
 	//if (OOB) { state->pos.x = 5; state->pos.y = 5; }// reset si hors limite (se produit rarement, mais peut arriver lors de switch de forme si les 2 formes ne peuvent pas être placées au même endroit)
 }
 
 void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state, int score, Camera3D camera, Model mountain[NOMBREMONTAGNE], Position mountainPos[NOMBREMONTAGNE], Seed s, ModelList models) {
+	printf("\nPosition : %d,%d", state->pos.x, state->pos.y);
 	int midX = GetScreenWidth() / 2;
 	int midY = GetScreenHeight() / 2;
 	static bool openPlayerPanel = 0;
