@@ -26,6 +26,11 @@ int main()
 	SetWindowMinSize(1280, 720);
 
 	SetTargetFPS(60);
+
+	pthread_t soundThread;
+	int keep = 1;
+	pthread_create(&soundThread, NULL, SoundThread, &keep);
+
 	//ToggleBorderlessWindowed();
 
 
@@ -195,6 +200,11 @@ int main()
 	//for (int i = 0; i < 2; i++) {GUIplacementShape(f, pieceTab[3], FORET, camera); }
 	//GUIplacementDefault(f, 5, camera);
 	Sleep(1000);
+
+	keep = 0;
+
+	pthread_join(soundThread, NULL);//arret du thread son
+
 	printf("\n\n\n\n\n\n Debug de fin de partie \n\n\n\n\n\n");
 
 	printf("\n\n stoneSideQuest points = %d\n", calcStoneSideQuest(f));

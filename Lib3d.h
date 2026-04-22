@@ -56,3 +56,7 @@ Image generateVillageImage(int x, int y);
 /*fonctions de décharge*/
 void UnloadSeed(Seed* s);
 void UnloadModels(ModelList* models);
+
+
+/*****fonctions de gestion du sons****/
+void* SoundThread(void* args);
