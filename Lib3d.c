@@ -398,7 +398,14 @@ void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera) {
 	if (IsKeyPressed(KEY_SPACE) && state->drawable)
 		state->status = 1;
 
-	if (OOB) { state->pos.x = 5; state->pos.y = 5; }// reset si hors limite (se produit rarement, mais peut arriver lors de switch de forme si les 2 formes ne peuvent pas être placées au même endroit)
+	if (OOB) {
+		if (state->pos.x < 1)        state->pos.x += 1;
+		if (state->pos.x > SIZE - 2) state->pos.x -= 1;
+		if (state->pos.y < 1)        state->pos.y += 1;
+		if (state->pos.y > SIZE - 2) state->pos.y -= 1;
+	}
+
+	//if (OOB) { state->pos.x = 5; state->pos.y = 5; }// reset si hors limite (se produit rarement, mais peut arriver lors de switch de forme si les 2 formes ne peuvent pas être placées au même endroit)
 }
 
 void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state, int score, Camera3D camera, Model mountain[NOMBREMONTAGNE], Position mountainPos[NOMBREMONTAGNE], Seed s, ModelList models) {
