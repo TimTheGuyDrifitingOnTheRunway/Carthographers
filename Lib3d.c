@@ -1065,3 +1065,33 @@ void UnloadModels(ModelList* models) {
 	UnloadModel(models->monsterTile);
 	printf("[INFO] models unloaded \n");
 }
+
+
+
+
+
+
+/***************************Sound management****************/
+
+void* SoundThread(void* args) {//thread de gestion de l'audio séparé afin d'éviter des freeze de la musicque
+	InitAudioDevice();              // Initialize audio device
+	int* keep = args;
+	Music music = LoadMusicStream(PATH_TO_AUDIO);
+
+	PlayMusicStream(music);
+
+	float timePlayed = 0.0f;        // Time played normalized [0.0f..1.0f]
+	float pan = 0.0f;               // Default audio pan center [-1.0f..1.0f]
+	SetMusicPan(music, pan);
+
+	float volume = 0.8f;            // Default audio volume [0.0f..1.0f]
+	SetMusicVolume(music, volume);
+
+	while (*keep==1) {
+		UpdateMusicStream(music);
+	}
+	UnloadMusicStream(music);   // Unload music stream buffers from RAM
+
+	CloseAudioDevice();
+	return NULL;
+}

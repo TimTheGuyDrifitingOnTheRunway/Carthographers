@@ -255,6 +255,8 @@
 #define SKYBOX_CUBEMAP_SHADER_PATH "Assets/shaders/glsl%i/cubemap.vs"
 #define SKYBOX_CUBEMAP_SHADER_PATH "Assets/shaders/glsl%i/cubemap.fs"
 
+#define PATH_TO_AUDIO "Assets/sound.mp4"
+
 
 #if defined(PLATFORM_DESKTOP)
     #define GLSL_VERSION            330
