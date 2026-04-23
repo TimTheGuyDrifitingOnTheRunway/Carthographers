@@ -29,16 +29,7 @@ int main()
 	//ToggleBorderlessWindowed();
 
 
-	//while (!WindowShouldClose() && !flag) {
-	//	BeginDrawing();
 
-	//	
-
-	//	EndDrawing();
-	//}
-
-
-	//DisableCursor();
 
 
 	Vector3 cubePosition = { 0.0f, 0.0f, 0.0f };
@@ -63,45 +54,54 @@ int main()
 			".,;:!?'°^&()[]{}<>_\"|+-/*= \\\n"
 			"éàèêëîïôûùçÉÀÈÊËÎÏÔÛÙÇ";
 
-		int codepointCount = 0;
+		int codepointCount = 0;  
 		int* codepoints = LoadCodepoints(charset, &codepointCount);
 
-		gs.fonts[FONT_GRENZE_GOTISCH_B] = LoadFontEx("Assets/Fonts/GrenzeGotisch-Bold.ttf", 200, codepoints, codepointCount);
-		gs.fonts[FONT_GRENZE_GOTISCH_L] = LoadFontEx("Assets/Fonts/GrenzeGotisch-Light.ttf", 200, codepoints, codepointCount);
-		gs.fonts[FONT_PIRATA_ONE] = LoadFontEx("Assets/Fonts/PirataOne.ttf", 200, codepoints, codepointCount);
-		gs.fonts[FONT_FREDOKA_CM] = LoadFontEx("Assets/Fonts/Fredoka_Condensed-Medium.ttf", 200, codepoints, codepointCount);
-		gs.fonts[FONT_FREDOKA_SB] = LoadFontEx("Assets/Fonts/Fredoka-SemiBold.ttf", 200, codepoints, codepointCount);
-		gs.fonts[FONT_METAMORPHOUS] = LoadFontEx("Assets/Fonts/Metamorphous.ttf", 200, codepoints, codepointCount);
+		gs.assets.fonts[FONT_GRENZE_GOTISCH_B] = LoadFontEx("Assets/Fonts/GrenzeGotisch-Bold.ttf", 200, codepoints, codepointCount);
+		gs.assets.fonts[FONT_GRENZE_GOTISCH_L] = LoadFontEx("Assets/Fonts/GrenzeGotisch-Light.ttf", 200, codepoints, codepointCount);
+		gs.assets.fonts[FONT_PIRATA_ONE] = LoadFontEx("Assets/Fonts/PirataOne.ttf", 200, codepoints, codepointCount);
+		gs.assets.fonts[FONT_FREDOKA_CM] = LoadFontEx("Assets/Fonts/Fredoka_Condensed-Medium.ttf", 200, codepoints, codepointCount);
+		gs.assets.fonts[FONT_FREDOKA_SB] = LoadFontEx("Assets/Fonts/Fredoka-SemiBold.ttf", 200, codepoints, codepointCount);
+		gs.assets.fonts[FONT_METAMORPHOUS] = LoadFontEx("Assets/Fonts/Metamorphous.ttf", 200, codepoints, codepointCount);
 
 		UnloadCodepoints(codepoints);
 	}
 
 	//for (int i = 0; i < FONT_COUNT; i++) {
-	//	printf("(%.5f,%.5f) ; ", MeasureTextEx(gs.fonts[i], " ", 30, 2).x, MeasureTextEx(gs.fonts[i], " ", 30, 2).y);
-	//	printf("(%.5f,%.5f)\n", MeasureTextEx(gs.fonts[i], "    \n   \n     ", 30, 2).x, MeasureTextEx(gs.fonts[i], "    \n   \n     ", 30, 2).y);
+	//	printf("(%.5f,%.5f) ; ", MeasureTextEx(gs.assets.fonts[i], " ", 30, 2).x, MeasureTextEx(gs.assets.fonts[i], " ", 30, 2).y);
+	//	printf("(%.5f,%.5f)\n", MeasureTextEx(gs.assets.fonts[i], "    \n   \n     ", 30, 2).x, MeasureTextEx(gs.assets.fonts[i], "    \n   \n     ", 30, 2).y);
 	//}
 	//printf("\n");
 	//BeginDrawing();
 	//ClearBackground(WHITE);
-	//DrawTextWrappedEx(gs.fonts[FONT_PIRATA_ONE], "Juste pour tester", (Rectangle) { 200, 100, 600, 800 }, 40, 1, GRAY, BLACK);
+	//DrawTextWrappedEx(gs.assets.fonts[FONT_PIRATA_ONE], "Juste pour tester", (Rectangle) { 200, 100, 600, 800 }, 40, 1, GRAY, BLACK);
 	//EndDrawing();
 	//system("pause");
 	//BeginDrawing();
 	//ClearBackground(WHITE);
-	//DrawTextWrappedEx(gs.fonts[FONT_PIRATA_ONE], "Juste pour tester", (Rectangle) { 200, 100, 600, 800 }, 40, 1, GRAY, BLACK);
+	//DrawTextWrappedEx(gs.assets.fonts[FONT_PIRATA_ONE], "Juste pour tester", (Rectangle) { 200, 100, 600, 800 }, 40, 1, GRAY, BLACK);
 	//EndDrawing();
 	//system("pause");
+
+	LoadContext imgCtx = { 0 };
+	pthread_mutex_init(&imgCtx.mutex, NULL);
+
+	gs.loadCtx = &imgCtx;
+
+	pthread_t assetWorkerThread;
+	pthread_create(&assetWorkerThread, NULL, LoadAssetsWorker, &imgCtx);
+
 
 	//gs.playerNumber = 98;
 	ScreenID current = SCREEN_MENU;
 
 	while (current != SCREEN_GAME && current != SCREEN_EXIT) {
 		switch (current) {
-		case SCREEN_MENU:       current = RunMenu(&gs);       break;
-		case SCREEN_ADD_PLAYER: current = RunAddPlayer(&gs);  break;
-		case SCREEN_RULES:      current = RunRules(&gs);      break;
-		case SCREEN_KEYBINDS:   current = RunKeybinds(&gs);   break;
-		default:                current = SCREEN_EXIT;        break;
+		case SCREEN_MENU:			current = RunMenu(&gs);			break;
+		case SCREEN_ADD_PLAYER:		current = RunAddPlayer(&gs);	break;
+		case SCREEN_RULES:			current = RunRules(&gs);		break;
+		case SCREEN_KEYBINDS:		current = RunKeybinds(&gs);		break;
+		default:					current = SCREEN_EXIT;			break;
 		}
 	}
 
@@ -110,6 +110,20 @@ int main()
 		EndProgram(&gs);
 		printf("\n\n\n\n Debug Fin de partie !! \n\n\n\n");
 		return 1;
+	}
+
+	if (current == SCREEN_GAME) {
+		pthread_join(assetWorkerThread, NULL);
+		int total = gs.loadCtx->cardsLoadedVRAM + gs.loadCtx->seasonsLoadedVRAM + gs.loadCtx->editsLoadedVRAM;
+		while (total < NUM_CARDS + NUM_EDITS + NUM_SEASONS) {
+			LoadAssetToVRAM(&gs);
+			total = gs.loadCtx->cardsLoadedVRAM + gs.loadCtx->seasonsLoadedVRAM + gs.loadCtx->editsLoadedVRAM;
+			printf("En attente de tout charger, %d = %d + %d + %d\n", total, gs.loadCtx->cardsLoadedVRAM, gs.loadCtx->seasonsLoadedVRAM, gs.loadCtx->editsLoadedVRAM);
+			//Sleep(100);
+
+			// AT THE END : ajouter un ecran de chargement
+		}
+		
 	}
 
 	SetMouseCursor(MOUSE_CURSOR_DEFAULT);
@@ -127,6 +141,7 @@ int main()
 	gs.edits[3] = &BrokenRoad;*/
 
 	DebugGameStats(&gs);
+	//DebugAssetViewer(&gs);
 
 
 	// Ouverture de la fenêtre
@@ -288,7 +303,7 @@ void sort_players_by_score(GameState* gs) {
 
 void EndProgram(GameState* gs) {
 	for (int i = 0; i < FONT_COUNT; i++) {
-		UnloadFont(gs->fonts[i]);
+		UnloadFont(gs->assets.fonts[i]);
 	}
 	CloseWindow();
 }

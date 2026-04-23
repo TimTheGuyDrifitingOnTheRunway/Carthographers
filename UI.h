@@ -29,6 +29,11 @@ void UpdateInputBox(InputBox* box);
 bool IsCharAllowed(char c);
 void DrawFullInputBoxEx(InputBox* box, int stroke, Color bkgColor, Color strokeColor);
 
+// Fonctions pour gérer le chargement des ressources
+void* LoadAssetsWorker(void* arg);
+void LoadAssetToVRAM(GameState* gs);
+
+
 
 void DrawStrokeTextEx(Font font, const char* text, int x, int y, int fontSize, int spacing, Color textColor, Color strokeColor, int thickness);
 void DrawStrokeText(Font font, const char* text, int x, int y, int fontSize, Color textColor, Color strokeColor);
@@ -41,6 +46,7 @@ Color multiplyColor(Color color, float factor);
 
 
 
+void DebugAssetViewer(GameState* gs);
 
 
 

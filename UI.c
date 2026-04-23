@@ -16,6 +16,8 @@ ScreenID RunMenu(GameState* gs) {
 	Button startBtn = { .color1 = LIME, .color2 = BLACK, .label = "Start !", .labelFont = MAIN_BTN_FONT, .labelColor = BLACK, .fontSize = MAIN_BUTTON_FS + 10, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = (Rectangle){0, 0, MAIN_MENU_BTN_WIDTH - 50, MAIN_BUTTON_FS + 15} };
 	Button stopBtn = { .color1 = RED, .color2 = BLACK, .label = "Exit The Game", .labelFont = MAIN_BTN_FONT, .labelColor = BLACK, .fontSize = (int)MAIN_BUTTON_FS * 0.8f, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = (Rectangle){0, 0, MAIN_MENU_BTN_WIDTH * 0.6f, MAIN_BUTTON_FS } };
 
+	
+
 	Rectangle* btns[] = { &addBtn.bounds, &ruleBtn.bounds, &keyBtn.bounds, &startBtn.bounds, &stopBtn.bounds };
 
 	while (!WindowShouldClose() && !startBtn.validated && !addPlayer && !stopBtn.validated && !keyBtn.validated && !ruleBtn.validated) {
@@ -52,7 +54,7 @@ ScreenID RunMenu(GameState* gs) {
 
 		// Ajoute un bouton pour ajouter un joueur
 		DrawButton(&addBtn);
-		if (gs->playerNumber >= MAX_PLAYER) DrawStrokeText(gs->fonts[FONT_FREDOKA_CM], tmppl, (GetScreenWidth() - MeasureTextEx(gs->fonts[FONT_FREDOKA_CM], tmppl, tmpplSize, NORMAL_SPACING).x) / 2, posY - 15, tmpplSize, RED, multiplyColor(DARKGRAY, 0.4f));
+		if (gs->playerNumber >= MAX_PLAYER) DrawStrokeText(gs->assets.fonts[FONT_FREDOKA_CM], tmppl, (GetScreenWidth() - MeasureTextEx(gs->assets.fonts[FONT_FREDOKA_CM], tmppl, tmpplSize, NORMAL_SPACING).x) / 2, posY - 15, tmpplSize, RED, multiplyColor(DARKGRAY, 0.4f));
 		else if (addBtn.validated) addPlayer = 1;
 
 		// afficher le nombre de joueurs
@@ -66,8 +68,9 @@ ScreenID RunMenu(GameState* gs) {
 
 		// Online : Ajoute un bouton pour rejoindre et quitter le lobby
 
-
 		EndDrawing();
+
+		LoadAssetToVRAM(gs);
 	}
 	if (startBtn.validated) {
 		printf("\n\nBouton Start Validé");
@@ -103,10 +106,10 @@ ScreenID RunAddPlayer(GameState* gs) {
 	Rectangle iptNameBox = (Rectangle){ 0 };
 	int d = 40; // Espacement entre les boutons
 
-	Button cclBtn = { .color1 = RED, .color2 = BLACK, .label = "Cancel", .labelFont = gs->fonts[FONT_METAMORPHOUS], .labelColor = BLACK, .fontSize = 40, .corner = 90, .stroke = 3 };
-	Button addBtn = { .color1 = LIME, .color2 = BLACK, .label = "Add", .labelFont = gs->fonts[FONT_METAMORPHOUS], .labelColor = BLACK, .fontSize = 40, .corner = 90, .stroke = 3 };
+	Button cclBtn = { .color1 = RED, .color2 = BLACK, .label = "Cancel", .labelFont = gs->assets.fonts[FONT_METAMORPHOUS], .labelColor = BLACK, .fontSize = 40, .corner = 90, .stroke = 3 };
+	Button addBtn = { .color1 = LIME, .color2 = BLACK, .label = "Add", .labelFont = gs->assets.fonts[FONT_METAMORPHOUS], .labelColor = BLACK, .fontSize = 40, .corner = 90, .stroke = 3 };
 
-	InputBox nameIptBox = { .maxLength = MAX_NAME_LENGTH,.dx = 5, .text = "", .length = 0, .fontSize = 30, .textFont = gs->fonts[FONT_FREDOKA_CM], .active = 1, .validated = 0 };
+	InputBox nameIptBox = { .maxLength = MAX_NAME_LENGTH,.dx = 5, .text = "", .length = 0, .fontSize = 30, .textFont = gs->assets.fonts[FONT_FREDOKA_CM], .active = 1, .validated = 0 };
 	char addLabel[19] = "New player name : ";
 	int addLabelFontSize = 32;
 
@@ -146,7 +149,7 @@ ScreenID RunAddPlayer(GameState* gs) {
 		posY = DrawTitle(gs);
 
 		// Afficher le menu d'ajout
-		DrawTextEx(gs->fonts[FONT_PIRATA_ONE], addPplLabel, (Vector2) { midX - MeasureTextEx(gs->fonts[FONT_PIRATA_ONE], addPplLabel, addPplFontSize, NORMAL_SPACING).x / 2, menuBounds.y + 3 }, addPplFontSize, NORMAL_SPACING, WHITE);	// Affiche le titre du menu
+		DrawTextEx(gs->assets.fonts[FONT_PIRATA_ONE], addPplLabel, (Vector2) { midX - MeasureTextEx(gs->assets.fonts[FONT_PIRATA_ONE], addPplLabel, addPplFontSize, NORMAL_SPACING).x / 2, menuBounds.y + 3 }, addPplFontSize, NORMAL_SPACING, WHITE);	// Affiche le titre du menu
 
 		DrawTextEx(nameIptBox.textFont, addLabel, (Vector2) { menuBounds.x + 5, nameIptBox.bounds.y + (nameIptBox.bounds.height - addLabelFontSize) / 2 }, addLabelFontSize, NORMAL_SPACING, WHITE);
 		DrawFullInputBoxEx(&nameIptBox, 2, GRAY, LIGHTGRAY);
@@ -158,6 +161,8 @@ ScreenID RunAddPlayer(GameState* gs) {
 		EndDrawing();
 
 		add = ((addBtn.validated || nameIptBox.validated) && strcmp(nameIptBox.text, ""));
+		LoadAssetToVRAM(gs);
+
 	}
 	if (add) {
 		strcpy(gs->players[gs->playerNumber++].name, nameIptBox.text);
@@ -184,7 +189,7 @@ ScreenID RunRules(GameState* gs) {
 
 	Button Next = (Button){ .label = ">", .fontSize = 30, .labelColor = BLACK, .labelFont = GetFontDefault(), .corner = 90, .stroke = 3, .color1 = DARKGRAY, .color2 = LIME };
 	Button Previous = (Button){ .label = "<", .fontSize = 30, .labelColor = BLACK, .labelFont = GetFontDefault(), .corner = 90, .stroke = 3, .color1 = DARKGRAY, .color2 = RED };
-	Button Exit = (Button){ .label = "OK", .fontSize = 30, .labelColor = BLACK, .labelFont = gs->fonts[FONT_FREDOKA_SB], .corner = 80, .stroke = 3, .color1 = DARKGRAY, .color2 = BLUE };
+	Button Exit = (Button){ .label = "OK", .fontSize = 30, .labelColor = BLACK, .labelFont = gs->assets.fonts[FONT_FREDOKA_SB], .corner = 80, .stroke = 3, .color1 = DARKGRAY, .color2 = BLUE };
 
 	Rectangle textZone;
 
@@ -218,11 +223,11 @@ ScreenID RunRules(GameState* gs) {
 		posY = DrawTitle(gs);
 		DrawTextWrappedEx(PAGE_FONT, pages[currentPage].Text, textZone, PAGE_FS, 1, WHITE, BLACK);
 
-		DrawStrokeTextEx(gs->fonts[FONT_METAMORPHOUS], TextFormat("Page : %s", pages[currentPage].Title), textZone.x + 10, posY, 35, NORMAL_SPACING, BLACK, GOLD, 1);
+		DrawStrokeTextEx(gs->assets.fonts[FONT_METAMORPHOUS], TextFormat("Page : %s", pages[currentPage].Title), textZone.x + 10, posY, 35, NORMAL_SPACING, BLACK, GOLD, 1);
 
 		DrawRectangleRoundedLinesEx((Rectangle) { textZone.x - TEXT_ZONE_PADDING, textZone.y - TEXT_ZONE_PADDING, textZone.width + 2 * TEXT_ZONE_PADDING, textZone.height + 2 * TEXT_ZONE_PADDING, }, .05, 10, 2, multiplyColor(BROWN, 1.2f));
 
-		DrawStrokeText(gs->fonts[FONT_METAMORPHOUS], TextFormat("%d / %d", currentPage + 1, PAGE_NB), midX - MeasureTextEx(gs->fonts[FONT_METAMORPHOUS], TextFormat("%d / %d", currentPage + 1, PAGE_NB), 40, NORMAL_SPACING).x / 2, Previous.bounds.y, 40, GOLD, BLACK);
+		DrawStrokeText(gs->assets.fonts[FONT_METAMORPHOUS], TextFormat("%d / %d", currentPage + 1, PAGE_NB), midX - MeasureTextEx(gs->assets.fonts[FONT_METAMORPHOUS], TextFormat("%d / %d", currentPage + 1, PAGE_NB), 40, NORMAL_SPACING).x / 2, Previous.bounds.y, 40, GOLD, BLACK);
 
 		DrawButton(&Previous);
 		DrawButton(&Next);
@@ -231,6 +236,7 @@ ScreenID RunRules(GameState* gs) {
 
 		EndDrawing();
 
+		LoadAssetToVRAM(gs);
 
 	}
 
@@ -252,7 +258,7 @@ ScreenID RunKeybinds(GameState* gs) {
 	Rectangle rCamera = (Rectangle){ 0, 0, MeasureTextEx(KEY_FONT, KEY_TEXT_CAMERA, KEY_FS, NORMAL_SPACING).x, KEY_FS };
 	Rectangle rPlace = (Rectangle){ 0, 0, MeasureTextEx(KEY_FONT, KEY_TEXT_PLACE, KEY_FS, NORMAL_SPACING).x, KEY_FS };
 
-	Button Exit = (Button){ .label = "OK", .fontSize = 30, .labelColor = BLACK, .labelFont = gs->fonts[FONT_METAMORPHOUS], .corner = 80, .stroke = 3, .color1 = DARKGRAY, .color2 = BLUE, .bounds = (Rectangle){0, 0, 300, 0} };
+	Button Exit = (Button){ .label = "OK", .fontSize = 30, .labelColor = BLACK, .labelFont = gs->assets.fonts[FONT_METAMORPHOUS], .corner = 80, .stroke = 3, .color1 = DARKGRAY, .color2 = BLUE, .bounds = (Rectangle){0, 0, 300, 0} };
 
 	Rectangle* recTextList[] = { &rMove, &rColorSwitch, &rShapeSwitch, &rRotate, &rFlip, &rCamera, &rPlace, &Exit.bounds };
 
@@ -299,9 +305,10 @@ ScreenID RunKeybinds(GameState* gs) {
 
 
 		EndDrawing();
+		LoadAssetToVRAM(gs);
 
 	}
-	printf("\n\n%d x %d\n\n", GetScreenHeight(), GetScreenWidth());
+	//printf("\n\n%d x %d\n\n", GetScreenHeight(), GetScreenWidth());
 
 
 	return SCREEN_MENU;
@@ -309,12 +316,12 @@ ScreenID RunKeybinds(GameState* gs) {
 
 int DrawTitle(GameState* gs) {
 	int posY = 0;
-	DrawStrokeTextEx(gs->fonts[FONT_GRENZE_GOTISCH_B], C_TITLE, (GetScreenWidth() - MeasureTextEx(gs->fonts[FONT_GRENZE_GOTISCH_B], C_TITLE, TITLE_FS, NORMAL_SPACING).x) / 2, posY, TITLE_FS, TITLE_SPACING, GOLD, BLACK, 2);
+	DrawStrokeTextEx(gs->assets.fonts[FONT_GRENZE_GOTISCH_B], C_TITLE, (GetScreenWidth() - MeasureTextEx(gs->assets.fonts[FONT_GRENZE_GOTISCH_B], C_TITLE, TITLE_FS, NORMAL_SPACING).x) / 2, posY, TITLE_FS, TITLE_SPACING, GOLD, BLACK, 2);
 	return posY + TITLE_FS - 10;
 }
 
 //void DrawTitleEx(GameState* gs, Rectangle r) {
-//	DrawStrokeTextEx(gs->fonts[FONT_GRENZE_GOTISCH_B], C_TITLE, r.x + (r.width - MeasureText(C_TITLE, TITLE_FS)) / 2, r.y, TITLE_FS, GOLD, BLACK, 2);
+//	DrawStrokeTextEx(gs->assets.fonts[FONT_GRENZE_GOTISCH_B], C_TITLE, r.x + (r.width - MeasureText(C_TITLE, TITLE_FS)) / 2, r.y, TITLE_FS, GOLD, BLACK, 2);
 //}
 
 void DrawBackgroudMenu(Rectangle r) {
@@ -628,3 +635,156 @@ void ImageRoundCorner(Image* image, float radius) {
 }
 
 
+void* LoadAssetsWorker(void* arg) {
+	LoadContext* ctx = (LoadContext*)arg;
+	double start = GetTime();
+	for (int i = 0; i < NUM_CARDS; i++) {
+		const char* path = TextFormat("Assets/Images/Game Card/%s.png", expCards[i]->name);
+		Image img = LoadImage(path);
+		ImageRoundedCorner(&img, 0.11f);		// 0.11 : ratio entre la largeur et l'arrondi pour les cartes de poker, format des cartes de cartographers
+
+		pthread_mutex_lock(&ctx->mutex);
+		ctx->cardsRAM[i] = img;
+		ctx->cardsLoadedRAM++;
+		pthread_mutex_unlock(&ctx->mutex);
+	}
+
+	for (int i = 0; i < NUM_SEASONS; i++) {
+		const char* path = TextFormat("Assets/Images/Season/%s.png", seasons[i]->name);
+		Image img = LoadImage(path);
+		ImageRoundedCorner(&img, 0.11f);
+
+		pthread_mutex_lock(&ctx->mutex);
+		ctx->seasonsRAM[i] = img;
+		ctx->seasonsLoadedRAM++;
+		pthread_mutex_unlock(&ctx->mutex);
+	}
+
+	for (int i = 0; i < NUM_EDITS; i++) {
+		const char* path = TextFormat("Assets/Images/Letter Scroll/%c.png", 'A' + i);
+		Image img = LoadImage(path);
+		Image img2 = ImageCopy(img);
+		ImageFormat(&img2, PIXELFORMAT_UNCOMPRESSED_GRAY_ALPHA);
+
+		pthread_mutex_lock(&ctx->mutex);
+		ctx->editsRAM[i] = img;
+		ctx->editsRAM[i + NUM_EDITS] = img2;
+		ctx->editsLoadedRAM++;
+		pthread_mutex_unlock(&ctx->mutex);
+	}
+	printf("\n\n Temps pris au total : %fs", (float)(GetTime() - start));
+	return NULL;
+}
+
+void LoadAssetToVRAM(GameState* gs) {
+	//printf("\nLoadAssetToVRAM appelé, %d %d cards", gs->loadCtx->cardsLoadedRAM, gs->loadCtx->cardsLoadedVRAM);
+	pthread_mutex_lock(&gs->loadCtx->mutex);
+	if (gs->loadCtx->cardsLoadedRAM > gs->loadCtx->cardsLoadedVRAM) {
+		int i = gs->loadCtx->cardsLoadedVRAM;
+		gs->assets.cardImages[i] = LoadTextureFromImage(gs->loadCtx->cardsRAM[i]);
+		gs->loadCtx->cardsLoadedVRAM++;
+		//printf("\nChargement de la carte %d en VRAM, %d, %d\n", i);
+
+		UnloadImage(gs->loadCtx->cardsRAM[i]);		// Libération de l'espace mémoire
+	}
+	else if(gs->loadCtx->seasonsLoadedRAM > gs->loadCtx->seasonsLoadedVRAM) {
+		int i = gs->loadCtx->seasonsLoadedVRAM;
+		gs->assets.seasonImages[i] = LoadTextureFromImage(gs->loadCtx->seasonsRAM[i]);
+		gs->loadCtx->seasonsLoadedVRAM++;
+		//printf("\nChargement de la saison %d en VRAM\n", i);
+		UnloadImage(gs->loadCtx->seasonsRAM[i]);
+	}
+	else if(gs->loadCtx->editsLoadedRAM > gs->loadCtx->editsLoadedVRAM) {
+		int i = gs->loadCtx->editsLoadedVRAM;
+		gs->assets.letterScrollsImage[i] = LoadTextureFromImage(gs->loadCtx->editsRAM[i]);
+		gs->assets.letterScrollsImage[i + NUM_EDITS] = LoadTextureFromImage(gs->loadCtx->editsRAM[i + NUM_EDITS]);
+		gs->loadCtx->editsLoadedVRAM++;
+		//printf("\nChargement de l'edit %d en VRAM\n", i);
+		UnloadImage(gs->loadCtx->editsRAM[i]);
+		UnloadImage(gs->loadCtx->editsRAM[i + NUM_EDITS]);
+	}
+
+	pthread_mutex_unlock(&gs->loadCtx->mutex);
+
+}
+
+void DebugAssetViewer(GameState* gs) {
+	int currentTab = 0; // 0 = Cartes, 1 = Saisons, 2 = Edits
+	int scrollY = 0;
+
+	// Pour ne pas que les images s'affichent en taille réelle et sortent de l'écran, on va les redimensionner visuellement à l'affichage (scale).
+	float scale = 0.2f;
+
+	while (!WindowShouldClose()) {
+		// --- CONTRÔLES ---
+		if (IsKeyPressed(KEY_RIGHT)) currentTab = (currentTab + 1) % 3;
+		if (IsKeyPressed(KEY_LEFT)) currentTab = (currentTab + 2) % 3;
+
+		// Molette de la souris pour scroller si tu as beaucoup de cartes
+		scrollY += GetMouseWheelMove() * 40;
+		if (scrollY > 0) scrollY = 0; // Bloque le scroll vers le haut
+
+		// Quitter le test pour lancer le vrai jeu
+		if (IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_SPACE)) break;
+
+		// --- DESSIN ---
+		BeginDrawing();
+		ClearBackground(GRAY);
+
+		// Header d'instructions
+		DrawRectangle(0, 0, GetScreenWidth(), 60, LIGHTGRAY);
+		DrawText("TEST DES IMAGES (Flèches G/D pour changer d'onglet, Molette pour scroller)", 10, 10, 20, DARKGRAY);
+		DrawText("Appuyez sur ENTREE pour lancer le jeu normal", 10, 35, 20, MAROON);
+
+		int startX = 20;
+		int startY = 80 + scrollY;
+
+		// Affichage dynamique selon l'onglet
+		if (currentTab == 0) {
+			DrawText("ONGLET 1 : Cartes d'Exploration (Arrondies)", startX, startY, 20, BLACK);
+			startY += 40;
+
+			// Affichage en grille (ex: 5 cartes par ligne)
+			for (int i = 0; i < 21; i++) { // NUM_CARDS
+				Texture2D tex = gs->assets.cardImages[i];
+				if (tex.id != 0) {							// Si la texture est bien chargée
+					int col = i % 5;
+					int row = i / 5;
+
+					int drawX = startX + col * (tex.width * scale + 20);
+					int drawY = startY + row * (tex.height * scale + 40);
+
+					DrawTextureEx(tex, (Vector2) { drawX, drawY }, 0.0f, scale, WHITE);
+					DrawText(TextFormat("ID: %d", i), drawX, drawY - 20, 15, GRAY);
+				}
+			}
+		}
+		else if (currentTab == 1) {
+			DrawText("ONGLET 2 : Saisons (Arrondies)", startX, startY, 20, BLACK);
+			startY += 40;
+			for (int i = 0; i < 4; i++) {					// NUM_SEASONS
+				Texture2D tex = gs->assets.seasonImages[i];
+				if (tex.id != 0) {
+					DrawTextureEx(tex, (Vector2) { startX + i * (tex.width * scale + 20), startY }, 0.0f, scale, WHITE);
+				}
+			}
+		}
+		else if (currentTab == 2) {
+			DrawText("ONGLET 3 : Edits (Bruts, pas d'arrondi ici)", startX, startY, 20, BLACK);
+			startY += 40;
+			for (int i = 0; i < NUM_EDITS * 2; i++) {		// NUM_EDITS
+				Texture2D tex = gs->assets.letterScrollsImage[i];
+				if (tex.id != 0) {
+					DrawTextureEx(tex, (Vector2) { startX + i * (tex.width + 20), startY }, 0.0f, 1, WHITE);
+					//DrawTexture(tex, startX + i * (tex.width + 20), startY, WHITE);
+				}
+				else {
+					printf("Edit %d non chargé, ", i);
+				}
+			}
+			printf("\n");
+		}
+
+		EndDrawing();
+	}
+}

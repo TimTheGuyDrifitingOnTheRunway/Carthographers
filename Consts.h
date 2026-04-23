@@ -73,8 +73,9 @@
 #define GRIDCOLOR GRAY
 #define BORDERCOLOR MAROON
 #define PLACEMENT_HEIGHT 1.0f
+#define CASE_HEIGHT 1.0f
 
-#define SPEEDY 5// constantes inverse de vitesse
+#define SPEEDY 5 // constantes inverse de vitesse
 #define SPEEDX 7
 
 // keybinds des pièces
@@ -100,13 +101,13 @@
 
 // Constantes du Menu
 #define SEASON_FS 40
-#define SEASON_FONT gs->fonts[FONT_GRENZE_GOTISCH_B]
+#define SEASON_FONT gs->assets.fonts[FONT_GRENZE_GOTISCH_B]
 
 #define EDITS_FS 50
-#define EDITS_FONT gs->fonts[FONT_GRENZE_GOTISCH_B]
-#define TOOLTIP_FONT gs->fonts[FONT_FREDOKA_CM]
+#define EDITS_FONT gs->assets.fonts[FONT_GRENZE_GOTISCH_B]
+#define TOOLTIP_FONT gs->assets.fonts[FONT_FREDOKA_CM]
 
-#define PLAYER_PANEL_FONT gs->fonts[FONT_METAMORPHOUS]
+#define PLAYER_PANEL_FONT gs->assets.fonts[FONT_METAMORPHOUS]
 
 #define PLAYER_REC_WIDTH 250
 #define PLAYER_REC_HEIGHT 500
@@ -115,8 +116,7 @@
 
 
 /******************************** GameManager.h ********************************/
-
-#define EXP_CARD_NUMBER 34
+// Rien
 
 /******************************** UI.h ********************************/
 
@@ -136,7 +136,7 @@
 #define MAIN_MENU_BTN_WIDTH 800
 #define MAIN_MENU_Y 700
 
-#define MAIN_BTN_FONT gs->fonts[FONT_METAMORPHOUS]
+#define MAIN_BTN_FONT gs->assets.fonts[FONT_METAMORPHOUS]
 #define MAIN_BUTTON_FS 50
 #define MAIN_BUTTON_STROKE 2
 #define BUTTON_DELTA 30		// Espacement entre les boutons
@@ -169,7 +169,7 @@
 #define ENEMY_TEXT "Prenez garde : cartographier est dangereux !\nLorsqu'une carte Monstre est piochée, les joueurs ne dessinent plus sur leur parchemin, mais sur le parchemin du voisin (gauche ou droite, en fonction de la carte). Vous êtes libre de placer l'ennemi ou vous voulez, pour embêter votre adversaire le plus possible.\n  - Utilité : les monstres font perdre des points en fin de saison\n  - Les cartes monstre ne sont pas impactées par les cartes ruines\n  - Règle spéciale solo : les monstres sont placés automatiquement par le jeu"
 #define SCORE_TEXT "Il y a 4 Décrets de la Reine actifs durant toute la partie (nommés A, B, C et D). Cependant, ils ne rapportent pas des points tout le temps. À la fin de chaque Saison, seuls deux Décrets spécifiques sont évalués : \n Printemps : Décrets A et B;  Été : Décrets B et C;  Automne : Décrets C et D;  Hiver : Décrets D et A\nChaque Décret est donc noté exactement deux fois dans la partie.\nUne fois la Saison terminée, le jeu calcule votre score ainsi :\n + Points des deux Décrets de la saison \n + Votre total actuel de Pièces d'Or \n - Les malus des Monstres (1 point perdu par case vide touchant un monstre)\nLa somme de vos 4 scores de Saison donne votre Réputation Finale."
 
-#define PAGE_FONT gs->fonts[FONT_GRENZE_GOTISCH_L]
+#define PAGE_FONT gs->assets.fonts[FONT_GRENZE_GOTISCH_L]
 #define PAGE_FS (int)min(textZone.width / 25, textZone.height / 11)
 
 // KeyBinds Menu
@@ -178,7 +178,7 @@
 #define KEY_PAD 0
 #define KEY_LINE_WIDTH 150
 
-#define KEY_FONT gs->fonts[FONT_GRENZE_GOTISCH_L]
+#define KEY_FONT gs->assets.fonts[FONT_GRENZE_GOTISCH_L]
 
 #define KEY_TEXT_MOVE "Z / Q / S / D : Permet de bouger la pièce"
 #define KEY_TEXT_COLOR_SWITCH "A : Permet de changer la couleur "
@@ -235,6 +235,7 @@
 
 #define MONSTER_SIZE 0.05f
 #define MONSTER_TRESHOLD 0.7f
+
 /**********Chemin des models 3d **************/
 
 #define PATH_TO_TREE_MODEL "Assets/tree.obj"
@@ -261,4 +262,14 @@
 #else   // PLATFORM_ANDROID, PLATFORM_WEB
     #define GLSL_VERSION            100
 #endif
+
+
+#define NUM_CARDS 21
+#define NUM_SEASONS 4
+#define NUM_EDITS NUM_SEASONS
+
+
+
+
+
 

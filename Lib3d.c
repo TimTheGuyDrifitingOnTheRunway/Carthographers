@@ -51,7 +51,7 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 			if (temp[i][j] >= RUINE) {
 				float x = i - (SIZE - 1) / 2.0f;
 				float z = j - (SIZE - 1) / 2.0f;
-				float y = -0.5f;   // Half height so cube is under the grid
+				float y = - CASE_HEIGHT / 2.f;   // Half height so cube is under the grid
 
 
 
@@ -128,7 +128,7 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 					break;
 				case CHAMPS:
 					
-					DrawModel(models.champs, (Vector3) { x, y+0.51f, z}, 1, WHITE);
+					DrawModel(models.champs, (Vector3) { x, y + CASE_HEIGHT / 2 + .01f, z }, 1, WHITE);
 					color = YELLOW;
 					break;
 					
@@ -168,8 +168,8 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 				default:
 					color = WHITE;
 				}
-				if(drawcube)DrawCube((Vector3) { x, y, z }, 1.0f, 1.0f, 1.0f, color);
-				DrawCubeWires((Vector3) { x, y, z }, 1.0f, 1.0f, 1.0f, BLACK);
+				if(drawcube)DrawCube((Vector3) { x, y, z }, 1.0f, CASE_HEIGHT, 1.0f, color);
+				DrawCubeWires((Vector3) { x, y, z }, 1.0f, CASE_HEIGHT, 1.0f, BLACK);
 			}
 		}
 	}
@@ -296,7 +296,6 @@ int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D
 }
 
 
-
 int GUIPlacementCard(GameState* gs, FeuilleCarte f, const ExploreCard* card,
 	int score, int isRuin, int* coinCount, Camera3D camera, Model mountains[NOMBREMONTAGNE], Seed s, ModelList models) {
 
@@ -343,9 +342,7 @@ void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera) {
 		state->pos, state->rotation, state->material);
 	tryDraw(f, state->feuilleVide, state->temp);
 	
-	state->drawable = state->drawable && isDrawable(f, state->feuilleVide);
-	if (state->isRuin)
-		state->drawable = state->drawable && coversRuin(f, state->feuilleVide);
+	state->drawable = state->drawable && state->isRuin ? coversRuin(f, state->feuilleVide) : isDrawable(f, state->feuilleVide);
 
 	Vector3 forward = { camera.target.x - camera.position.x, 0, camera.target.z - camera.position.z };
 	normalize(&forward);
@@ -393,19 +390,14 @@ void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera) {
 		}
 	}
 
-	//// Recalcul de la preview après les changements
-	//initCarte(state->feuilleVide, FALSE);
-	//state->drawable = state->drawable && isDrawable(f, state->feuilleVide);
-	//if (state->isRuin)
-	//	state->drawable = state->drawable && coversRuin(f, state->feuilleVide);
-
-
 	if (!drawShape(state->feuilleVide, state->shapeCopy, state->pos, state->rotation, state->material)) {	//out of bounds, pour reset la position si la pièce sort de la carte
 		if (state->pos.x < 1)        state->pos.x += 1;
 		if (state->pos.x > SIZE - 2) state->pos.x -= 1;
 		if (state->pos.y < 1)        state->pos.y += 1;
 		if (state->pos.y > SIZE - 2) state->pos.y -= 1;
 	}
+
+	state->drawable = state->drawable && (state->isRuin ? coversRuin(f, state->feuilleVide) : isDrawable(f, state->feuilleVide));
 
 	if (IsKeyPressed(KEY_SPACE) && state->drawable)
 		state->status = 1;
@@ -415,7 +407,7 @@ void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera) {
 }
 
 void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state, int score, Camera3D camera, Model mountain[NOMBREMONTAGNE], Position mountainPos[NOMBREMONTAGNE], Seed s, ModelList models) {
-	printf("\nPosition : %d,%d", state->pos.x, state->pos.y);
+	//printf("\nPosition : %d,%d", state->pos.x, state->pos.y);
 	int midX = GetScreenWidth() / 2;
 	int midY = GetScreenHeight() / 2;
 	static bool openPlayerPanel = 0;
@@ -500,21 +492,35 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 	// UI 2D — lecture seule sur state
 
 	// Infos relatives à tous les joueurs
-	DrawRectangleStroke(infoPanel, 3, WHITE, RED);
-	int y1 = 5;
+	//DrawRectangleStroke(infoPanel, 3, WHITE, RED);
+	//int y1 = 5;
 	//DrawText(TextFormat("Carte : %s", state->card->name), 5, infoPanel.y + y1, 25, BLACK); y1 += 30;
+	//DrawText(TextFormat("Temps de la saison : %d + %d", gs->currentTime, seasons[gs->currentSeason]->maxTime), 5, infoPanel.y + y1, 25, BLACK); y1 += 30;
 	//DrawText(TextFormat("2 formes : %d", state->hasTwoShapes), 5, infoPanel.y + y1, 25, BLACK); y1 += 30;
 	//DrawText(TextFormat("2 matériaux : %d", state->hasTwoMat), 5, infoPanel.y + y1, 25, BLACK); y1 += 30;
 	//DrawText(TextFormat("Saison : %s", seasons[gs->currentSeason]->name), 5, infoPanel.y + y1, 25, BLACK); y1 += 30;
-	//DrawText(TextFormat("Edits : %s / %s", gs->edits[seasons[gs->currentSeason]->EditA]->name, gs->edits[seasons[gs->currentSeason]->EditB]->name), 5, infoPanel.y + y1, 15, BLACK); y1 += 20;
-	//for (int i = 0; i < 4; i++) {
-	//	DrawText(TextFormat("Edit %d : %s", i, gs->edits[i]->name), 5, infoPanel.y + y1, 25, BLACK); y1 += 30;
-	//}
+	//DrawText(TextFormat("Edits en vigueur : %s / %s", gs->edits[seasons[gs->currentSeason]->EditA]->name, gs->edits[seasons[gs->currentSeason]->EditB]->name), 5, infoPanel.y + y1, 25, BLACK); y1 += 30;
+	//
 	//if (state->isRuin) DrawText("Doit être placé sur une Ruine", 5, infoPanel.y + y1, 30, RED); y1 += 35;
 	//if (state->isRiftLands) DrawText("Tous matériaux disponibles !", 5, infoPanel.y + y1, 30, RED); y1 += 35;
 
 
+	/******** Gestion de la Carte ********/
 
+	// Recherche de la carte par le nom
+	int cardIndex = 0;	// Index de la carte actuelle
+	for (int i = 0; i < NUM_CARDS; i++) if (!strcmp(expCards[i]->name, state->card->name)) { cardIndex = i; break; }
+
+
+	Texture2D cardTex = gs->assets.cardImages[cardIndex];
+	// Affichage de la carte
+	int targetHeight = GetScreenHeight() / 2.0f;
+	float ratioCards = 1.4f;					// Format des cartes de Cartographers (ou poker)
+	int targetWidth = targetHeight / ratioCards;
+	Rectangle destRec = (Rectangle){ 50, midY - targetHeight / 2, targetWidth, targetHeight };
+	Rectangle sourceRect = (Rectangle){ 0, 0, cardTex.width, cardTex.height };
+
+	DrawTexturePro(cardTex, sourceRect, destRec, (Vector2) { 0 }, 0, WHITE);
 
 	// Infos relatives au joueur actuel
 	int y2 = 20;
@@ -523,17 +529,17 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 	//DrawText(gs->players[gs->playerIndex].name, playerPanel.x + 5, y2, 30, BLACK); y2 += 35;
 	//DrawText(TextFormat("Score : %d", score), playerPanel.x + 5, y2, 30, BLACK); y2 += 35;
 	//DrawText(TextFormat("Coins : %d", gs->players[gs->playerIndex].coinCount), playerPanel.x + 5, y2, 30, BLACK); y2 += 35;
-	DrawRectangleRoundedStrokeEx(playerPanel, .1f, 10, 3, LIGHTGRAY, BROWN);
-	DrawText(gs->players[gs->playerIndex].name, playerPanel.x + 10, playerPanel.y + 5, PLAYER_PANEL_FS + 10, BLACK);
-	DrawText(TextFormat("SCORE  %d", score), playerPanel.x + 10, playerPanel.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, BLACK);										y2 += PLAYER_PANEL_FS + 10;
-	DrawText(TextFormat("COINS  %d", gs->players[gs->playerIndex].coinCount), playerPanel.x + 10, playerPanel.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, BLACK);	y2 += PLAYER_PANEL_FS + 10;
+	DrawRectangleRoundedStrokeEx(playerPanel, .1f, 10, 3, LIGHTGRAY, DARKBROWN);
+	DrawStrokeTextEx(PLAYER_PANEL_FONT, gs->players[gs->playerIndex].name, playerPanel.x + 10, playerPanel.y + 5 , PLAYER_PANEL_FS + 10, NORMAL_SPACING, WHITE, BLACK, 1);
+	DrawStrokeTextEx(PLAYER_PANEL_FONT, TextFormat("SCORE  %d", score), playerPanel.x + 10, playerPanel.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, NORMAL_SPACING, WHITE, BLACK, 1);										y2 += PLAYER_PANEL_FS + 10;
+	DrawStrokeTextEx(PLAYER_PANEL_FONT, TextFormat("COINS  %d", gs->players[gs->playerIndex].coinCount), playerPanel.x + 10, playerPanel.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, NORMAL_SPACING, WHITE, BLACK, 1);		y2 += PLAYER_PANEL_FS + 10;
 	//if (gs->isOnline) { DrawText(TextFormat("COINS  %d", gs->players[gs->playerIndex].coinCount), playerPanel.x + 10, playerPanel.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, BLACK); }
 
 	// Edits & Saison
 	DrawRectangleRoundedStrokeEx(seasonRec, 1.f, 10, 2, BGCOLOR, GREEN);
 	DrawRectangleRoundedStrokeEx(editsRec, 1.f, 10, 2, BGCOLOR, GOLD);
 	for (int i = 0; i < 4; i++) {
-		DrawStrokeTextEx(gs->fonts[FONT_GRENZE_GOTISCH_L], editLabels[i], editRects[i].x, editRects[i].y + 10 - EDITS_FS / 5, EDITS_FS, NORMAL_SPACING, GOLD, BLACK, 1);
+		DrawStrokeTextEx(gs->assets.fonts[FONT_GRENZE_GOTISCH_L], editLabels[i], editRects[i].x, editRects[i].y + 10 - EDITS_FS / 5, EDITS_FS, NORMAL_SPACING, GOLD, BLACK, 1);
 
 		//printf("Impression de l'edit %d (nom %s) a la place (%d,%d), taille %d\n", i, editLabels[i], (int)editRects[i].x + 10, (int)editRects[i].y + 10, EDITS_FS);
 	}
@@ -826,6 +832,7 @@ ModelList loadModels() {
 
 
 Model loadSkybox(bool useHDR) {
+	double start = GetTime();
 	Mesh cube = GenMeshCube(1.0f, 1.0f, 1.0f);
 	Model skybox = LoadModelFromMesh(cube);
 
@@ -877,6 +884,7 @@ Model loadSkybox(bool useHDR) {
 		skybox.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture = LoadTextureCubemap(image, CUBEMAP_LAYOUT_AUTO_DETECT);
 		UnloadImage(image);
 	}
+	//printf("\n La skybox a mis %f temps à se charger\n", (float)(GetTime() - start));
 	return skybox;
 }
 

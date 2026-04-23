@@ -73,12 +73,35 @@ typedef struct ScoringCard {
 	char* description;
 } ScoringCard;
 
+typedef struct {
+	Image cardsRAM[NUM_CARDS];
+	Image seasonsRAM[NUM_SEASONS];
+	Image editsRAM[NUM_EDITS * 2];
+
+	int cardsLoadedRAM;
+	int seasonsLoadedRAM;
+	int editsLoadedRAM;
+
+	int cardsLoadedVRAM;
+	int seasonsLoadedVRAM;
+	int editsLoadedVRAM;
+
+	pthread_mutex_t mutex;
+} LoadContext;
+
 typedef struct PlayerState {
 	FeuilleCarte map;
 	int coinCount;
 	int score;
 	char name[20];
 } PlayerState;
+
+typedef struct AssetBank {
+	Font fonts[FONT_COUNT];
+	Texture2D cardImages[NUM_CARDS];
+	Texture2D seasonImages[NUM_SEASONS];
+	Texture2D letterScrollsImage[NUM_SEASONS * 2];		// 2 fois plus pour stocker les Textures en nuances de Gris
+} AssetBank;
 
 typedef struct GameState {
 	int playerNumber;        // Nombre de joueurs
@@ -89,11 +112,13 @@ typedef struct GameState {
 	int currentSeason;
 	const ScoringCard* edits[4];
 	const ExploreCard* exploreDeck[17];
+	const ExploreCard* explorePile[13];		// Ne dépassera jamais 13 : au max 4 cartes ennemi, 2 cartes ruines, 1 carte Riftland, 4 cartes de temps 1, et 2 cartes de temps 2
 	int deckSize;
 
 	bool isOnline;
 
-	Font fonts[FONT_COUNT];
+	AssetBank assets;
+	LoadContext* loadCtx;
 } GameState;
 
 
