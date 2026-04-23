@@ -255,7 +255,7 @@
 #define SKYBOX_CUBEMAP_SHADER_PATH "Assets/shaders/glsl%i/cubemap.vs"
 #define SKYBOX_CUBEMAP_SHADER_PATH "Assets/shaders/glsl%i/cubemap.fs"
 
-#define PATH_TO_AUDIO "Assets/sound.mp4"
+#define PATH_TO_AUDIO "Assets/music.mp3"
 
 
 #if defined(PLATFORM_DESKTOP)
