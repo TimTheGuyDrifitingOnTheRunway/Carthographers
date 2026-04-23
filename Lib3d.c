@@ -1082,10 +1082,10 @@ void UnloadModels(ModelList* models) {
 
 /***************************Sound management****************/
 
-void* SoundThread(void* args) {//thread de gestion de l'audio séparé afin d'éviter des freeze de la musicque
+void* SoundThread(void* args) {		//thread de gestion de l'audio séparé afin d'éviter des freeze de la musique
 	InitAudioDevice();              // Initialize audio device
 	int* keep = args;
-	srand(time(NULL));//besoin de re-initialiser le génératuer random parce que thread séparé
+	srand(time(NULL));				//besoin de re-initialiser le génératuer random parce que thread séparé
 	int musicIndex = randInt(0, MAX_MUSIC_INDEX);
 
 	char musicPath[256];
@@ -1105,8 +1105,8 @@ void* SoundThread(void* args) {//thread de gestion de l'audio séparé afin d'é
 	while (*keep==1) {
 		UpdateMusicStream(music);
 		timePlayed = GetMusicTimePlayed(music) / GetMusicTimeLength(music);
-		printf("time played : %.3f \n", timePlayed);
-		if (timePlayed > 0.99f) {
+		//printf("time played : %.3f \n", timePlayed);
+		if (timePlayed > 0.999f) {		// 3 chiffres après la virgule parce que le temps entre .99 et .999 est de plus d'1s, ce qui peut couper la musique avant la fin si elle est trop longue
 			timePlayed = 0.0f;
 			UnloadMusicStream(music);
 
