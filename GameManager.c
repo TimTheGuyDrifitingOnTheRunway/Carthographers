@@ -63,7 +63,7 @@ const ScoringCard LostBarony = { 4, calcLostBarony, "Lost Barony", "Gagnez trois
 const ScoringCard TheCauldrons = { 4, calcTheCauldrons, "The Cauldrons", "Gagnez une Etoile de Reputation pour chaque case vide entoure des quatre cotes par des cases remplies ou le bord de la Carte." };*/
 
 // Liste de toutes les cartes de scoring
-const ScoringCard* scoringCards[16] = { &SentinelWood, &TreeTower, &GreenBough, &StoneSideQuest, &CanalLake, &ShoreSideExpanse, &GoldenGranary, &MagesValley, &Wildholds, &GreengoldPlains, &GreatCity, &Shieldgate, &Borderlands, &BrokenRoad, &LostBarony, &TheCauldrons };
+const ScoringCard* scoringCards[] = { &SentinelWood, &TreeTower, &GreenBough, &StoneSideQuest, &CanalLake, &ShoreSideExpanse, &GoldenGranary, &MagesValley, &Wildholds, &GreengoldPlains, &GreatCity, &Shieldgate, &Borderlands, &BrokenRoad, &LostBarony, &TheCauldrons };
 
 // Cartes Exploration
 const ExploreCard FarmLands = { .name = "Farm Lands", .time = 1, .pieceA = &L_LINE, .iscoinA = 1, .pieceB = &CROSS, .terrainA = CHAMPS };
@@ -77,6 +77,11 @@ const ExploreCard Marshlands = { .name = "Marshlands", .time = 2, .pieceA = &T, 
 const ExploreCard TreetopVillage = { .name = "Treetop Village", .time = 2, .pieceA = &STRANGE, .terrainA = FORET, .terrainB = VILLAGE };
 const ExploreCard FishingVillage = { .name = "Fishing Village", .time = 2, .pieceA = &B_Z, .terrainA = EAU, .terrainB = VILLAGE };
 
+// Ruines et RiftLands
+const ExploreCard OutpostRuins = { .name = "Outpost Ruins", .isRuin = 1 };
+const ExploreCard TempleRuins = { .name = "Temple Ruins", .isRuin = 1 };
+const ExploreCard RiftLands = { .pieceA = &POINT, .terrainA = FORET, .name = "Rift Lands", .isRiftLands = 1 };
+
 // Cartes Ennemis
 const ExploreCard GoblinAttack = { .name = "Goblin Attack", .isEnemy = 1, .rotation = -1, .pieceA = &DIAG,  };
 const ExploreCard BugbearAssault = { .name = "Bugbear Assault", .isEnemy = 1, .rotation = 1, .pieceA = &RECT_WITH_HOLE };
@@ -87,12 +92,7 @@ const ExploreCard InsectoidInvasion = { .name = "Insectoid Invasion", .isEnemy =
 const ExploreCard RatmanStrike = { .name = "Ratman Strike", .isEnemy = 1, .rotation = 1, .pieceA = &LINE };
 const ExploreCard FlayerIncursion = { .name = "Flayer Incursion", .isEnemy = 1, .rotation = -1, .pieceA = &L_L };
 
-// Ruines et RiftLands
-const ExploreCard OutpostRuins = { .name = "Outpost Ruins", .isRuin = 1 };
-const ExploreCard TempleRuins = { .name = "Temple Ruins", .isRuin = 1 };
-const ExploreCard RiftLands = { .pieceA = &POINT, .terrainA = FORET, .name = "Rift Lands", .isRiftLands = 1 };
-
-const ExploreCard* expCards[21] = { &FarmLands, &ForgottenForest, &Hamlet, &GreatRiver, &HinterlandStream, &Homestead, &Orchard, &Marshlands, &TreetopVillage, &FishingVillage, &OutpostRuins, &TempleRuins, &RiftLands, &BugbearAssault, &GoblinAttack, &FlayerIncursion, &GnollRaid, &InsectoidInvasion, &OgreCharge, &RatmanStrike, &KoboldOnslaught };
+const ExploreCard* expCards[NUM_CARDS] = { &FarmLands, &ForgottenForest, &Hamlet, &GreatRiver, &HinterlandStream, &Homestead, &Orchard, &Marshlands, &TreetopVillage, &FishingVillage, &OutpostRuins, &TempleRuins, &RiftLands, &GoblinAttack, &BugbearAssault, &KoboldOnslaught, &GnollRaid, &OgreCharge, &InsectoidInvasion, &RatmanStrike, &FlayerIncursion };
 
 /*TODO: 
 * Mise en place du jeu complet
@@ -321,7 +321,7 @@ const ExploreCard* Turn(GameState* gs, int* index, int* isRuin, Camera3D camera,
 		
 		generateMountainsModels(mountains, gs->players[(p + card->rotation + gs->playerNumber) % gs->playerNumber].map, mountainSeed);
 		printf("--- Tour de %s %d/%d---\n", ps->name, p + 1, gs->playerNumber);
-		GUIPlacementCard(gs, gs->players[(p + card->rotation + gs->playerNumber) % gs->playerNumber].map, card, ps->score, (*isRuin && !card->isEnemy), &ps->coinCount, camera, mountains, s, models);	// p + card->rotation + gs->playerNumber car -1 % playerNumber renvoie -1
+		GUIPlacementCard(gs, gs->players[(p + card->rotation + gs->playerNumber) % gs->playerNumber].map, card, ps->score, (*isRuin && !card->isEnemy), &ps->coinCount, camera, mountains, s, models);	// p + card->rotation + gs->playerNumber car (-1 % playerNumber) renvoie -1
 	}
 
 	if (card->isEnemy) gs->deckSize--;
