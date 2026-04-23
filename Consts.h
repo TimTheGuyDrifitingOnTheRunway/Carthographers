@@ -235,7 +235,13 @@
 
 #define MONSTER_SIZE 0.05f
 #define MONSTER_TRESHOLD 0.7f
-/**********Chemin des models 3d **************/
+
+
+/* audio*/
+#define MAX_MUSIC_INDEX 2 // numéro de la musique maximale
+#define MIN_MUSIC_DELAY 1000 // temps d'attente minimum entre 2 musiques
+
+/**********Chemin des models 3d et assets**************/
 
 #define PATH_TO_TREE_MODEL "Assets/tree.obj"
 #define PATH_TO_BUSH_MODEL "Assets/bush.obj"
@@ -255,7 +261,7 @@
 #define SKYBOX_CUBEMAP_SHADER_PATH "Assets/shaders/glsl%i/cubemap.vs"
 #define SKYBOX_CUBEMAP_SHADER_PATH "Assets/shaders/glsl%i/cubemap.fs"
 
-#define PATH_TO_AUDIO "Assets/music.mp3"
+#define PATH_TO_AUDIO "Assets/Sounds/music"
 
 
 #if defined(PLATFORM_DESKTOP)

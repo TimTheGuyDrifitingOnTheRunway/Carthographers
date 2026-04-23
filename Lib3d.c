@@ -982,6 +982,7 @@ Image generateOffsetImage(int x, int y) {
 
 void *generateRandomOfsetImagesThread(void* arg) {
 	Image* img;
+	srand(time(NULL));//besoin de re-initialiser le génératuer random parce que thread séparé
 	do {
 		img = malloc(sizeof(Image));
 		*img = generateOffsetImage(randInt(0, 100) * 10, randInt(0, 100) * 10);
@@ -1076,7 +1077,12 @@ void UnloadModels(ModelList* models) {
 void* SoundThread(void* args) {//thread de gestion de l'audio séparé afin d'éviter des freeze de la musicque
 	InitAudioDevice();              // Initialize audio device
 	int* keep = args;
-	Music music = LoadMusicStream(PATH_TO_AUDIO);
+	srand(time(NULL));//besoin de re-initialiser le génératuer random parce que thread séparé
+	int musicIndex = randInt(0, MAX_MUSIC_INDEX);
+
+	char musicPath[256];
+	sprintf(musicPath, "%s%d.mp3", PATH_TO_AUDIO, musicIndex);
+	Music music = LoadMusicStream(musicPath);
 
 	PlayMusicStream(music);
 
@@ -1087,8 +1093,30 @@ void* SoundThread(void* args) {//thread de gestion de l'audio séparé afin d'é
 	float volume = 0.8f;            // Default audio volume [0.0f..1.0f]
 	SetMusicVolume(music, volume);
 
+
 	while (*keep==1) {
 		UpdateMusicStream(music);
+		timePlayed = GetMusicTimePlayed(music) / GetMusicTimeLength(music);
+		printf("time played : %.3f \n", timePlayed);
+		if (timePlayed > 0.99f) {
+			timePlayed = 0.0f;
+			UnloadMusicStream(music);
+
+			int new_index;
+				do {
+					new_index = randInt(0, MAX_MUSIC_INDEX);
+					Sleep(MIN_MUSIC_DELAY);//attends un temps aléatoire et choisit une nouvelle musique différente de l'actuelle
+				} while (musicIndex == new_index);
+
+
+			musicIndex = new_index;
+			sprintf(musicPath, "%s%d.mp3", PATH_TO_AUDIO, musicIndex);
+			music = LoadMusicStream(musicPath);
+		
+			SetMusicPan(music, pan);
+			SetMusicVolume(music, volume);
+			PlayMusicStream(music);
+		}
 	}
 	UnloadMusicStream(music);   // Unload music stream buffers from RAM
 
