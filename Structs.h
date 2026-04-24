@@ -106,9 +106,8 @@ typedef struct AssetBank {
 
 typedef struct GameState {
 	int playerNumber;			// Nombre de joueurs
-	PlayerState players[MAX_PLAYER];
+	PlayerState* players;
 	int playerIndex;			// Index du joueur actuel
-	ExploreCard* card;
 	int currentTime;
 	int currentSeason;
 	const ScoringCard* edits[4];

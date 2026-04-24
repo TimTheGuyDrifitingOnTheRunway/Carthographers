@@ -8,7 +8,7 @@ ScreenID RunMenu(GameState* gs) {
 	int posY = GetScreenHeight() / 20 + 30 + TITLE_FS + 20;
 
 	bool addPlayer = 0;
-	char tmppl[33] = "Limite de 100 personnes atteinte";	int tmpplSize = 70;		// tmppl = too many people
+	//char tmppl[33] = "Limite de 100 personnes atteinte";	int tmpplSize = 70;		// tmppl = too many people
 	Button addBtn = { .color1 = SKYBLUE, .color2 = BLACK, .label = "+ Ajouter un joueur", .labelFont = MAIN_BTN_FONT, .labelColor = BLACK, .fontSize = MAIN_BUTTON_FS, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = (Rectangle){ midX - MAIN_MENU_BTN_WIDTH / 2, posY + 30, MAIN_MENU_BTN_WIDTH - 50, MAIN_BUTTON_FS + 10} };
 	Button ruleBtn = { .color1 = GOLD, .color2 = BLACK, .label = "Règles du Jeu", .labelFont = MAIN_BTN_FONT, .labelColor = BLACK, .fontSize = MAIN_BUTTON_FS, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = (Rectangle){0, 0, MAIN_MENU_BTN_WIDTH - 50, MAIN_BUTTON_FS + 10} };
 	Button keyBtn = { .color1 = BROWN, .color2 = BLACK, .label = "Commandes du jeu", .labelFont = MAIN_BTN_FONT, .labelColor = BLACK, .fontSize = MAIN_BUTTON_FS, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = (Rectangle){0,0, MAIN_MENU_BTN_WIDTH - 50, MAIN_BUTTON_FS + 10} };
@@ -54,11 +54,11 @@ ScreenID RunMenu(GameState* gs) {
 
 		// Ajoute un bouton pour ajouter un joueur
 		DrawButton(&addBtn);
-		if (gs->playerNumber >= MAX_PLAYER) DrawStrokeText(gs->assets.fonts[FONT_FREDOKA_CM], tmppl, (GetScreenWidth() - MeasureTextEx(gs->assets.fonts[FONT_FREDOKA_CM], tmppl, tmpplSize, NORMAL_SPACING).x) / 2, posY - 15, tmpplSize, RED, multiplyColor(DARKGRAY, 0.4f));
-		else if (addBtn.validated) addPlayer = 1;
+		//if (gs->playerNumber >= MAX_PLAYER) DrawStrokeText(gs->assets.fonts[FONT_FREDOKA_CM], tmppl, (GetScreenWidth() - MeasureTextEx(gs->assets.fonts[FONT_FREDOKA_CM], tmppl, tmpplSize, NORMAL_SPACING).x) / 2, posY - 15, tmpplSize, RED, multiplyColor(DARKGRAY, 0.4f));
+		if (addBtn.validated) addPlayer = 1;
 
 		// afficher le nombre de joueurs
-		DrawText(TextFormat("Il y a %s%d/%d joueurs", gs->playerNumber > 10 ? "déjà " : "", gs->playerNumber, MAX_PLAYER), addBtn.bounds.x, addBtn.bounds.y + addBtn.bounds.height + 5, 20, WHITE);
+		DrawStrokeTextEx(gs->assets.fonts[FONT_FREDOKA_CM], TextFormat("Il y a %s%d joueur%c", gs->playerNumber > 10 ? "déjà " : "", gs->playerNumber, MAX_PLAYER, gs->playerNumber > 2 ? 's' : ' '), addBtn.bounds.x, addBtn.bounds.y + addBtn.bounds.height + 5, 20,NORMAL_SPACING, WHITE, BLACK, 1);
 
 		// Ajoute un bouton pour quitter le Jeu
 		DrawButton(&stopBtn);
@@ -165,7 +165,13 @@ ScreenID RunAddPlayer(GameState* gs) {
 
 	}
 	if (add) {
-		strcpy(gs->players[gs->playerNumber++].name, nameIptBox.text);
+
+		PlayerState* tmp = (PlayerState*)realloc(gs->players, (gs->playerNumber + 1) * sizeof(PlayerState));
+		if (tmp) {
+			gs->players = tmp;
+			strcpy(gs->players[gs->playerNumber++].name, nameIptBox.text);
+		}
+		
 	}
 
 	return SCREEN_MENU;

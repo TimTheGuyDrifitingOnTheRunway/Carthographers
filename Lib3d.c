@@ -417,6 +417,7 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 	int midY = GetScreenHeight() / 2;
 	static bool openPlayerPanel = 0;
 	static bool openCard = 0;
+	static float historyScrollOffset = 0.0f; // Offset de scroll pour l'historique de cartes
 	static bool openSeasonCard = 0;
 
 	Rectangle infoPanel = { 0, midY - 700 / 2, 400, 700 };
@@ -519,7 +520,7 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 
 	// Recherche de la carte par le nom
 	char* cardName = state->card->name;
-	int cardIndex = 0;	// Index de la carte actuelle
+	int cardIndex = 0;
 	for (int i = 0; i < NUM_CARDS; i++) if (!strcmp(expCards[i]->name, cardName)) { cardIndex = i; break; }
 
 	// Affichage de la carte
