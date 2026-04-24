@@ -32,8 +32,7 @@ int main()
 	pthread_create(&soundThread, NULL, SoundThread, &keep);
 
 	//ToggleBorderlessWindowed();
-
-
+	
 
 
 
@@ -71,6 +70,7 @@ int main()
 
 		UnloadCodepoints(codepoints);
 	}
+	printf("%f", MeasureTextEx(gs.assets.fonts[FONT_GRENZE_GOTISCH_B], "Printemps  0/8", EDITS_FS, NORMAL_SPACING).x);
 
 	//for (int i = 0; i < FONT_COUNT; i++) {
 	//	printf("(%.5f,%.5f) ; ", MeasureTextEx(gs.assets.fonts[i], " ", 30, 2).x, MeasureTextEx(gs.assets.fonts[i], " ", 30, 2).y);

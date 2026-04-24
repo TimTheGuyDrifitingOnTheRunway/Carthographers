@@ -296,8 +296,7 @@ int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D
 }
 
 
-int GUIPlacementCard(GameState* gs, FeuilleCarte f, const ExploreCard* card,
-	int score, int isRuin, int* coinCount, Camera3D camera, Model mountains[NOMBREMONTAGNE], Seed s, ModelList models) {
+int GUIPlacementCard(GameState* gs, FeuilleCarte f, const ExploreCard* card, int score, int isRuin, int* coinCount, Camera3D camera, Model mountains[NOMBREMONTAGNE], Seed s, ModelList models) {
 
 	// Vérification placabilité
 	int canFitA = isRuin ? checkShapeOnRuin(f, card->pieceA) : checkShape(f, card->pieceA);
@@ -417,6 +416,8 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 	int midX = GetScreenWidth() / 2;
 	int midY = GetScreenHeight() / 2;
 	static bool openPlayerPanel = 0;
+	static bool openCard = 0;
+	static bool openSeasonCard = 0;
 
 	Rectangle infoPanel = { 0, midY - 700 / 2, 400, 700 };
 	//Rectangle playerPanel = { midX * 2 - 400, 100, 400, 250 };
@@ -430,9 +431,10 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 	{
 		int len;		// réduction de la portée car nom commun
 		for (int i = 0; i < 4; i++) {
-			len = strlen(gs->edits[i]->name) + 8;
+			char lbl[] = "       %s  ";
+			len = strlen(gs->edits[i]->name) + strlen(lbl) - 2;
 			editLabels[i] = (char*)malloc(len * sizeof(char));
-			snprintf(editLabels[i], len, "  [%c] %s  ", 'A' + i, gs->edits[i]->name);
+			snprintf(editLabels[i], len, lbl, gs->edits[i]->name);
 			//printf("%d\n", (int)strlen(gs->edits[i]->name));
 			editRects[i].width = MeasureTextEx(EDITS_FONT, editLabels[i], EDITS_FS, NORMAL_SPACING).x;
 			editRects[i].height = editsRec.height / 2;
@@ -470,7 +472,7 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 			tooltipTarget = i;
 	}
 
-	const char* seasonLabel = TextFormat("%s", seasons[gs->currentSeason]->name);
+	const char* seasonLabel = TextFormat("%s  %d/%d", seasons[gs->currentSeason]->name, gs->currentTime + state->card->time, seasons[gs->currentSeason]->maxTime);
 
 	Vector2 seasonLabelSize = MeasureTextEx(SEASON_FONT, seasonLabel, EDITS_FS, NORMAL_SPACING);
 	Rectangle seasonRec = (Rectangle){ midX - seasonLabelSize.x / 2 - 40, editsRec.y + editsRec.height - 50, seasonLabelSize.x + 80, 100 };
@@ -495,6 +497,8 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 	GUIdrawGrille();
 	EndMode3D();
 
+	/**************************************************************** Affichage 2D ****************************************************************/
+
 	// UI 2D — lecture seule sur state
 
 	// Infos relatives à tous les joueurs
@@ -514,19 +518,27 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 	/******** Gestion de la Carte ********/
 
 	// Recherche de la carte par le nom
+	char* cardName = state->card->name;
 	int cardIndex = 0;	// Index de la carte actuelle
-	for (int i = 0; i < NUM_CARDS; i++) if (!strcmp(expCards[i]->name, state->card->name)) { cardIndex = i; break; }
+	for (int i = 0; i < NUM_CARDS; i++) if (!strcmp(expCards[i]->name, cardName)) { cardIndex = i; break; }
 
-
-	Texture2D cardTex = gs->assets.cardImages[cardIndex];
 	// Affichage de la carte
-	int targetHeight = GetScreenHeight() / 2.0f;
+	Texture2D cardTex = gs->assets.cardImages[cardIndex];
+	int targetHeight = GetScreenHeight() * (openCard ? .7f : .4f);
 	float ratioCards = 1.4f;					// Format des cartes de Cartographers (ou poker)
 	int targetWidth = targetHeight / ratioCards;
-	Rectangle destRec = (Rectangle){ 50, midY - targetHeight / 2, targetWidth, targetHeight };
+	Rectangle destRec = (Rectangle){ (openCard ? 30 : 50), midY - targetHeight / 2, targetWidth, targetHeight };
 	Rectangle sourceRect = (Rectangle){ 0, 0, cardTex.width, cardTex.height };
-
 	DrawTexturePro(cardTex, sourceRect, destRec, (Vector2) { 0 }, 0, WHITE);
+
+	// Affichage du titre de la carte et de son Type
+	int cardFS = 100 * (openCard ? .7f : .4f) * ((float)GetScreenHeight() / 1000.0f);
+	DrawStrokeTextEx(CARD_FONT, cardName, destRec.x + targetWidth / 2 - MeasureTextEx(CARD_FONT, cardName, cardFS, NORMAL_SPACING).x / 2, destRec.y + targetHeight * 49 / 100, cardFS, NORMAL_SPACING, WHITE, BLACK, 2);
+	int typrFS = 40 * (openCard ? .7f : .4f) * ((float)GetScreenHeight() / 1000.0f);
+	char* typeLbl = state->card->isEnemy ? "AMBUSH" : "EXPLORE";
+	DrawStrokeTextEx(CARD_FONT, typeLbl, destRec.x + targetWidth / 2 - MeasureTextEx(CARD_FONT, typeLbl, typrFS, NORMAL_SPACING).x / 2, destRec.y + targetHeight * 95.5f / 100 - typrFS, typrFS, NORMAL_SPACING, WHITE, BLACK, 1);
+	openCard = CheckCollisionPointRec(mouse, destRec);
+
 
 	// Infos relatives au joueur actuel
 	int y2 = 20;
@@ -538,18 +550,42 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 	DrawRectangleRoundedStrokeEx(playerPanel, .1f, 10, 3, LIGHTGRAY, DARKBROWN);
 	DrawStrokeTextEx(PLAYER_PANEL_FONT, gs->players[gs->playerIndex].name, playerPanel.x + 10, playerPanel.y + 5 , PLAYER_PANEL_FS + 10, NORMAL_SPACING, WHITE, BLACK, 1);
 	DrawStrokeTextEx(PLAYER_PANEL_FONT, TextFormat("SCORE  %d", score), playerPanel.x + 10, playerPanel.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, NORMAL_SPACING, WHITE, BLACK, 1);										y2 += PLAYER_PANEL_FS + 10;
-	DrawStrokeTextEx(PLAYER_PANEL_FONT, TextFormat("COINS  %d", gs->players[gs->playerIndex].coinCount), playerPanel.x + 10, playerPanel.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, NORMAL_SPACING, WHITE, BLACK, 1);		y2 += PLAYER_PANEL_FS + 10;
+	DrawStrokeTextEx(PLAYER_PANEL_FONT, TextFormat("PIECES  %d", gs->players[gs->playerIndex].coinCount), playerPanel.x + 10, playerPanel.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, NORMAL_SPACING, WHITE, BLACK, 1);		y2 += PLAYER_PANEL_FS + 10;
 	//if (gs->isOnline) { DrawText(TextFormat("COINS  %d", gs->players[gs->playerIndex].coinCount), playerPanel.x + 10, playerPanel.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, BLACK); }
 
+	// Affichage des saisons
+	//DrawRectangleRoundedStrokeEx(seasonRec, 1.f, 10, 2, BGCOLOR, GREEN);
+
+	Texture2D seasonTex = gs->assets.seasonImages[gs->currentSeason];
+
+	float scale = 250.f / (float)seasonTex.width;
+	//printf("\nTexure : %d %d, scale : %f",IsTextureValid(seasonTex), seasonTex.width, scale);
+	Vector2 seasonCardV = (Vector2){ midX - (seasonTex.width / 2 * scale), editsRec.y + editsRec.height + (openSeasonCard ? -5 : SEASON_FS + 15 - (seasonTex.height * scale)) };
+	Rectangle seasonTexPlace = (Rectangle){ seasonCardV.x, seasonCardV.y, seasonTex.width * scale, seasonTex.height * scale };
+	DrawTextureEx(seasonTex, seasonCardV, 0, scale, WHITE);
+
+	DrawStrokeTextEx(SEASON_FONT, seasonLabel, seasonRec.x + 40, editsRec.y + editsRec.height + (openSeasonCard ? seasonTexPlace.height * 3 / 4 : 0), EDITS_FS, NORMAL_SPACING, GOLD, BLACK, 1);
+
+	Rectangle openSeasonRec = GetCollisionRec(editsRec, seasonTexPlace);
+	bool openSeasonCardA = CheckCollisionPointRec(mouse, openSeasonRec);
+	bool openSeasonCardB = CheckCollisionPointRec(mouse, seasonTexPlace);
+	openSeasonCard = (!openSeasonCardA && openSeasonCardB);
+	
 	// Edits & Saison
-	DrawRectangleRoundedStrokeEx(seasonRec, 1.f, 10, 2, BGCOLOR, GREEN);
 	DrawRectangleRoundedStrokeEx(editsRec, 1.f, 10, 2, BGCOLOR, GOLD);
 	for (int i = 0; i < 4; i++) {
 		DrawStrokeTextEx(gs->assets.fonts[FONT_GRENZE_GOTISCH_L], editLabels[i], editRects[i].x, editRects[i].y + 10 - EDITS_FS / 5, EDITS_FS, NORMAL_SPACING, GOLD, BLACK, 1);
-
+		if (i == gs->currentSeason || i == (gs->currentSeason + 1) % NUM_SEASONS) {
+			Texture2D letterScrollTex = gs->assets.letterScrollsImage[i];
+			DrawTextureEx(letterScrollTex, (Vector2) { editRects[i].x, editRects[i].y + 10 - EDITS_FS / 5 }, 0, (float)EDITS_FS / (float)letterScrollTex.height * 1.2f, WHITE);
+		}
+		else {
+			Texture2D letterScrollTex = gs->assets.letterScrollsImage[i + NUM_SEASONS];
+			DrawTextureEx(letterScrollTex, (Vector2) { editRects[i].x, editRects[i].y + 10 - EDITS_FS / 5 }, 0, (float)EDITS_FS / (float)letterScrollTex.height * 1.2f, WHITE);
+		}
 		//printf("Impression de l'edit %d (nom %s) a la place (%d,%d), taille %d\n", i, editLabels[i], (int)editRects[i].x + 10, (int)editRects[i].y + 10, EDITS_FS);
 	}
-	DrawStrokeTextEx(SEASON_FONT, TextFormat("%s", seasons[gs->currentSeason]->name), seasonRec.x + 40, editsRec.y + editsRec.height - 3, EDITS_FS, NORMAL_SPACING, GOLD, BLACK, 1);
+
 
 
 #define A_MID(a,b) (midX < mouse.x ? a : b)
@@ -582,8 +618,6 @@ void ApplyPlacement(FeuilleCarte f, PlacementState* state, int* coinCount) {
 		(*coinCount)++;
 }
 
-
-
 void DrawMapGrid(int slices, float spacing) {
 	float halfSize = (slices * spacing) / 2.0f;
 	Color gridColor = LIGHTGRAY; // Couleur par défaut pour rester cohérent
@@ -611,7 +645,6 @@ int GUIplacementDefaultCard(GameState* gs, FeuilleCarte f, const ExploreCard* ca
 	GUIPlacementCard(gs, f, &def, score, isRuin, coinCount, camera, mountains, s, models);
 	return 1;
 }
-
 
 void GUIdrawGrille() {
 	for (int i = -SIZE / 2 - 1; i <= SIZE / 2; i++) {

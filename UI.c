@@ -9,12 +9,12 @@ ScreenID RunMenu(GameState* gs) {
 
 	bool addPlayer = 0;
 	char tmppl[33] = "Limite de 100 personnes atteinte";	int tmpplSize = 70;		// tmppl = too many people
-	Button addBtn = { .color1 = SKYBLUE, .color2 = BLACK, .label = "+ Add 1 Player", .labelFont = MAIN_BTN_FONT, .labelColor = BLACK, .fontSize = MAIN_BUTTON_FS, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = (Rectangle){ midX - MAIN_MENU_BTN_WIDTH / 2, posY + 30, MAIN_MENU_BTN_WIDTH - 50, MAIN_BUTTON_FS + 10} };
-	Button ruleBtn = { .color1 = GOLD, .color2 = BLACK, .label = "Game Rules", .labelFont = MAIN_BTN_FONT, .labelColor = BLACK, .fontSize = MAIN_BUTTON_FS, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = (Rectangle){0, 0, MAIN_MENU_BTN_WIDTH - 50, MAIN_BUTTON_FS + 10} };
-	Button keyBtn = { .color1 = BROWN, .color2 = BLACK, .label = "Key Binds in the Game", .labelFont = MAIN_BTN_FONT, .labelColor = BLACK, .fontSize = MAIN_BUTTON_FS, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = (Rectangle){0,0, MAIN_MENU_BTN_WIDTH - 50, MAIN_BUTTON_FS + 10} };
+	Button addBtn = { .color1 = SKYBLUE, .color2 = BLACK, .label = "+ Ajouter un joueur", .labelFont = MAIN_BTN_FONT, .labelColor = BLACK, .fontSize = MAIN_BUTTON_FS, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = (Rectangle){ midX - MAIN_MENU_BTN_WIDTH / 2, posY + 30, MAIN_MENU_BTN_WIDTH - 50, MAIN_BUTTON_FS + 10} };
+	Button ruleBtn = { .color1 = GOLD, .color2 = BLACK, .label = "Règles du Jeu", .labelFont = MAIN_BTN_FONT, .labelColor = BLACK, .fontSize = MAIN_BUTTON_FS, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = (Rectangle){0, 0, MAIN_MENU_BTN_WIDTH - 50, MAIN_BUTTON_FS + 10} };
+	Button keyBtn = { .color1 = BROWN, .color2 = BLACK, .label = "Commandes du jeu", .labelFont = MAIN_BTN_FONT, .labelColor = BLACK, .fontSize = MAIN_BUTTON_FS, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = (Rectangle){0,0, MAIN_MENU_BTN_WIDTH - 50, MAIN_BUTTON_FS + 10} };
 
-	Button startBtn = { .color1 = LIME, .color2 = BLACK, .label = "Start !", .labelFont = MAIN_BTN_FONT, .labelColor = BLACK, .fontSize = MAIN_BUTTON_FS + 10, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = (Rectangle){0, 0, MAIN_MENU_BTN_WIDTH - 50, MAIN_BUTTON_FS + 15} };
-	Button stopBtn = { .color1 = RED, .color2 = BLACK, .label = "Exit The Game", .labelFont = MAIN_BTN_FONT, .labelColor = BLACK, .fontSize = (int)MAIN_BUTTON_FS * 0.8f, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = (Rectangle){0, 0, MAIN_MENU_BTN_WIDTH * 0.6f, MAIN_BUTTON_FS } };
+	Button startBtn = { .color1 = LIME, .color2 = BLACK, .label = "Jouer !", .labelFont = MAIN_BTN_FONT, .labelColor = BLACK, .fontSize = MAIN_BUTTON_FS + 10, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = (Rectangle){0, 0, MAIN_MENU_BTN_WIDTH - 50, MAIN_BUTTON_FS + 25} };
+	Button stopBtn = { .color1 = RED, .color2 = BLACK, .label = "Quitter le jeu", .labelFont = MAIN_BTN_FONT, .labelColor = BLACK, .fontSize = (int)MAIN_BUTTON_FS * 0.8f, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = (Rectangle){0, 0, MAIN_MENU_BTN_WIDTH * 0.6f, MAIN_BUTTON_FS } };
 
 	
 
@@ -58,7 +58,7 @@ ScreenID RunMenu(GameState* gs) {
 		else if (addBtn.validated) addPlayer = 1;
 
 		// afficher le nombre de joueurs
-		DrawText(TextFormat("There is %s%d/%d players", gs->playerNumber > 10 ? "already " : "", gs->playerNumber, MAX_PLAYER), addBtn.bounds.x, addBtn.bounds.y + addBtn.bounds.height + 5, 20, WHITE);
+		DrawText(TextFormat("Il y a %s%d/%d joueurs", gs->playerNumber > 10 ? "déjà " : "", gs->playerNumber, MAX_PLAYER), addBtn.bounds.x, addBtn.bounds.y + addBtn.bounds.height + 5, 20, WHITE);
 
 		// Ajoute un bouton pour quitter le Jeu
 		DrawButton(&stopBtn);
@@ -102,15 +102,15 @@ ScreenID RunAddPlayer(GameState* gs) {
 	int posY = GetScreenHeight() / 20 + 30 + TITLE_FS + 20;
 
 	Rectangle menuBounds = (Rectangle){ 0 };
-	char addPplLabel[19] = "Add a new player !"; 	int addPplFontSize = 50;
+	char addPplLabel[] = "Ajouter un nouveau joueur !"; 	int addPplFontSize = 50;
 	Rectangle iptNameBox = (Rectangle){ 0 };
 	int d = 40; // Espacement entre les boutons
 
-	Button cclBtn = { .color1 = RED, .color2 = BLACK, .label = "Cancel", .labelFont = gs->assets.fonts[FONT_METAMORPHOUS], .labelColor = BLACK, .fontSize = 40, .corner = 90, .stroke = 3 };
-	Button addBtn = { .color1 = LIME, .color2 = BLACK, .label = "Add", .labelFont = gs->assets.fonts[FONT_METAMORPHOUS], .labelColor = BLACK, .fontSize = 40, .corner = 90, .stroke = 3 };
+	Button cclBtn = { .color1 = RED, .color2 = BLACK, .label = "Annuler", .labelFont = gs->assets.fonts[FONT_METAMORPHOUS], .labelColor = BLACK, .fontSize = 40, .corner = 90, .stroke = 3 };
+	Button addBtn = { .color1 = LIME, .color2 = BLACK, .label = "Ajouter", .labelFont = gs->assets.fonts[FONT_METAMORPHOUS], .labelColor = BLACK, .fontSize = 40, .corner = 90, .stroke = 3 };
 
 	InputBox nameIptBox = { .maxLength = MAX_NAME_LENGTH,.dx = 5, .text = "", .length = 0, .fontSize = 30, .textFont = gs->assets.fonts[FONT_FREDOKA_CM], .active = 1, .validated = 0 };
-	char addLabel[19] = "New player name : ";
+	char addLabel[] = "Nom du nouveau joueur ";
 	int addLabelFontSize = 32;
 
 	bool add = false;
@@ -223,7 +223,7 @@ ScreenID RunRules(GameState* gs) {
 		posY = DrawTitle(gs);
 		DrawTextWrappedEx(PAGE_FONT, pages[currentPage].Text, textZone, PAGE_FS, 1, WHITE, BLACK);
 
-		DrawStrokeTextEx(gs->assets.fonts[FONT_METAMORPHOUS], TextFormat("Page : %s", pages[currentPage].Title), textZone.x + 10, posY, 35, NORMAL_SPACING, BLACK, GOLD, 1);
+		DrawStrokeTextEx(gs->assets.fonts[FONT_METAMORPHOUS], TextFormat("  %s", pages[currentPage].Title), textZone.x + 10, posY, 35, NORMAL_SPACING, BLACK, GOLD, 1);
 
 		DrawRectangleRoundedLinesEx((Rectangle) { textZone.x - TEXT_ZONE_PADDING, textZone.y - TEXT_ZONE_PADDING, textZone.width + 2 * TEXT_ZONE_PADDING, textZone.height + 2 * TEXT_ZONE_PADDING, }, .05, 10, 2, multiplyColor(BROWN, 1.2f));
 
@@ -650,7 +650,7 @@ void* LoadAssetsWorker(void* arg) {
 	}
 
 	for (int i = 0; i < NUM_SEASONS; i++) {
-		const char* path = TextFormat("Assets/Images/Season/%s.png", seasons[i]->name);
+		const char* path = TextFormat("Assets/Images/Season/%s.png", seasons[i]->path);
 		Image img = LoadImage(path);
 		ImageRoundedCorner(&img, 0.11f);
 
