@@ -204,7 +204,7 @@ void GUIdisplayFinal(GameState gs, int mountainSeed[2], Seed s, ModelList models
 			BeginDrawing(); // Début de l'affichage
 			ClearBackground(RAYWHITE);
 			BeginMode3D(camera);
-            // Ensure we always pass an array of NOMBREMONTAGNE positions to GUIDrawFeuille
+           
 			Position emptyMountainPos[NOMBREMONTAGNE];
 			for (int mi = 0; mi < NOMBREMONTAGNE; mi++) { emptyMountainPos[mi].x = -100; emptyMountainPos[mi].y = -100; }
 			GUIDrawFeuille(ps->map, tempMap, mountains, mountainPos ? mountainPos : emptyMountainPos, s, models);
@@ -348,6 +348,13 @@ void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera) {
 	Vector3 right = crossProduct(forward, camera.up);
 	normalize(&right);
 
+
+	state->drawable = state->drawable && (state->isRuin ? coversRuin(f, state->feuilleVide) : isDrawable(f, state->feuilleVide));
+	if (IsKeyPressed(KEY_SPACE) && state->drawable) {
+		state->status = 1;
+		return;//retourne immédiatement si la pièce est placée pour éviter de devoir attendre la fin de la boucle et éviter les problèmes de placement + déplacement en même temps (duplicatrion)
+	}
+
 	if (IsKeyPressed(UPP))		fabs(forward.x) > fabs(forward.z) ? (state->pos.x += forward.x > 0 ? 1 : -1) : (state->pos.y += forward.z > 0 ? 1 : -1);
 	if (IsKeyPressed(DOWNP))	fabs(forward.x) > fabs(forward.z) ? (state->pos.x += forward.x > 0 ? -1 : 1) : (state->pos.y += forward.z > 0 ? -1 : 1);
 	if (IsKeyPressed(LEFTP))	fabs(right.x) > fabs(right.z) ? (state->pos.x += right.x > 0 ? -1 : 1) : (state->pos.y += right.z > 0 ? -1 : 1);
@@ -396,10 +403,9 @@ void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera) {
 		if (state->pos.y > SIZE - 2) state->pos.y -= 1;
 	}
 
-	state->drawable = state->drawable && (state->isRuin ? coversRuin(f, state->feuilleVide) : isDrawable(f, state->feuilleVide));
+	
 
-	if (IsKeyPressed(KEY_SPACE) && state->drawable)
-		state->status = 1;
+	
 
 
 	//if (OOB) { state->pos.x = 5; state->pos.y = 5; }// reset si hors limite (se produit rarement, mais peut arriver lors de switch de forme si les 2 formes ne peuvent pas être placées au même endroit)
@@ -1096,7 +1102,7 @@ void UnloadSeed(Seed* s) {
 	s->isGenerated = 0;
 	printf("[INFO] seed unloaded \n");
 }
-void UnloadModels(ModelList* models) {
+void UnloadModels(ModelList* models) {//décharge manuellement les models meme si raylib le fait automatiquement
 	UnloadModel(models->tree);
 	UnloadModel(models->buisson);
 	UnloadModel(models->skybox);
@@ -1105,6 +1111,8 @@ void UnloadModels(ModelList* models) {
 	UnloadModel(models->champs);
 	UnloadModel(models->water);
 	UnloadModel(models->monsterTile);
+	UnloadModel(models->forestTile);
+	UnloadModel(models->vilageTile);
 	printf("[INFO] models unloaded \n");
 }
 
