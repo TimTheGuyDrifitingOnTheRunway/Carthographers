@@ -105,6 +105,7 @@ const ExploreCard* expCards[NUM_CARDS] = { &FarmLands, &ForgottenForest, &Hamlet
 
 void SetupGame(GameState* gs) { 	// Initialisation du jeu
 	if (gs->playerNumber == 0) {
+		gs->players = malloc(sizeof(PlayerState));
 		strcpy(gs->players[gs->playerNumber++].name, "Teapot-418");
 	}
 	gs->playerIndex = 0;
