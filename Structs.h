@@ -41,7 +41,8 @@ typedef struct Saison {
 	int maxTime;
 	int EditA;
 	int EditB;
-	char name[7];
+	char name[10];
+	char path[7];
 } Saison;
 
 typedef struct ExploreCard {
@@ -104,16 +105,16 @@ typedef struct AssetBank {
 } AssetBank;
 
 typedef struct GameState {
-	int playerNumber;        // Nombre de joueurs
+	int playerNumber;			// Nombre de joueurs
 	PlayerState players[MAX_PLAYER];
-	int playerIndex;        // Index du joueur actuel
+	int playerIndex;			// Index du joueur actuel
 	ExploreCard* card;
 	int currentTime;
 	int currentSeason;
 	const ScoringCard* edits[4];
 	const ExploreCard* exploreDeck[17];
-	const ExploreCard* explorePile[13];		// Ne dépassera jamais 13 : au max 4 cartes ennemi, 2 cartes ruines, 1 carte Riftland, 4 cartes de temps 1, et 2 cartes de temps 2
-	int deckSize;
+	int exploreIndex;			// Index de la carte actuelle
+	int deckSize;				// Taille actuelle du deck
 
 	bool isOnline;
 

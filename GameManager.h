@@ -23,8 +23,8 @@ void Season2(GameState* gs, Camera3D camera, ModelList models, Seed s, int mount
 
 // Tour de jeu
 
-const ExploreCard* Turn(GameState* gs, int* index, int* isRuin, Camera3D camera, int mountainSeed[2], ModelList models, Seed s);
-const ExploreCard* NextExploreCard(GameState* gs, int* index, int* isRuin);
+const ExploreCard* Turn(GameState* gs, int* isRuin, Camera3D camera, int mountainSeed[2], ModelList models, Seed s);
+const ExploreCard* NextExploreCard(GameState* gs, int* isRuin);
 
 void DebugGameStats(GameState* gs);
 
