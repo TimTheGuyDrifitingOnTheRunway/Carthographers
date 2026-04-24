@@ -251,7 +251,7 @@ void Season(GameState* gs, Camera3D camera, ModelList models) {
 	gs->currentTime = 0;
 	int isRuin = 0;
 	while (gs->currentTime < seasons[gs->currentSeason]->maxTime) {
-		const ExploreCard* card = Turn(gs, &isRuin, camera, mountainSeed, models, s);
+		const ExploreCard* card = Turn(gs, &isRuin, &camera, mountainSeed, models, s);
 		gs->currentTime += card->time;
 	}
 	pthread_join(thread, (void**)&s2);
@@ -271,7 +271,7 @@ void Season2(GameState* gs, Camera3D camera, ModelList models, Seed s, int mount
 	gs->currentTime = 0;
 	int isRuin = 0;
 	while (gs->currentTime < seasons[gs->currentSeason]->maxTime) {
-		const ExploreCard* card = Turn(gs, &isRuin, camera, mountainSeed, models, s);
+		const ExploreCard* card = Turn(gs, &isRuin, &camera, mountainSeed, models, s);
 		gs->currentTime += card->time;
 	}
 	pthread_join(thread, (void**)&s2);
@@ -309,7 +309,7 @@ void NextSeason(GameState *gs, Camera3D camera, ModelList models, Seed s2, int m
 }
 
 // Tour de jeu
-const ExploreCard* Turn(GameState* gs, int* isRuin, Camera3D camera, int mountainSeed[2], ModelList models, Seed s) {
+const ExploreCard* Turn(GameState* gs, int* isRuin, Camera3D *camera, int mountainSeed[2], ModelList models, Seed s) {
 	const ExploreCard* card = NextExploreCard(gs, isRuin);
 
 	for (int p = 0; p < gs->playerNumber; p++) {

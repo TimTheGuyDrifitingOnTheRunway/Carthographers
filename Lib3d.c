@@ -296,7 +296,7 @@ int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D
 }
 
 
-int GUIPlacementCard(GameState* gs, FeuilleCarte f, const ExploreCard* card, int score, int isRuin, int* coinCount, Camera3D camera, Model mountains[NOMBREMONTAGNE], Seed s, ModelList models) {
+int GUIPlacementCard(GameState* gs, FeuilleCarte f, const ExploreCard* card, int score, int isRuin, int* coinCount, Camera3D *camera, Model mountains[NOMBREMONTAGNE], Seed s, ModelList models) {
 
 	// Vérification placabilité
 	int canFitA = isRuin ? checkShapeOnRuin(f, card->pieceA) : checkShape(f, card->pieceA);
@@ -321,10 +321,10 @@ int GUIPlacementCard(GameState* gs, FeuilleCarte f, const ExploreCard* card, int
 	Position* mountainPos = getPositionsOfMaterial(f, MONTAGNE);//envoi la positions des montagnes pour avancer si un conflit à lieu entre une montagne et autre
 	// Boucle principale — logique et rendu séparés
 	while (state.status == 0 && !WindowShouldClose()) {
-		UpdatePlacement(f, &state, camera);
-		RenderPlacement(gs, f, &state, score, camera, mountains, mountainPos, s, models);
-		GUIUpdateCustomCamera(&camera);
-		camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
+		UpdatePlacement(f, &state, *camera);
+		RenderPlacement(gs, f, &state, score, *camera, mountains, mountainPos, s, models);
+		GUIUpdateCustomCamera(camera);
+		camera->target = (Vector3){ 0.0f, 0.0f, 0.0f };
 	}
 
 	if (WindowShouldClose()) { EndProgram(gs); exit(1); }
@@ -636,7 +636,7 @@ int GUIplacementDefault(FeuilleCarte f, int  material, Camera3D camera, Model mo
 	return 1;
 }
 
-int GUIplacementDefaultCard(GameState* gs, FeuilleCarte f, const ExploreCard* card, int score, int isRuin, int* coinCount, Camera3D camera, Model mountains[NOMBREMONTAGNE], Seed s, ModelList models) {
+int GUIplacementDefaultCard(GameState* gs, FeuilleCarte f, const ExploreCard* card, int score, int isRuin, int* coinCount, Camera3D *camera, Model mountains[NOMBREMONTAGNE], Seed s, ModelList models) {
 	if (getEmptySpots(f) == 0) return 0;
 	ExploreCard def = *card;
 	def.pieceA = &POINT;
