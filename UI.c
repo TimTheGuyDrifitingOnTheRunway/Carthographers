@@ -58,7 +58,7 @@ ScreenID RunMenu(GameState* gs) {
 		if (addBtn.validated) addPlayer = 1;
 
 		// afficher le nombre de joueurs
-		DrawStrokeTextEx(gs->assets.fonts[FONT_FREDOKA_CM], TextFormat("Il y a %s%d joueur%c", gs->playerNumber > 10 ? "déjà " : "", gs->playerNumber, MAX_PLAYER, gs->playerNumber > 2 ? 's' : ' '), addBtn.bounds.x, addBtn.bounds.y + addBtn.bounds.height + 5, 20,NORMAL_SPACING, WHITE, BLACK, 1);
+		DrawStrokeTextEx(gs->assets.fonts[FONT_FREDOKA_CM], TextFormat("Il y a %s%d joueur%c", gs->playerNumber > 10 ? "déjà " : "", gs->playerNumber, gs->playerNumber > 1 ? 's' : ' '), addBtn.bounds.x, addBtn.bounds.y + addBtn.bounds.height + 5, 20,NORMAL_SPACING, WHITE, BLACK, 1);
 
 		// Ajoute un bouton pour quitter le Jeu
 		DrawButton(&stopBtn);

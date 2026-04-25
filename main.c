@@ -35,7 +35,6 @@ int main()
 	
 
 
-
 	Vector3 cubePosition = { 0.0f, 0.0f, 0.0f };
 
 	printf("\n\n\n\n\n\n Debug 3 \n\n\n\n\n\n");
