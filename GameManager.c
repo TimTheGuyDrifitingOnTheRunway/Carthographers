@@ -315,7 +315,7 @@ void NextSeason(GameState *gs, Camera3D camera, ModelList models, Seed s2, int m
 
 	}
 
-	if (++gs->currentSeason < 4) Season2(gs, camera, models, s2, mountainSeed);
+	if (++gs->currentSeason < 1) Season2(gs, camera, models, s2, mountainSeed);
 	else {
 		sort_players_by_score(gs);
 		GUIdisplayFinal(*gs, mountainSeed, s2, models, camera);
