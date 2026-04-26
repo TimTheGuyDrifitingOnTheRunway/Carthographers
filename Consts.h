@@ -114,7 +114,7 @@
 #define PLAYER_PANEL_FS 30
 
 #define CARD_FONT gs->assets.fonts[FONT_GRENZE_GOTISCH_B]
-
+#define NOMBRE_TOTAL_ASSETS  29
 
 
 /******************************** GameManager.h ********************************/

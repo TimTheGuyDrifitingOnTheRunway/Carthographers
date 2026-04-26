@@ -316,7 +316,10 @@ void NextSeason(GameState *gs, Camera3D camera, ModelList models, Seed s2, int m
 	}
 
 	if (++gs->currentSeason < 4) Season2(gs, camera, models, s2, mountainSeed);
-	else GUIdisplayFinal(*gs, mountainSeed, s2, models, camera);
+	else {
+		sort_players_by_score(gs);
+		GUIdisplayFinal(*gs, mountainSeed, s2, models, camera);
+	}
 }
 
 // Tour de jeu
@@ -352,3 +355,18 @@ const ExploreCard* NextExploreCard(GameState* gs, int *isRuin) {
 
 
 
+void sort_players_by_score(GameState* gs) {
+	PlayerState* arr = gs->players;
+	int n = gs->playerNumber;
+
+	for (int i = 1; i < n; i++) {
+		PlayerState key = arr[i];
+		int j = i;
+
+		while (j > 0 && arr[j - 1].score < key.score) { /* décroissant */
+			arr[j] = arr[j - 1];
+			j--;
+		}
+		arr[j] = key;
+	}
+}

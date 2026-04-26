@@ -7,20 +7,27 @@ ScreenID RunMenu(GameState* gs) {
 	int midY = 0;
 	int posY = GetScreenHeight() / 20 + 30 + TITLE_FS + 20;
 
+	char play[12] = "chargement";
+	
+	
 	bool addPlayer = 0;
 	//char tmppl[33] = "Limite de 100 personnes atteinte";	int tmpplSize = 70;		// tmppl = too many people
 	Button addBtn = { .color1 = SKYBLUE, .color2 = BLACK, .label = "+ Ajouter un joueur", .labelFont = MAIN_BTN_FONT, .labelColor = BLACK, .fontSize = MAIN_BUTTON_FS, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = (Rectangle){ midX - MAIN_MENU_BTN_WIDTH / 2, posY + 30, MAIN_MENU_BTN_WIDTH - 50, MAIN_BUTTON_FS + 10} };
 	Button ruleBtn = { .color1 = GOLD, .color2 = BLACK, .label = "Règles du Jeu", .labelFont = MAIN_BTN_FONT, .labelColor = BLACK, .fontSize = MAIN_BUTTON_FS, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = (Rectangle){0, 0, MAIN_MENU_BTN_WIDTH - 50, MAIN_BUTTON_FS + 10} };
 	Button keyBtn = { .color1 = BROWN, .color2 = BLACK, .label = "Commandes du jeu", .labelFont = MAIN_BTN_FONT, .labelColor = BLACK, .fontSize = MAIN_BUTTON_FS, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = (Rectangle){0,0, MAIN_MENU_BTN_WIDTH - 50, MAIN_BUTTON_FS + 10} };
 
-	Button startBtn = { .color1 = LIME, .color2 = BLACK, .label = "Jouer !", .labelFont = MAIN_BTN_FONT, .labelColor = BLACK, .fontSize = MAIN_BUTTON_FS + 10, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = (Rectangle){0, 0, MAIN_MENU_BTN_WIDTH - 50, MAIN_BUTTON_FS + 25} };
+	Button startBtn = { .color1 = LIME, .color2 = BLACK, .label = play, .labelFont = MAIN_BTN_FONT, .labelColor = BLACK, .fontSize = MAIN_BUTTON_FS + 10, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = (Rectangle){0, 0, MAIN_MENU_BTN_WIDTH - 50, MAIN_BUTTON_FS + 25} };
 	Button stopBtn = { .color1 = RED, .color2 = BLACK, .label = "Quitter le jeu", .labelFont = MAIN_BTN_FONT, .labelColor = BLACK, .fontSize = (int)MAIN_BUTTON_FS * 0.8f, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = (Rectangle){0, 0, MAIN_MENU_BTN_WIDTH * 0.6f, MAIN_BUTTON_FS } };
 
 	
 
 	Rectangle* btns[] = { &addBtn.bounds, &ruleBtn.bounds, &keyBtn.bounds, &startBtn.bounds, &stopBtn.bounds };
 
-	while (!WindowShouldClose() && !startBtn.validated && !addPlayer && !stopBtn.validated && !keyBtn.validated && !ruleBtn.validated) {
+	while (!WindowShouldClose() && !(startBtn.validated && (gs->loadCtx->avancement >= NOMBRE_TOTAL_ASSETS)) && !addPlayer && !stopBtn.validated && !keyBtn.validated && !ruleBtn.validated) {
+
+		startBtn.label = gs->loadCtx->avancement >= NOMBRE_TOTAL_ASSETS  ? "Jouer !" : "Chargement en cours";
+		startBtn.color1 = gs->loadCtx->avancement >= NOMBRE_TOTAL_ASSETS ? LIME : DARKGRAY;
+
 		midX = GetScreenWidth() / 2;
 		midY = GetScreenHeight() / 2;
 
@@ -32,7 +39,7 @@ ScreenID RunMenu(GameState* gs) {
 		addBtn.hovered = CheckCollisionPointRec(GetMousePosition(), addBtn.bounds);
 		ruleBtn.hovered = CheckCollisionPointRec(GetMousePosition(), ruleBtn.bounds);
 		keyBtn.hovered = CheckCollisionPointRec(GetMousePosition(), keyBtn.bounds);
-		startBtn.hovered = CheckCollisionPointRec(GetMousePosition(), startBtn.bounds);
+		startBtn.hovered = CheckCollisionPointRec(GetMousePosition(), startBtn.bounds)&&(gs->loadCtx->avancement >= NOMBRE_TOTAL_ASSETS);
 		stopBtn.hovered = CheckCollisionPointRec(GetMousePosition(), stopBtn.bounds);
 
 		if (startBtn.hovered || addBtn.hovered || stopBtn.hovered || ruleBtn.hovered || keyBtn.hovered) {
@@ -72,7 +79,7 @@ ScreenID RunMenu(GameState* gs) {
 
 		LoadAssetToVRAM(gs);
 	}
-	if (startBtn.validated) {
+	if (startBtn.validated && (gs->loadCtx->avancement >= NOMBRE_TOTAL_ASSETS)) {
 		printf("\n\nBouton Start Validé");
 		return SCREEN_GAME;
 	}
@@ -690,6 +697,7 @@ void LoadAssetToVRAM(GameState* gs) {
 		gs->assets.cardImages[i] = LoadTextureFromImage(gs->loadCtx->cardsRAM[i]);
 		gs->loadCtx->cardsLoadedVRAM++;
 		//printf("\nChargement de la carte %d en VRAM, %d, %d\n", i);
+		gs->loadCtx->avancement++;
 
 		UnloadImage(gs->loadCtx->cardsRAM[i]);		// Libération de l'espace mémoire
 	}
@@ -699,6 +707,7 @@ void LoadAssetToVRAM(GameState* gs) {
 		gs->loadCtx->seasonsLoadedVRAM++;
 		//printf("\nChargement de la saison %d en VRAM\n", i);
 		UnloadImage(gs->loadCtx->seasonsRAM[i]);
+		gs->loadCtx->avancement++;
 	}
 	else if(gs->loadCtx->editsLoadedRAM > gs->loadCtx->editsLoadedVRAM) {
 		int i = gs->loadCtx->editsLoadedVRAM;
@@ -708,6 +717,7 @@ void LoadAssetToVRAM(GameState* gs) {
 		//printf("\nChargement de l'edit %d en VRAM\n", i);
 		UnloadImage(gs->loadCtx->editsRAM[i]);
 		UnloadImage(gs->loadCtx->editsRAM[i + NUM_EDITS]);
+		gs->loadCtx->avancement++;
 	}
 
 	pthread_mutex_unlock(&gs->loadCtx->mutex);
@@ -793,4 +803,18 @@ void DebugAssetViewer(GameState* gs) {
 
 		EndDrawing();
 	}
+}
+
+void drawFinalUi(GameState *gs) {
+	int y2 = 20;
+	//printf("\nPosition : %d,%d", state->pos.x, state->pos.y);
+	int midX = GetScreenWidth() / 2;
+	int midY = GetScreenHeight() / 2;
+	Vector2 playerPanelSize = MeasureTextEx(PLAYER_PANEL_FONT, gs->players[gs->playerIndex].name, PLAYER_PANEL_FS + 10, NORMAL_SPACING);
+	Rectangle playerPanel = (Rectangle){ GetScreenWidth() - 50 - ( max(PLAYER_REC_WIDTH, playerPanelSize.x - 20)), midY - PLAYER_REC_HEIGHT / 2, playerPanelSize.x + PLAYER_REC_HEIGHT, PLAYER_REC_HEIGHT };
+	DrawRectangleRoundedStrokeEx(playerPanel, .1f, 10, 3, LIGHTGRAY, DARKBROWN);
+	DrawStrokeTextEx(PLAYER_PANEL_FONT, gs->players[gs->playerIndex].name, playerPanel.x + 8, playerPanel.y + 5, PLAYER_PANEL_FS + 10, NORMAL_SPACING, WHITE, BLACK, 1);
+	DrawStrokeTextEx(PLAYER_PANEL_FONT, TextFormat("SCORE : %d", gs->players[gs->playerIndex].score), playerPanel.x + 8, playerPanel.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, NORMAL_SPACING, WHITE, BLACK, 1);
+	DrawStrokeTextEx(PLAYER_PANEL_FONT, TextFormat(gs->playerIndex+1 ==1 ? "CLASSEMENT :  %d er" : "CLASSEMENT :  %d eme", gs->playerIndex+1), playerPanel.x + 8, playerPanel.y + PLAYER_PANEL_FS*2 + y2, PLAYER_PANEL_FS, NORMAL_SPACING, WHITE, BLACK, 1);
+
 }
