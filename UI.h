@@ -29,8 +29,6 @@ void UpdateInputBox(InputBox* box);
 bool IsCharAllowed(char c);
 void DrawFullInputBoxEx(InputBox* box, int stroke, Color bkgColor, Color strokeColor);
 
-void drawFinalUi(GameState *gs);
-
 // Fonctions pour gérer le chargement des ressources
 void* LoadAssetsWorker(void* arg);
 void LoadAssetToVRAM(GameState* gs);

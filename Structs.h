@@ -87,7 +87,6 @@ typedef struct {
 	int seasonsLoadedVRAM;
 	int editsLoadedVRAM;
 
-	int avancement;
 	pthread_mutex_t mutex;
 } LoadContext;
 

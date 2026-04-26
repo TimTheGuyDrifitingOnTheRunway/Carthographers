@@ -34,6 +34,7 @@ int main()
 	
 
 
+
 	Vector3 cubePosition = { 0.0f, 0.0f, 0.0f };
 
 	printf("\n\n\n\n\n\n Debug 3 \n\n\n\n\n\n");
@@ -293,7 +294,22 @@ int main()
 
 }
 
+void sort_players_by_score(GameState* gs) {
+	PlayerState* arr = gs->players;
+	int n = gs->playerNumber;
 
+	for (int i = 1; i < n; i++) {
+		PlayerState key = arr[i];
+		int j = i;
+
+		while (j > 0 && arr[j - 1].score < key.score) { /* décroissant */
+			arr[j] = arr[j - 1];
+			j--;
+		}
+		arr[j] = key;
+	}
+	CloseWindow();
+}
 
 void EndProgram(GameState* gs) {
 	for (int i = 0; i < FONT_COUNT; i++) {

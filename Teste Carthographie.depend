@@ -1,0 +1,75 @@
+# depslib dependency file v1.0
+1777111818 source:e:\pc\documents\carthographers\gamemanager.c
+	"GameManager.h"
+
+1777111818 e:\pc\documents\carthographers\gamemanager.h
+	"Data.h"
+	"LibCarthographie.h"
+	"Lib3d.h"
+	"UI.h"
+
+1777111799 e:\pc\documents\carthographers\data.h
+	"Structs.h"
+
+1777111818 e:\pc\documents\carthographers\structs.h
+	"Consts.h"
+
+1777112000 e:\pc\documents\carthographers\consts.h
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+	<math.h>
+	<string.h>
+	<raylib.h>
+	<rlgl.h>
+	<raymath.h>
+	<pthread.h>
+
+1777111747 e:\pc\documents\carthographers\external\raylib\include\raylib.h
+	<stdarg.h>
+	<stdbool.h>
+
+1777112169 e:\pc\documents\carthographers\libcarthographie.h
+	"Data.h"
+
+1777111818 e:\pc\documents\carthographers\lib3d.h
+	"Data.h"
+	"LibCarthographie.h"
+	"UI.h"
+
+1777111811 e:\pc\documents\carthographers\ui.h
+	"Data.h"
+
+1776715385 source:e:\pc\documents\carthographers\lib3d.c
+	"Lib3d.h"
+
+1777111818 source:e:\pc\documents\carthographers\ui.c
+	"UI.h"
+
+1776715385 source:e:\pc\documents\carthographers\libcarthographie.c
+	"LibCarthographie.h"
+
+1777111817 source:e:\pc\documents\carthographers\main.c
+	"LibCarthographie.h"
+	"Lib3d.h"
+	"GameManager.h"
+	"UI.h"
+
+1777111747 e:\pc\documents\carthographers\external\raylib\include\rlgl.h
+	<stdbool.h>
+	<OpenGL/gl.h>
+	<OpenGL/glext.h>
+	<GL/gl.h>
+	"external/glad.h"
+	<GLES3/gl3.h>
+	<GLES2/gl2ext.h>
+	"external/glad_gles2.h"
+	<GLES2/gl2.h>
+	<GLES2/gl2ext.h>
+	<stdlib.h>
+	<string.h>
+	<math.h>
+
+1777111747 e:\pc\documents\carthographers\external\raylib\include\raymath.h
+	<math.h>
+

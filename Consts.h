@@ -5,7 +5,11 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 
+/*Alias et macro de compatibilités code_block*/
+#define Sleep _sleep
 
+#define max(x, y) (x > y ? x :y)
+#define min(x,y) (x<y ? x : y)
 
 
 
@@ -230,7 +234,7 @@
 
 #define VILLAGE_IMAGE_SIZE 1000
 #define  VILLAGE_IMAGE_SCALE 100
-#define HOUSE_TRESHOLD 0.7f 
+#define HOUSE_TRESHOLD 0.7f
 #define HOUSE_DIVIDER 5
 #define HOUSE_SIZE 0.05f
 #define RED_POWER 1.0f
