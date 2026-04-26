@@ -598,7 +598,7 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 		maxBounds.width = recSize.x + 40;
 		maxBounds.height = recSize.y + 20;
 
-		DrawRectangleRoundedStrokeEx(maxBounds, 0.3f, 10, 2, Fade(BLACK, 0.65f), BLACK);
+		DrawRectangleRoundedStrokeEx(maxBounds, 0.3f, 10, 2, ColorAlpha(BLACK, 0.65f), BLACK);
 
 		DrawTextWrappedEx(TOOLTIP_FONT, desc, (Rectangle) { maxBounds.x + 20, maxBounds.y + 10, maxBounds.width - 40, 0 }, 20, 1, WHITE, BLACK);
 

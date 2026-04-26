@@ -28,6 +28,7 @@
 
 /*OPTIONS DE DEBOGAGE */
 #define cc// DEBUG_FORET : affiche la noisemap source de foret
+#define co // DEBUG_UI_FIN : permet de sauter les 3 premières saisons pour tester directement la fin de partie et le classement des joueurs
 
 
 /*****MACROS****/
@@ -118,7 +119,7 @@
 #define PLAYER_PANEL_FS 30
 
 #define CARD_FONT gs->assets.fonts[FONT_GRENZE_GOTISCH_B]
-
+#define NOMBRE_TOTAL_ASSETS  29
 
 
 /******************************** GameManager.h ********************************/

@@ -103,7 +103,8 @@ const ExploreCard* expCards[NUM_CARDS] = { &FarmLands, &ForgottenForest, &Hamlet
 
 
 
-void SetupGame(GameState* gs) { 	// Initialisation du jeu
+// Initialise l'état du jeu, crée les joueurs, mélange le deck et réinitialise les variables
+void SetupGame(GameState* gs) {
 	if (gs->playerNumber == 0) {
 		gs->players = malloc(sizeof(PlayerState));
 		strcpy(gs->players[gs->playerNumber++].name, "Teapot-418");
@@ -114,28 +115,25 @@ void SetupGame(GameState* gs) { 	// Initialisation du jeu
 	FeuilleCarte temp;
 	initCarte2(temp, TRUE, TRUE);
 
-	// Initialiser la Map et les stats pour chaque joueur
 	for (int i = 0; i < gs->playerNumber; i++) {
 		copyCarte(temp, gs->players[i].map);
 		gs->players[i].score = 0;
 		gs->players[i].coinCount = 0;
 	}
 
-	// Initialiser les cartes Scores
 	InitScoringCards(gs);
 
-	// Mélange des cartes, Définition des packets, Saison, etc
 	for (int i = 0; i < 13; i++) {
 		gs->exploreDeck[i] = expCards[i];
 	}
 	InitDeck(gs);
 
-	// Initialisation du 1er tour
 	gs->currentSeason = 0;
 	gs->currentTime = 0;
 
 }
 
+// Affiche les informations de débogage du jeu (édits, deck)
 void DebugGameStats(GameState* gs) {
 	printf("\n\n\n");
 	printf("\n\nEdits :\n");
@@ -146,11 +144,12 @@ void DebugGameStats(GameState* gs) {
 
 	printf("\n\nExplore Deck (size = %d) :\n", gs->deckSize);
 	for (int i = 0; i < gs->deckSize; i++) {
-		printf("card %d : %s, isEnemy = %d;\n", i, gs->exploreDeck[i]->name, gs->exploreDeck[i]->isEnemy);
+		printf("card %d : %s, isEnemy = %d, Time = %d;\n", i, gs->exploreDeck[i]->name, gs->exploreDeck[i]->isEnemy, gs->exploreDeck[i]->time);
 	}
 
 }
 
+// Affiche le classement final des joueurs et termine le jeu
 void EndGame(GameState* gs, int nbPlayers) {
 	printf("\n\n\n\nFin de la partie ! \n\n\n\n");
 	printf("Joueurs et scores :\n\n");
@@ -165,7 +164,7 @@ void EndGame(GameState* gs, int nbPlayers) {
 
 
 
-// ???
+// Calcule le total des points d'une feuille de carte pour un ensemble de cartes de scoring
 int CalcPointsFromCards(FeuilleCarte f, ScoringCard *cards, int numberOfCards) {
 	int somme =0;
 	for (int i = 0; i < numberOfCards; i++) {
@@ -174,10 +173,19 @@ int CalcPointsFromCards(FeuilleCarte f, ScoringCard *cards, int numberOfCards) {
 	return somme;
 }
 
+// Réinitialise le deck d'exploration en supprimant les cartes ennemies jouées et en ajoute une nouvelle
 void InitDeck(GameState* gs) {
-	// Setup du deck
+	printf("\nDeck Actuel :\n");
+	for (int i = 0; i < gs->deckSize; i++) {
+		printf("\n %d : %s", i + 1, gs->exploreDeck[i]->name);
+	}
+
+	for (int i = 0; i < gs->exploreIndex; i++) {
+		if (gs->exploreDeck[i]->isEnemy) gs->exploreDeck[i] = NULL;
+	}
+
 	int j = 0;
-	for (int i = 0; i < gs->deckSize; i++) { //Remettre les NULL au fond du Deck
+	for (int i = 0; i < gs->deckSize; i++) {
 		if (gs->exploreDeck[i] == NULL) {
 			gs->exploreDeck[i] = gs->exploreDeck[16 - j];
 			gs->exploreDeck[16 - j] = NULL;
@@ -189,17 +197,17 @@ void InitDeck(GameState* gs) {
 	gs->exploreDeck[gs->deckSize] = expCards[randInt(13, 20)];
 	gs->deckSize++;
 
-	
-	//Melanger le deck :
+
 	ShakeDeck(gs);
 
-	// display Deck for debug
+	printf("\nDeck after : \n");
 	for (int i = 0; i < gs->deckSize; i++) {
 		printf("Carte %d = %s\n", i, gs->exploreDeck[i]->name);
 	}
 
 }
 
+// Mélange aléatoirement le deck d'exploration
 void ShakeDeck(GameState* gs) {
 	const ExploreCard* temp;
 	for (int k = 0; k < 100; k++) {
@@ -211,6 +219,7 @@ void ShakeDeck(GameState* gs) {
 	}
 }
 
+// Initialise les 4 cartes de scoring aléatoires de la partie (une par type)
 void InitScoringCards(GameState* gs) {
 	const ScoringCard* temp[4];
 	int usedEdit[4] = { 0, 0, 0, 0 };
@@ -228,13 +237,14 @@ void InitScoringCards(GameState* gs) {
 	}
 }
 
+// Lance le jeu en démarrant la première saison
 void StartGame(GameState* gs, Camera3D camera) {
 	printf("\n\n\n\nLancement du jeu !\n\n\n\n");
 	ModelList models = loadModels();
 	Season(gs, camera, models);
 }
 
-// Saisons
+// Exécute une saison complète avec tous les tours jusqu'à la limite de temps, génère les seeds en parallèle
 void Season(GameState* gs, Camera3D camera, ModelList models) {
 	Model mountains[NOMBREMONTAGNE];
 	int mountainSeed[2] = { randInt(0, 100), randInt(0, 100) };
@@ -242,7 +252,6 @@ void Season(GameState* gs, Camera3D camera, ModelList models) {
 	clock_t begin = clock();
 	printf("generating seed data\n");
 	Seed s = generateSeed(mountainSeed);
-	//prégen de la seed de la saison suivante en parallèle pour gagner du temps
 	Seed* s2;
 	pthread_t thread;
 	pthread_create(&thread, NULL, generateSeedThread, mountainSeed2);
@@ -261,10 +270,11 @@ void Season(GameState* gs, Camera3D camera, ModelList models) {
 	NextSeason(gs, camera, models, S2, mountainSeed2);
 }
 
+// Exécute une saison avec une seed déjà générée
 void Season2(GameState* gs, Camera3D camera, ModelList models, Seed s, int mountainSeed[2]) {
 	Model mountains[NOMBREMONTAGNE];
 	int mountainSeed2[2] = { randInt(0, 100), randInt(0, 100) };
-	
+
 	Seed* s2;
 	pthread_t thread;
 	pthread_create(&thread, NULL, generateSeedThread, mountainSeed2);	//prégen de la seed de la saison suivante en parallèle pour gagner du temps
@@ -283,12 +293,12 @@ void Season2(GameState* gs, Camera3D camera, ModelList models, Seed s, int mount
 
 
 
+// Termine la saison en calculant les points et passe à la saison suivante ou à l'écran final
 void NextSeason(GameState *gs, Camera3D camera, ModelList models, Seed s2, int mountainSeed[2]) {
 	InitDeck(gs);
 	gs->exploreIndex = 0;
 	
 
-	// calculs des points
 	for (int p = 0; p < gs->playerNumber; p++) {
 		PlayerState* ps = &gs->players[p];
 		printf("\n\nCalcul des points pour %s :\n", ps->name);
@@ -305,6 +315,9 @@ void NextSeason(GameState *gs, Camera3D camera, ModelList models, Seed s2, int m
 
 	}
 
+#ifdef DEBUG_UI_FIN
+	if (++gs->currentSeason < 1) Season2(gs, camera, models, s2, mountainSeed);
+#else
 	if (++gs->currentSeason < 4) Season2(gs, camera, models, s2, mountainSeed);
 	else GUIdisplayFinal(*gs, mountainSeed, s2, models, camera);
 }
@@ -317,8 +330,8 @@ const ExploreCard* Turn(GameState* gs, int* isRuin, Camera3D *camera, int mounta
 		gs->playerIndex = p;
 		PlayerState* ps = &gs->players[p];
 		Model mountains[NOMBREMONTAGNE];
-		
-		
+
+
 		generateMountainsModels(mountains, gs->players[(p + card->rotation + gs->playerNumber) % gs->playerNumber].map, mountainSeed);
 		printf("--- Tour de %s %d/%d---\n", ps->name, p + 1, gs->playerNumber);
 		GUIPlacementCard(gs, gs->players[(p + card->rotation + gs->playerNumber) % gs->playerNumber].map, card, ps->score, (*isRuin && !card->isEnemy), &ps->coinCount, camera, mountains, s, models);	// p + card->rotation + gs->playerNumber car (-1 % playerNumber) renvoie -1
@@ -342,3 +355,19 @@ const ExploreCard* NextExploreCard(GameState* gs, int *isRuin) {
 
 
 
+// Trie les joueurs par score décroissant
+void sort_players_by_score(GameState* gs) {
+	PlayerState* arr = gs->players;
+	int n = gs->playerNumber;
+
+	for (int i = 1; i < n; i++) {
+		PlayerState key = arr[i];
+		int j = i;
+
+		while (j > 0 && arr[j - 1].score < key.score) {
+			arr[j] = arr[j - 1];
+			j--;
+		}
+		arr[j] = key;
+	}
+}

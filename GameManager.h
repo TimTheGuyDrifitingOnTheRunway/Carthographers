@@ -13,6 +13,8 @@ void ShakeDeck(GameState* gs);
 void InitScoringCards(GameState* gs);
 void EndGame(GameState* gs, int nbPlayers);
 
+void sort_players_by_score(GameState* gs);
+
 
 void StartGame(GameState* gs, Camera3D camera);
 // Saison 

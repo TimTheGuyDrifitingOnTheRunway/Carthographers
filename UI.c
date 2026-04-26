@@ -20,7 +20,11 @@ ScreenID RunMenu(GameState* gs) {
 
 	Rectangle* btns[] = { &addBtn.bounds, &ruleBtn.bounds, &keyBtn.bounds, &startBtn.bounds, &stopBtn.bounds };
 
-	while (!WindowShouldClose() && !startBtn.validated && !addPlayer && !stopBtn.validated && !keyBtn.validated && !ruleBtn.validated) {
+	while (!WindowShouldClose() && !(startBtn.validated && (gs->loadCtx->avancement >= NOMBRE_TOTAL_ASSETS)) && !addPlayer && !stopBtn.validated && !keyBtn.validated && !ruleBtn.validated) {
+
+		startBtn.label = gs->loadCtx->avancement >= NOMBRE_TOTAL_ASSETS  ? "Jouer !" : "Chargement en cours";
+		startBtn.color1 = gs->loadCtx->avancement >= NOMBRE_TOTAL_ASSETS ? LIME : DARKGRAY;
+
 		midX = GetScreenWidth() / 2;
 		midY = GetScreenHeight() / 2;
 
@@ -32,7 +36,7 @@ ScreenID RunMenu(GameState* gs) {
 		addBtn.hovered = CheckCollisionPointRec(GetMousePosition(), addBtn.bounds);
 		ruleBtn.hovered = CheckCollisionPointRec(GetMousePosition(), ruleBtn.bounds);
 		keyBtn.hovered = CheckCollisionPointRec(GetMousePosition(), keyBtn.bounds);
-		startBtn.hovered = CheckCollisionPointRec(GetMousePosition(), startBtn.bounds);
+		startBtn.hovered = CheckCollisionPointRec(GetMousePosition(), startBtn.bounds)&&(gs->loadCtx->avancement >= NOMBRE_TOTAL_ASSETS);
 		stopBtn.hovered = CheckCollisionPointRec(GetMousePosition(), stopBtn.bounds);
 
 		if (startBtn.hovered || addBtn.hovered || stopBtn.hovered || ruleBtn.hovered || keyBtn.hovered) {
@@ -72,7 +76,7 @@ ScreenID RunMenu(GameState* gs) {
 
 		LoadAssetToVRAM(gs);
 	}
-	if (startBtn.validated) {
+	if (startBtn.validated && (gs->loadCtx->avancement >= NOMBRE_TOTAL_ASSETS)) {
 		printf("\n\nBouton Start Validé");
 		return SCREEN_GAME;
 	}
@@ -712,6 +716,171 @@ void LoadAssetToVRAM(GameState* gs) {
 
 	pthread_mutex_unlock(&gs->loadCtx->mutex);
 
+			if (dx * dx + dy * dy > rad2) {
+				Color pixelColor = GetImageColor(*image, i, j);
+				pixelColor.a = 0; // On rend le pixel totalement transparent
+				ImageDrawPixel(image, i, j, pixelColor);
+			}
+		}
+	}
+}
+
+
+void* LoadAssetsWorker(void* arg) {
+	LoadContext* ctx = (LoadContext*)arg;
+	double start = GetTime();
+	for (int i = 0; i < NUM_CARDS; i++) {
+		const char* path = TextFormat("Assets/Images/Game Card/%s.png", expCards[i]->name);
+		Image img = LoadImage(path);
+		ImageRoundedCorner(&img, 0.11f);		// 0.11 : ratio entre la largeur et l'arrondi pour les cartes de poker, format des cartes de cartographers
+
+		pthread_mutex_lock(&ctx->mutex);
+		ctx->cardsRAM[i] = img;
+		ctx->cardsLoadedRAM++;
+		pthread_mutex_unlock(&ctx->mutex);
+	}
+
+	for (int i = 0; i < NUM_SEASONS; i++) {
+		const char* path = TextFormat("Assets/Images/Season/%s.png", seasons[i]->path);
+		Image img = LoadImage(path);
+		ImageRoundedCorner(&img, 0.11f);
+
+		pthread_mutex_lock(&ctx->mutex);
+		ctx->seasonsRAM[i] = img;
+		ctx->seasonsLoadedRAM++;
+		pthread_mutex_unlock(&ctx->mutex);
+	}
+
+	for (int i = 0; i < NUM_EDITS; i++) {
+		const char* path = TextFormat("Assets/Images/Letter Scroll/%c.png", 'A' + i);
+		Image img = LoadImage(path);
+		Image img2 = ImageCopy(img);
+		ImageFormat(&img2, PIXELFORMAT_UNCOMPRESSED_GRAY_ALPHA);
+
+		pthread_mutex_lock(&ctx->mutex);
+		ctx->editsRAM[i] = img;
+		ctx->editsRAM[i + NUM_EDITS] = img2;
+		ctx->editsLoadedRAM++;
+		pthread_mutex_unlock(&ctx->mutex);
+	}
+	printf("\n\n Temps pris au total : %fs", (float)(GetTime() - start));
+	return NULL;
+}
+
+void LoadAssetToVRAM(GameState* gs) {
+	//printf("\nLoadAssetToVRAM appelé, %d %d cards", gs->loadCtx->cardsLoadedRAM, gs->loadCtx->cardsLoadedVRAM);
+	pthread_mutex_lock(&gs->loadCtx->mutex);
+	if (gs->loadCtx->cardsLoadedRAM > gs->loadCtx->cardsLoadedVRAM) {
+		int i = gs->loadCtx->cardsLoadedVRAM;
+		gs->assets.cardImages[i] = LoadTextureFromImage(gs->loadCtx->cardsRAM[i]);
+		gs->loadCtx->cardsLoadedVRAM++;
+		//printf("\nChargement de la carte %d en VRAM, %d, %d\n", i);
+		gs->loadCtx->avancement++;
+
+		UnloadImage(gs->loadCtx->cardsRAM[i]);		// Libération de l'espace mémoire
+	}
+	else if(gs->loadCtx->seasonsLoadedRAM > gs->loadCtx->seasonsLoadedVRAM) {
+		int i = gs->loadCtx->seasonsLoadedVRAM;
+		gs->assets.seasonImages[i] = LoadTextureFromImage(gs->loadCtx->seasonsRAM[i]);
+		gs->loadCtx->seasonsLoadedVRAM++;
+		//printf("\nChargement de la saison %d en VRAM\n", i);
+		UnloadImage(gs->loadCtx->seasonsRAM[i]);
+		gs->loadCtx->avancement++;
+	}
+	else if(gs->loadCtx->editsLoadedRAM > gs->loadCtx->editsLoadedVRAM) {
+		int i = gs->loadCtx->editsLoadedVRAM;
+		gs->assets.letterScrollsImage[i] = LoadTextureFromImage(gs->loadCtx->editsRAM[i]);
+		gs->assets.letterScrollsImage[i + NUM_EDITS] = LoadTextureFromImage(gs->loadCtx->editsRAM[i + NUM_EDITS]);
+		gs->loadCtx->editsLoadedVRAM++;
+		//printf("\nChargement de l'edit %d en VRAM\n", i);
+		UnloadImage(gs->loadCtx->editsRAM[i]);
+		UnloadImage(gs->loadCtx->editsRAM[i + NUM_EDITS]);
+		gs->loadCtx->avancement++;
+	}
+
+	pthread_mutex_unlock(&gs->loadCtx->mutex);
+
+}
+
+void DebugAssetViewer(GameState* gs) {
+	int currentTab = 0; // 0 = Cartes, 1 = Saisons, 2 = Edits
+	int scrollY = 0;
+
+	// Pour ne pas que les images s'affichent en taille réelle et sortent de l'écran, on va les redimensionner visuellement à l'affichage (scale).
+	float scale = 0.2f;
+
+	while (!WindowShouldClose()) {
+		// --- CONTRÔLES ---
+		if (IsKeyPressed(KEY_RIGHT)) currentTab = (currentTab + 1) % 3;
+		if (IsKeyPressed(KEY_LEFT)) currentTab = (currentTab + 2) % 3;
+
+		// Molette de la souris pour scroller si tu as beaucoup de cartes
+		scrollY += GetMouseWheelMove() * 40;
+		if (scrollY > 0) scrollY = 0; // Bloque le scroll vers le haut
+
+		// Quitter le test pour lancer le vrai jeu
+		if (IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_SPACE)) break;
+
+		// --- DESSIN ---
+		BeginDrawing();
+		ClearBackground(GRAY);
+
+		// Header d'instructions
+		DrawRectangle(0, 0, GetScreenWidth(), 60, LIGHTGRAY);
+		DrawText("TEST DES IMAGES (Flèches G/D pour changer d'onglet, Molette pour scroller)", 10, 10, 20, DARKGRAY);
+		DrawText("Appuyez sur ENTREE pour lancer le jeu normal", 10, 35, 20, MAROON);
+
+		int startX = 20;
+		int startY = 80 + scrollY;
+
+		// Affichage dynamique selon l'onglet
+		if (currentTab == 0) {
+			DrawText("ONGLET 1 : Cartes d'Exploration (Arrondies)", startX, startY, 20, BLACK);
+			startY += 40;
+
+			// Affichage en grille (ex: 5 cartes par ligne)
+			for (int i = 0; i < 21; i++) { // NUM_CARDS
+				Texture2D tex = gs->assets.cardImages[i];
+				if (tex.id != 0) {							// Si la texture est bien chargée
+					int col = i % 5;
+					int row = i / 5;
+
+					int drawX = startX + col * (tex.width * scale + 20);
+					int drawY = startY + row * (tex.height * scale + 40);
+
+					DrawTextureEx(tex, (Vector2) { drawX, drawY }, 0.0f, scale, WHITE);
+					DrawText(TextFormat("ID: %d", i), drawX, drawY - 20, 15, GRAY);
+				}
+			}
+		}
+		else if (currentTab == 1) {
+			DrawText("ONGLET 2 : Saisons (Arrondies)", startX, startY, 20, BLACK);
+			startY += 40;
+			for (int i = 0; i < 4; i++) {					// NUM_SEASONS
+				Texture2D tex = gs->assets.seasonImages[i];
+				if (tex.id != 0) {
+					DrawTextureEx(tex, (Vector2) { startX + i * (tex.width * scale + 20), startY }, 0.0f, scale, WHITE);
+				}
+			}
+		}
+		else if (currentTab == 2) {
+			DrawText("ONGLET 3 : Edits (Bruts, pas d'arrondi ici)", startX, startY, 20, BLACK);
+			startY += 40;
+			for (int i = 0; i < NUM_EDITS * 2; i++) {		// NUM_EDITS
+				Texture2D tex = gs->assets.letterScrollsImage[i];
+				if (tex.id != 0) {
+					DrawTextureEx(tex, (Vector2) { startX + i * (tex.width + 20), startY }, 0.0f, 1, WHITE);
+					//DrawTexture(tex, startX + i * (tex.width + 20), startY, WHITE);
+				}
+				else {
+					printf("Edit %d non chargé, ", i);
+				}
+			}
+			printf("\n");
+		}
+
+		EndDrawing();
+	}
 }
 
 void DebugAssetViewer(GameState* gs) {

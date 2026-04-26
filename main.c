@@ -5,7 +5,6 @@
 #include "GameManager.h"
 #include "UI.h"
 
-void sort_players_by_score(GameState* gs);
 
 int main()
 {
@@ -309,6 +308,7 @@ void sort_players_by_score(GameState* gs) {
 		}
 		arr[j] = key;
 	}
+	CloseWindow();
 }
 
 void EndProgram(GameState* gs) {
