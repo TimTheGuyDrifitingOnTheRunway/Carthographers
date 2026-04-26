@@ -24,6 +24,7 @@
 
 /*OPTIONS DE DEBOGAGE */
 #define cc// DEBUG_FORET : affiche la noisemap source de foret
+#define co // DEBUG_UI_FIN : permet de sauter les 3 premières saisons pour tester directement la fin de partie et le classement des joueurs
 
 
 /*****MACROS****/
