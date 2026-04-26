@@ -7,13 +7,16 @@ ScreenID RunMenu(GameState* gs) {
 	int midY = 0;
 	int posY = GetScreenHeight() / 20 + 30 + TITLE_FS + 20;
 
+	char play[12] = "chargement";
+	
+	
 	bool addPlayer = 0;
 	//char tmppl[33] = "Limite de 100 personnes atteinte";	int tmpplSize = 70;		// tmppl = too many people
 	Button addBtn = { .color1 = SKYBLUE, .color2 = BLACK, .label = "+ Ajouter un joueur", .labelFont = MAIN_BTN_FONT, .labelColor = BLACK, .fontSize = MAIN_BUTTON_FS, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = (Rectangle){ midX - MAIN_MENU_BTN_WIDTH / 2, posY + 30, MAIN_MENU_BTN_WIDTH - 50, MAIN_BUTTON_FS + 10} };
 	Button ruleBtn = { .color1 = GOLD, .color2 = BLACK, .label = "Règles du Jeu", .labelFont = MAIN_BTN_FONT, .labelColor = BLACK, .fontSize = MAIN_BUTTON_FS, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = (Rectangle){0, 0, MAIN_MENU_BTN_WIDTH - 50, MAIN_BUTTON_FS + 10} };
 	Button keyBtn = { .color1 = BROWN, .color2 = BLACK, .label = "Commandes du jeu", .labelFont = MAIN_BTN_FONT, .labelColor = BLACK, .fontSize = MAIN_BUTTON_FS, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = (Rectangle){0,0, MAIN_MENU_BTN_WIDTH - 50, MAIN_BUTTON_FS + 10} };
 
-	Button startBtn = { .color1 = LIME, .color2 = BLACK, .label = "Jouer !", .labelFont = MAIN_BTN_FONT, .labelColor = BLACK, .fontSize = MAIN_BUTTON_FS + 10, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = (Rectangle){0, 0, MAIN_MENU_BTN_WIDTH - 50, MAIN_BUTTON_FS + 25} };
+	Button startBtn = { .color1 = LIME, .color2 = BLACK, .label = play, .labelFont = MAIN_BTN_FONT, .labelColor = BLACK, .fontSize = MAIN_BUTTON_FS + 10, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = (Rectangle){0, 0, MAIN_MENU_BTN_WIDTH - 50, MAIN_BUTTON_FS + 25} };
 	Button stopBtn = { .color1 = RED, .color2 = BLACK, .label = "Quitter le jeu", .labelFont = MAIN_BTN_FONT, .labelColor = BLACK, .fontSize = (int)MAIN_BUTTON_FS * 0.8f, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = (Rectangle){0, 0, MAIN_MENU_BTN_WIDTH * 0.6f, MAIN_BUTTON_FS } };
 
 	
@@ -62,7 +65,7 @@ ScreenID RunMenu(GameState* gs) {
 		if (addBtn.validated) addPlayer = 1;
 
 		// afficher le nombre de joueurs
-		DrawStrokeTextEx(gs->assets.fonts[FONT_FREDOKA_CM], TextFormat("Il y a %s%d joueur%c", gs->playerNumber > 10 ? "déjà " : "", gs->playerNumber, MAX_PLAYER, gs->playerNumber > 2 ? 's' : ' '), addBtn.bounds.x, addBtn.bounds.y + addBtn.bounds.height + 5, 20,NORMAL_SPACING, WHITE, BLACK, 1);
+		DrawStrokeTextEx(gs->assets.fonts[FONT_FREDOKA_CM], TextFormat("Il y a %s%d joueur%c", gs->playerNumber > 10 ? "déjà " : "", gs->playerNumber, gs->playerNumber > 1 ? 's' : ' '), addBtn.bounds.x, addBtn.bounds.y + addBtn.bounds.height + 5, 20,NORMAL_SPACING, WHITE, BLACK, 1);
 
 		// Ajoute un bouton pour quitter le Jeu
 		DrawButton(&stopBtn);
@@ -694,87 +697,6 @@ void LoadAssetToVRAM(GameState* gs) {
 		gs->assets.cardImages[i] = LoadTextureFromImage(gs->loadCtx->cardsRAM[i]);
 		gs->loadCtx->cardsLoadedVRAM++;
 		//printf("\nChargement de la carte %d en VRAM, %d, %d\n", i);
-
-		UnloadImage(gs->loadCtx->cardsRAM[i]);		// Libération de l'espace mémoire
-	}
-	else if(gs->loadCtx->seasonsLoadedRAM > gs->loadCtx->seasonsLoadedVRAM) {
-		int i = gs->loadCtx->seasonsLoadedVRAM;
-		gs->assets.seasonImages[i] = LoadTextureFromImage(gs->loadCtx->seasonsRAM[i]);
-		gs->loadCtx->seasonsLoadedVRAM++;
-		//printf("\nChargement de la saison %d en VRAM\n", i);
-		UnloadImage(gs->loadCtx->seasonsRAM[i]);
-	}
-	else if(gs->loadCtx->editsLoadedRAM > gs->loadCtx->editsLoadedVRAM) {
-		int i = gs->loadCtx->editsLoadedVRAM;
-		gs->assets.letterScrollsImage[i] = LoadTextureFromImage(gs->loadCtx->editsRAM[i]);
-		gs->assets.letterScrollsImage[i + NUM_EDITS] = LoadTextureFromImage(gs->loadCtx->editsRAM[i + NUM_EDITS]);
-		gs->loadCtx->editsLoadedVRAM++;
-		//printf("\nChargement de l'edit %d en VRAM\n", i);
-		UnloadImage(gs->loadCtx->editsRAM[i]);
-		UnloadImage(gs->loadCtx->editsRAM[i + NUM_EDITS]);
-	}
-
-	pthread_mutex_unlock(&gs->loadCtx->mutex);
-
-			if (dx * dx + dy * dy > rad2) {
-				Color pixelColor = GetImageColor(*image, i, j);
-				pixelColor.a = 0; // On rend le pixel totalement transparent
-				ImageDrawPixel(image, i, j, pixelColor);
-			}
-		}
-	}
-}
-
-
-void* LoadAssetsWorker(void* arg) {
-	LoadContext* ctx = (LoadContext*)arg;
-	double start = GetTime();
-	for (int i = 0; i < NUM_CARDS; i++) {
-		const char* path = TextFormat("Assets/Images/Game Card/%s.png", expCards[i]->name);
-		Image img = LoadImage(path);
-		ImageRoundedCorner(&img, 0.11f);		// 0.11 : ratio entre la largeur et l'arrondi pour les cartes de poker, format des cartes de cartographers
-
-		pthread_mutex_lock(&ctx->mutex);
-		ctx->cardsRAM[i] = img;
-		ctx->cardsLoadedRAM++;
-		pthread_mutex_unlock(&ctx->mutex);
-	}
-
-	for (int i = 0; i < NUM_SEASONS; i++) {
-		const char* path = TextFormat("Assets/Images/Season/%s.png", seasons[i]->path);
-		Image img = LoadImage(path);
-		ImageRoundedCorner(&img, 0.11f);
-
-		pthread_mutex_lock(&ctx->mutex);
-		ctx->seasonsRAM[i] = img;
-		ctx->seasonsLoadedRAM++;
-		pthread_mutex_unlock(&ctx->mutex);
-	}
-
-	for (int i = 0; i < NUM_EDITS; i++) {
-		const char* path = TextFormat("Assets/Images/Letter Scroll/%c.png", 'A' + i);
-		Image img = LoadImage(path);
-		Image img2 = ImageCopy(img);
-		ImageFormat(&img2, PIXELFORMAT_UNCOMPRESSED_GRAY_ALPHA);
-
-		pthread_mutex_lock(&ctx->mutex);
-		ctx->editsRAM[i] = img;
-		ctx->editsRAM[i + NUM_EDITS] = img2;
-		ctx->editsLoadedRAM++;
-		pthread_mutex_unlock(&ctx->mutex);
-	}
-	printf("\n\n Temps pris au total : %fs", (float)(GetTime() - start));
-	return NULL;
-}
-
-void LoadAssetToVRAM(GameState* gs) {
-	//printf("\nLoadAssetToVRAM appelé, %d %d cards", gs->loadCtx->cardsLoadedRAM, gs->loadCtx->cardsLoadedVRAM);
-	pthread_mutex_lock(&gs->loadCtx->mutex);
-	if (gs->loadCtx->cardsLoadedRAM > gs->loadCtx->cardsLoadedVRAM) {
-		int i = gs->loadCtx->cardsLoadedVRAM;
-		gs->assets.cardImages[i] = LoadTextureFromImage(gs->loadCtx->cardsRAM[i]);
-		gs->loadCtx->cardsLoadedVRAM++;
-		//printf("\nChargement de la carte %d en VRAM, %d, %d\n", i);
 		gs->loadCtx->avancement++;
 
 		UnloadImage(gs->loadCtx->cardsRAM[i]);		// Libération de l'espace mémoire
@@ -883,83 +805,28 @@ void DebugAssetViewer(GameState* gs) {
 	}
 }
 
-void DebugAssetViewer(GameState* gs) {
-	int currentTab = 0; // 0 = Cartes, 1 = Saisons, 2 = Edits
-	int scrollY = 0;
+void drawFinalUi(GameState *gs) {
+	int y2 = 20;
+	//printf("\nPosition : %d,%d", state->pos.x, state->pos.y);
+	int midX = GetScreenWidth() / 2;
+	int midY = GetScreenHeight() / 2;
+	Vector2 playerPanelSize = MeasureTextEx(PLAYER_PANEL_FONT, gs->players[gs->playerIndex].name, PLAYER_PANEL_FS + 10, NORMAL_SPACING);
+	Rectangle playerPanel = (Rectangle){ GetScreenWidth() - 50 - ( max(PLAYER_REC_WIDTH, playerPanelSize.x - 20)), midY - PLAYER_REC_HEIGHT / 2, playerPanelSize.x + PLAYER_REC_HEIGHT, PLAYER_REC_HEIGHT };
+	Rectangle editsRec = (Rectangle){ midX - 40, -60, 80, 180 };
+	
+	Rectangle editRects;
+	
+	editRects.width = MeasureTextEx(EDITS_FONT, "FIN DU JEUX", EDITS_FS*2, NORMAL_SPACING).x;
+	editRects.height = editsRec.height / 2;
+	editsRec.width += editRects.width;
+	editsRec.x -= editRects.width / 2;
+	editRects.x = editsRec.x + (editsRec.width - editRects.width) / 2;
+	editRects.y = 0;
 
-	// Pour ne pas que les images s'affichent en taille réelle et sortent de l'écran, on va les redimensionner visuellement à l'affichage (scale).
-	float scale = 0.2f;
-
-	while (!WindowShouldClose()) {
-		// --- CONTRÔLES ---
-		if (IsKeyPressed(KEY_RIGHT)) currentTab = (currentTab + 1) % 3;
-		if (IsKeyPressed(KEY_LEFT)) currentTab = (currentTab + 2) % 3;
-
-		// Molette de la souris pour scroller si tu as beaucoup de cartes
-		scrollY += GetMouseWheelMove() * 40;
-		if (scrollY > 0) scrollY = 0; // Bloque le scroll vers le haut
-
-		// Quitter le test pour lancer le vrai jeu
-		if (IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_SPACE)) break;
-
-		// --- DESSIN ---
-		BeginDrawing();
-		ClearBackground(GRAY);
-
-		// Header d'instructions
-		DrawRectangle(0, 0, GetScreenWidth(), 60, LIGHTGRAY);
-		DrawText("TEST DES IMAGES (Flèches G/D pour changer d'onglet, Molette pour scroller)", 10, 10, 20, DARKGRAY);
-		DrawText("Appuyez sur ENTREE pour lancer le jeu normal", 10, 35, 20, MAROON);
-
-		int startX = 20;
-		int startY = 80 + scrollY;
-
-		// Affichage dynamique selon l'onglet
-		if (currentTab == 0) {
-			DrawText("ONGLET 1 : Cartes d'Exploration (Arrondies)", startX, startY, 20, BLACK);
-			startY += 40;
-
-			// Affichage en grille (ex: 5 cartes par ligne)
-			for (int i = 0; i < 21; i++) { // NUM_CARDS
-				Texture2D tex = gs->assets.cardImages[i];
-				if (tex.id != 0) {							// Si la texture est bien chargée
-					int col = i % 5;
-					int row = i / 5;
-
-					int drawX = startX + col * (tex.width * scale + 20);
-					int drawY = startY + row * (tex.height * scale + 40);
-
-					DrawTextureEx(tex, (Vector2) { drawX, drawY }, 0.0f, scale, WHITE);
-					DrawText(TextFormat("ID: %d", i), drawX, drawY - 20, 15, GRAY);
-				}
-			}
-		}
-		else if (currentTab == 1) {
-			DrawText("ONGLET 2 : Saisons (Arrondies)", startX, startY, 20, BLACK);
-			startY += 40;
-			for (int i = 0; i < 4; i++) {					// NUM_SEASONS
-				Texture2D tex = gs->assets.seasonImages[i];
-				if (tex.id != 0) {
-					DrawTextureEx(tex, (Vector2) { startX + i * (tex.width * scale + 20), startY }, 0.0f, scale, WHITE);
-				}
-			}
-		}
-		else if (currentTab == 2) {
-			DrawText("ONGLET 3 : Edits (Bruts, pas d'arrondi ici)", startX, startY, 20, BLACK);
-			startY += 40;
-			for (int i = 0; i < NUM_EDITS * 2; i++) {		// NUM_EDITS
-				Texture2D tex = gs->assets.letterScrollsImage[i];
-				if (tex.id != 0) {
-					DrawTextureEx(tex, (Vector2) { startX + i * (tex.width + 20), startY }, 0.0f, 1, WHITE);
-					//DrawTexture(tex, startX + i * (tex.width + 20), startY, WHITE);
-				}
-				else {
-					printf("Edit %d non chargé, ", i);
-				}
-			}
-			printf("\n");
-		}
-
-		EndDrawing();
-	}
+	DrawRectangleRoundedStrokeEx(playerPanel, .1f, 10, 3, LIGHTGRAY, DARKBROWN);
+	DrawStrokeTextEx(PLAYER_PANEL_FONT, gs->players[gs->playerIndex].name, playerPanel.x + 8, playerPanel.y + 5, PLAYER_PANEL_FS + 10, NORMAL_SPACING, WHITE, BLACK, 1);
+	DrawStrokeTextEx(PLAYER_PANEL_FONT, TextFormat("SCORE : %d", gs->players[gs->playerIndex].score), playerPanel.x + 8, playerPanel.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, NORMAL_SPACING, WHITE, BLACK, 1);
+	DrawStrokeTextEx(PLAYER_PANEL_FONT, TextFormat(gs->playerIndex+1 ==1 ? "CLASSEMENT :  %d er" : "CLASSEMENT :  %d eme", gs->playerIndex+1), playerPanel.x + 8, playerPanel.y + PLAYER_PANEL_FS*2 + y2, PLAYER_PANEL_FS, NORMAL_SPACING, WHITE, BLACK, 1);
+	DrawRectangleRoundedStrokeEx(editsRec, 1.f, 10, 2, BGCOLOR, GOLD);
+	DrawStrokeTextEx(gs->assets.fonts[FONT_GRENZE_GOTISCH_L], "FIN DU JEUX", editRects.x, editRects.y , EDITS_FS*2, NORMAL_SPACING, GOLD, BLACK, 1);
 }

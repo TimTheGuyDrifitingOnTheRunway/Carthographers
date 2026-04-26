@@ -261,8 +261,7 @@ void Season(GameState* gs, Camera3D camera, ModelList models) {
 	gs->currentTime = 0;
 	int isRuin = 0;
 	while (gs->currentTime < seasons[gs->currentSeason]->maxTime) {
-		const ExploreCard* card = Turn(gs, &isRuin, &camera, mountainSeed, models, s);
-		gs->currentTime += card->time;
+		Turn(gs, &isRuin, &camera, mountainSeed, models, s);
 	}
 	pthread_join(thread, (void**)&s2);
 	Seed S2 = *s2;
@@ -277,13 +276,12 @@ void Season2(GameState* gs, Camera3D camera, ModelList models, Seed s, int mount
 
 	Seed* s2;
 	pthread_t thread;
-	pthread_create(&thread, NULL, generateSeedThread, mountainSeed2);	//prégen de la seed de la saison suivante en parallèle pour gagner du temps
+	pthread_create(&thread, NULL, generateSeedThread, mountainSeed2);
 
 	gs->currentTime = 0;
 	int isRuin = 0;
 	while (gs->currentTime < seasons[gs->currentSeason]->maxTime) {
-		const ExploreCard* card = Turn(gs, &isRuin, &camera, mountainSeed, models, s);
-		gs->currentTime += card->time;
+		Turn(gs, &isRuin, &camera, mountainSeed, models, s);
 	}
 	pthread_join(thread, (void**)&s2);
 	Seed S2 = *s2;
@@ -297,7 +295,7 @@ void Season2(GameState* gs, Camera3D camera, ModelList models, Seed s, int mount
 void NextSeason(GameState *gs, Camera3D camera, ModelList models, Seed s2, int mountainSeed[2]) {
 	InitDeck(gs);
 	gs->exploreIndex = 0;
-	
+
 
 	for (int p = 0; p < gs->playerNumber; p++) {
 		PlayerState* ps = &gs->players[p];
@@ -319,12 +317,18 @@ void NextSeason(GameState *gs, Camera3D camera, ModelList models, Seed s2, int m
 	if (++gs->currentSeason < 1) Season2(gs, camera, models, s2, mountainSeed);
 #else
 	if (++gs->currentSeason < 4) Season2(gs, camera, models, s2, mountainSeed);
-	else GUIdisplayFinal(*gs, mountainSeed, s2, models, camera);
+	else {
+		sort_players_by_score(gs);
+		GUIdisplayFinal(*gs, mountainSeed, s2, models, camera);
+	}
+#endif
+
 }
 
-// Tour de jeu
+// Exécute un tour de jeu : révèle une carte et chaque joueur la place sur sa carte
 const ExploreCard* Turn(GameState* gs, int* isRuin, Camera3D *camera, int mountainSeed[2], ModelList models, Seed s) {
 	const ExploreCard* card = NextExploreCard(gs, isRuin);
+	gs->currentTime += card->time;
 
 	for (int p = 0; p < gs->playerNumber; p++) {
 		gs->playerIndex = p;
@@ -334,20 +338,20 @@ const ExploreCard* Turn(GameState* gs, int* isRuin, Camera3D *camera, int mounta
 
 		generateMountainsModels(mountains, gs->players[(p + card->rotation + gs->playerNumber) % gs->playerNumber].map, mountainSeed);
 		printf("--- Tour de %s %d/%d---\n", ps->name, p + 1, gs->playerNumber);
-		GUIPlacementCard(gs, gs->players[(p + card->rotation + gs->playerNumber) % gs->playerNumber].map, card, ps->score, (*isRuin && !card->isEnemy), &ps->coinCount, camera, mountains, s, models);	// p + card->rotation + gs->playerNumber car (-1 % playerNumber) renvoie -1
+		GUIPlacementCard(gs, gs->players[(p + card->rotation + gs->playerNumber) % gs->playerNumber].map, card, ps->score, (*isRuin && !card->isEnemy), &ps->coinCount, camera, mountains, s, models);
 	}
 
 	if (card->isEnemy) gs->deckSize--;
 	else *isRuin = 0;
 	return card;
 }
+// Récupère la prochaine carte à explorer en ignorant les ruines
 const ExploreCard* NextExploreCard(GameState* gs, int *isRuin) {
 	const ExploreCard* card;
 	do {
 		card = gs->exploreDeck[gs->exploreIndex];
 		if (card && card->isRuin) *isRuin = 1;
-		if (card && card->isEnemy) gs->exploreDeck[gs->exploreIndex] = NULL;
-		gs->exploreIndex += 1;
+		gs->exploreIndex++;
 		printf("Carte choisie %d, %d\n\n", gs->exploreIndex, *isRuin);
 	} while (card && card->isRuin);
 	return card;

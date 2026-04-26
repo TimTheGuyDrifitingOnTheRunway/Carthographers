@@ -28,7 +28,6 @@ float distPos(Position a, Position b);
 Position* emptyPositionList(int size);
 void copyPiece(const Piece pieceFrom, Piece pieceTo);
 void copyCarte(FeuilleCarte Ffrom, FeuilleCarte Fto);
-void copyFeuilleCarte(FeuilleCarte Ffrom, FeuilleCarte Fto);
 void flipShape(Piece shape);
 int compareShape(Piece shape1, Piece shape2);
 
@@ -111,6 +110,7 @@ int IsASquare(FeuilleCarte f, int x, int y, int length);
 int calcEnenmyPoints(FeuilleCarte f);
 
 int countSurroundedMountains(FeuilleCarte f);
+
 
 
 
