@@ -179,6 +179,8 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 
 void GUIdisplayFinal(GameState gs, int mountainSeed[2], Seed s, ModelList models, Camera3D camera) {
 	int i = 0;
+	
+	
     while (i < gs.playerNumber) {
 		gs.playerIndex = i;
 		PlayerState* ps = &gs.players[i];
@@ -212,9 +214,12 @@ void GUIdisplayFinal(GameState gs, int mountainSeed[2], Seed s, ModelList models
 			GUIdrawGrille();
 
 			EndMode3D();
+
+			drawFinalUi(&gs);
 			EndDrawing(); // Fin de l'affichage
 
 			if (IsKeyPressed(KEY_SPACE)) break;
+			
 		}
 
 		if (mountainPos) free(mountainPos);
@@ -473,7 +478,7 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 			tooltipTarget = i;
 	}
 
-	const char* seasonLabel = TextFormat("%s  %d/%d", seasons[gs->currentSeason]->name, gs->currentTime + state->card->time, seasons[gs->currentSeason]->maxTime);
+	const char* seasonLabel = TextFormat("%s  %d/%d", seasons[gs->currentSeason]->name, gs->currentTime, seasons[gs->currentSeason]->maxTime);
 
 	Vector2 seasonLabelSize = MeasureTextEx(SEASON_FONT, seasonLabel, EDITS_FS, NORMAL_SPACING);
 	Rectangle seasonRec = (Rectangle){ midX - seasonLabelSize.x / 2 - 40, editsRec.y + editsRec.height - 50, seasonLabelSize.x + 80, 100 };
@@ -523,22 +528,148 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 	int cardIndex = 0;
 	for (int i = 0; i < NUM_CARDS; i++) if (!strcmp(expCards[i]->name, cardName)) { cardIndex = i; break; }
 
+
+
 	// Affichage de la carte
 	Texture2D cardTex = gs->assets.cardImages[cardIndex];
-	int targetHeight = GetScreenHeight() * (openCard ? .7f : .4f);
+	int targetHeight = GetScreenHeight() * (openCard ? .6f : .4f);
 	float ratioCards = 1.4f;					// Format des cartes de Cartographers (ou poker)
 	int targetWidth = targetHeight / ratioCards;
-	Rectangle destRec = (Rectangle){ (openCard ? 30 : 50), midY - targetHeight / 2, targetWidth, targetHeight };
+	float histVSmainCardRatio = 3.0f / 5.0f;
+
+	int cardFS = 100 * (openCard ? .6f : .4f) * ((float)GetScreenHeight() / 1000.0f);
+	int typeFS = 40 * (openCard ? .6f : .4f) * ((float)GetScreenHeight() / 1000.0f);
+
+
+	int ruinOffsetX = 0;
+	int ruinOffsetY = 0;
+	int mainOffsetX = 0;
+
+	if (openCard) {
+		int historyCount = gs->exploreIndex - 1;
+		int histCardHeight = targetHeight * histVSmainCardRatio;
+		int histSpacing = histCardHeight + 10;
+
+		float maxScroll = (float)(historyCount * histSpacing) + midY - targetHeight/* / 2.0f*/;
+		historyScrollOffset += GetMouseWheelMove() * histSpacing * .4f;
+		if (historyScrollOffset < 0)			historyScrollOffset = 0;
+		if (historyScrollOffset > maxScroll)	historyScrollOffset = maxScroll;
+
+		if (historyCount > 0) {
+			int histCardHeight = targetHeight * histVSmainCardRatio;
+			int histCardWidth = histCardHeight / ratioCards;
+			int histSpacing = histCardHeight + 10;
+			int histX = 30 + ((targetWidth - histCardWidth) / 2);
+
+			int mainCardTop = midY - targetHeight / 2 + (int)historyScrollOffset;  // suit le scroll
+
+			// Scissor pour ne pas déborder sous la carte principale
+			BeginScissorMode(histX, 0, histCardWidth + 10, mainCardTop);
+
+			for (int i = historyCount - 1; i >= 0; i--) {
+				int posInColumn = (historyCount - 1 - i);
+				int cardY = mainCardTop - histSpacing - posInColumn * histSpacing;
+
+				if (cardY + histCardHeight < 0 || cardY > mainCardTop) continue;
+
+				const ExploreCard* hCard = gs->exploreDeck[i];
+				int hCardIndex = 0;
+				for (int j = 0; j < NUM_CARDS; j++) if (!strcmp(expCards[j]->name, hCard->name)) { hCardIndex = j; break; }
+
+				Texture2D hTex = gs->assets.cardImages[hCardIndex];
+				Rectangle hDest = (Rectangle){ (float)histX, (float)cardY, (float)histCardWidth, (float)histCardHeight };
+				Rectangle hSource = (Rectangle){ 0, 0, (float)hTex.width, (float)hTex.height };
+
+				float alpha = 0.6f + 0.4f * ((float)(i + 1) / historyCount);
+				DrawTexturePro(hTex, hSource, hDest, (Vector2) { 0 }, 0, ColorAlpha(WHITE, alpha));
+
+				// Nom
+				int hFS = (int)(cardFS * histVSmainCardRatio);
+				DrawStrokeTextEx(CARD_FONT, hCard->name,
+					hDest.x + histCardWidth / 2 - MeasureTextEx(CARD_FONT, hCard->name, hFS, NORMAL_SPACING).x / 2,
+					hDest.y + histCardHeight * 49 / 100,
+					hFS, NORMAL_SPACING, WHITE, BLACK, 2);
+
+				// Type
+				int hTypeFS = (int)(typeFS * histVSmainCardRatio);
+				char* hTypeLbl = hCard->isEnemy ? "AMBUSH" : "EXPLORE";
+				DrawStrokeTextEx(CARD_FONT, hTypeLbl,
+					hDest.x + histCardWidth / 2 - MeasureTextEx(CARD_FONT, hTypeLbl, hTypeFS, NORMAL_SPACING).x / 2,
+					hDest.y + histCardHeight * 95.5f / 100 - hTypeFS,
+					hTypeFS, NORMAL_SPACING, WHITE, BLACK, 1);
+			}
+
+			EndScissorMode();
+		}
+	}
+	else {
+		historyScrollOffset = 0.0f;
+	}
+
+
+	bool showRuin = state->isRuin && !state->card->isEnemy && !openCard;
+	if (showRuin) {
+		// Chercher la carte ruine dans exploreDeck avant la carte actuelle
+		const ExploreCard* ruinCard = NULL;
+		for (int i = gs->exploreIndex - 1; i >= 0; i--) {
+			if (gs->exploreDeck[i]->isRuin) { // ou toute autre condition identifiant une ruine
+				ruinCard = gs->exploreDeck[i];
+				break;
+			}
+		}
+
+		if (ruinCard) {
+			int ruinIndex = 0;
+			for (int i = 0; i < NUM_CARDS; i++) if (!strcmp(expCards[i]->name, ruinCard->name)) { ruinIndex = i; break; }
+
+			Texture2D ruinTex = gs->assets.cardImages[ruinIndex];
+
+			// Décalage : ruine en haut-gauche, carte principale décalée à droite
+			ruinOffsetX = -15;
+			ruinOffsetY = -15;
+			mainOffsetX = 20;
+
+			Rectangle ruinDest = (Rectangle){
+				50 + ruinOffsetX,
+				midY - targetHeight / 2 + (int)historyScrollOffset + ruinOffsetY,
+				targetWidth,
+				targetHeight
+			};
+			Rectangle ruinSrc = (Rectangle){ 0, 0, ruinTex.width, ruinTex.height };
+			DrawTexturePro(ruinTex, ruinSrc, ruinDest, (Vector2) { 0 }, 0, ColorAlpha(WHITE, 0.85f));
+
+		}
+	}
+
+	//  Rendu de la carte principale
+	Rectangle destRec = (Rectangle){ (openCard ? 30 : 50 + mainOffsetX), midY - targetHeight / 2 + (int)historyScrollOffset, targetWidth, targetHeight };
 	Rectangle sourceRect = (Rectangle){ 0, 0, cardTex.width, cardTex.height };
 	DrawTexturePro(cardTex, sourceRect, destRec, (Vector2) { 0 }, 0, WHITE);
 
-	// Affichage du titre de la carte et de son Type
-	int cardFS = 100 * (openCard ? .7f : .4f) * ((float)GetScreenHeight() / 1000.0f);
-	DrawStrokeTextEx(CARD_FONT, cardName, destRec.x + targetWidth / 2 - MeasureTextEx(CARD_FONT, cardName, cardFS, NORMAL_SPACING).x / 2, destRec.y + targetHeight * 49 / 100, cardFS, NORMAL_SPACING, WHITE, BLACK, 2);
-	int typrFS = 40 * (openCard ? .7f : .4f) * ((float)GetScreenHeight() / 1000.0f);
+	DrawStrokeTextEx(CARD_FONT, cardName,
+		destRec.x + targetWidth / 2 - MeasureTextEx(CARD_FONT, cardName, cardFS, NORMAL_SPACING).x / 2,
+		destRec.y + targetHeight * 49 / 100,
+		cardFS, NORMAL_SPACING, WHITE, BLACK, 2);
 	char* typeLbl = state->card->isEnemy ? "AMBUSH" : "EXPLORE";
-	DrawStrokeTextEx(CARD_FONT, typeLbl, destRec.x + targetWidth / 2 - MeasureTextEx(CARD_FONT, typeLbl, typrFS, NORMAL_SPACING).x / 2, destRec.y + targetHeight * 95.5f / 100 - typrFS, typrFS, NORMAL_SPACING, WHITE, BLACK, 1);
-	openCard = CheckCollisionPointRec(mouse, destRec);
+	DrawStrokeTextEx(CARD_FONT, typeLbl,
+		destRec.x + targetWidth / 2 - MeasureTextEx(CARD_FONT, typeLbl, typeFS, NORMAL_SPACING).x / 2,
+		destRec.y + targetHeight * 95.5f / 100 - typeFS,
+		typeFS, NORMAL_SPACING, WHITE, BLACK, 1);
+
+	openCard = CheckCollisionPointRec(mouse, openCard ? (Rectangle) { destRec.x, 0, destRec.width, GetScreenHeight() } : destRec);
+
+
+	//Rectangle destRec = (Rectangle){ (openCard ? 30 : 50), midY - targetHeight / 2 + (int)historyScrollOffset, targetWidth, targetHeight };
+	//Rectangle sourceRect = (Rectangle){ 0, 0, cardTex.width, cardTex.height };
+	//DrawTexturePro(cardTex, sourceRect, destRec, (Vector2) { 0 }, 0, WHITE);
+
+	//// Affichage du titre de la carte et de son Type
+	//int cardFS = 100 * (openCard ? .7f : .4f) * ((float)GetScreenHeight() / 1000.0f);
+	//DrawStrokeTextEx(CARD_FONT, cardName, destRec.x + targetWidth / 2 - MeasureTextEx(CARD_FONT, cardName, cardFS, NORMAL_SPACING).x / 2, destRec.y + targetHeight * 49 / 100, cardFS, NORMAL_SPACING, WHITE, BLACK, 2);
+	//int typeFS = 40 * (openCard ? .7f : .4f) * ((float)GetScreenHeight() / 1000.0f);
+	//char* typeLbl = state->card->isEnemy ? "AMBUSH" : "EXPLORE";
+	//DrawStrokeTextEx(CARD_FONT, typeLbl, destRec.x + targetWidth / 2 - MeasureTextEx(CARD_FONT, typeLbl, typeFS, NORMAL_SPACING).x / 2, destRec.y + targetHeight * 95.5f / 100 - typeFS, typeFS, NORMAL_SPACING, WHITE, BLACK, 1);
+	//openCard = CheckCollisionPointRec(mouse, destRec);
 
 
 	// Infos relatives au joueur actuel
@@ -1173,3 +1304,6 @@ void* SoundThread(void* args) {		//thread de gestion de l'audio séparé afin d'
 	CloseAudioDevice();
 	return NULL;
 }
+
+
+

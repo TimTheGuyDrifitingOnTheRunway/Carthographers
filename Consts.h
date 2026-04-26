@@ -5,6 +5,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 
+
 /*Alias et macro de compatibilités code_block*/
 #define Sleep _sleep
 
