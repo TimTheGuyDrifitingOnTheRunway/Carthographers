@@ -18,8 +18,6 @@ int main()
 	int screenWidth = 1280;
 	int screenHeight = 720;
 	int flag = 0;
-	printf("\n\n\n\n\n\n Debug 1 \n\n\n\n\n\n");
-
 
 	SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_MAXIMIZED);
 	InitWindow(screenWidth, screenHeight, "Cartographer");
@@ -27,73 +25,78 @@ int main()
 
 	SetTargetFPS(60);
 
+	GameState gs = { 0 };
+	gs.assets = calloc(1, sizeof(AssetBank));
+	FeuilleCarte f;
+
+
 	pthread_t soundThread;
 	int keep = 1;
 	pthread_create(&soundThread, NULL, SoundThread, &keep);
+
+	gs.seed.isGenerated = false;
+	bool mountainsReady = false;
+	pthread_t seedThread;
+	pthread_create(&seedThread, NULL, PreloadSeedWorker, &gs);
+
+	LoadContext imgCtx = { 0 };
+	pthread_mutex_init(&imgCtx.mutex, NULL);
+	gs.loadCtx = &imgCtx;
+	pthread_t assetWorkerThread;
+	pthread_create(&assetWorkerThread, NULL, LoadAssetsWorker, &imgCtx);
+
 
 	//ToggleBorderlessWindowed();
 	
 
 
-	Vector3 cubePosition = { 0.0f, 0.0f, 0.0f };
-
-	printf("\n\n\n\n\n\n Debug 3 \n\n\n\n\n\n");
 	// WaitTime(1.0f);
 
 	
-
+	
 
 	// Main game loop
 
-	FeuilleCarte f;
 	/*const ScoringCard* edits[4];
 	const ExploreCard* exploreDeck[17];
 	int deckSize = 14;*/
-	printf("\n\n\n\n\n\n Debug 4 \n\n\n\n\n\n");
-	GameState gs = { 0 };
 
 	{
 		const char* charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-			".,;:!?'°^&()[]{}<>_\"|+-/*= \\\n"
-			"éàèêëîïôûùçÉÀÈÊËÎÏÔÛÙÇ";
+			".,;:!?'°^²&()[]{}<>_\"|+-/*= \\\n"
+			"€$£§µ@¤#~"
+			"éàèêëîïôöûùçñÉÀÈÊËÎÏÔÖÛÙÇÑ";
 
 		int codepointCount = 0;  
 		int* codepoints = LoadCodepoints(charset, &codepointCount);
 
-		gs.assets.fonts[FONT_GRENZE_GOTISCH_B] = LoadFontEx("Assets/Fonts/GrenzeGotisch-Bold.ttf", 200, codepoints, codepointCount);
-		gs.assets.fonts[FONT_GRENZE_GOTISCH_L] = LoadFontEx("Assets/Fonts/GrenzeGotisch-Light.ttf", 200, codepoints, codepointCount);
-		gs.assets.fonts[FONT_PIRATA_ONE] = LoadFontEx("Assets/Fonts/PirataOne.ttf", 200, codepoints, codepointCount);
-		gs.assets.fonts[FONT_FREDOKA_CM] = LoadFontEx("Assets/Fonts/Fredoka_Condensed-Medium.ttf", 200, codepoints, codepointCount);
-		gs.assets.fonts[FONT_FREDOKA_SB] = LoadFontEx("Assets/Fonts/Fredoka-SemiBold.ttf", 200, codepoints, codepointCount);
-		gs.assets.fonts[FONT_METAMORPHOUS] = LoadFontEx("Assets/Fonts/Metamorphous.ttf", 200, codepoints, codepointCount);
+		gs.assets->fonts[FONT_GRENZE_GOTISCH_B] = LoadFontEx("Assets/Fonts/GrenzeGotisch-Bold.ttf", 200, codepoints, codepointCount);
+		gs.assets->fonts[FONT_GRENZE_GOTISCH_L] = LoadFontEx("Assets/Fonts/GrenzeGotisch-Light.ttf", 200, codepoints, codepointCount);
+		gs.assets->fonts[FONT_PIRATA_ONE] = LoadFontEx("Assets/Fonts/PirataOne.ttf", 200, codepoints, codepointCount);
+		gs.assets->fonts[FONT_FREDOKA_CM] = LoadFontEx("Assets/Fonts/Fredoka_Condensed-Medium.ttf", 200, codepoints, codepointCount);
+		gs.assets->fonts[FONT_FREDOKA_SB] = LoadFontEx("Assets/Fonts/Fredoka-SemiBold.ttf", 200, codepoints, codepointCount);
+		gs.assets->fonts[FONT_METAMORPHOUS] = LoadFontEx("Assets/Fonts/Metamorphous.ttf", 200, codepoints, codepointCount);
 
 		UnloadCodepoints(codepoints);
 	}
-	printf("%f", MeasureTextEx(gs.assets.fonts[FONT_GRENZE_GOTISCH_B], "Printemps  0/8", EDITS_FS, NORMAL_SPACING).x);
+	printf("%f", MeasureTextEx(gs.assets->fonts[FONT_GRENZE_GOTISCH_B], "Printemps  0/8", EDITS_FS, NORMAL_SPACING).x);
 
 	//for (int i = 0; i < FONT_COUNT; i++) {
-	//	printf("(%.5f,%.5f) ; ", MeasureTextEx(gs.assets.fonts[i], " ", 30, 2).x, MeasureTextEx(gs.assets.fonts[i], " ", 30, 2).y);
-	//	printf("(%.5f,%.5f)\n", MeasureTextEx(gs.assets.fonts[i], "    \n   \n     ", 30, 2).x, MeasureTextEx(gs.assets.fonts[i], "    \n   \n     ", 30, 2).y);
+	//	printf("(%.5f,%.5f) ; ", MeasureTextEx(gs.assets->fonts[i], " ", 30, 2).x, MeasureTextEx(gs.assets->fonts[i], " ", 30, 2).y);
+	//	printf("(%.5f,%.5f)\n", MeasureTextEx(gs.assets->fonts[i], "    \n   \n     ", 30, 2).x, MeasureTextEx(gs.assets->fonts[i], "    \n   \n     ", 30, 2).y);
 	//}
 	//printf("\n");
 	//BeginDrawing();
 	//ClearBackground(WHITE);
-	//DrawTextWrappedEx(gs.assets.fonts[FONT_PIRATA_ONE], "Juste pour tester", (Rectangle) { 200, 100, 600, 800 }, 40, 1, GRAY, BLACK);
+	//DrawTextWrappedEx(gs.assets->fonts[FONT_PIRATA_ONE], "Juste pour tester", (Rectangle) { 200, 100, 600, 800 }, 40, 1, GRAY, BLACK);
 	//EndDrawing();
 	//system("pause");
 	//BeginDrawing();
 	//ClearBackground(WHITE);
-	//DrawTextWrappedEx(gs.assets.fonts[FONT_PIRATA_ONE], "Juste pour tester", (Rectangle) { 200, 100, 600, 800 }, 40, 1, GRAY, BLACK);
+	//DrawTextWrappedEx(gs.assets->fonts[FONT_PIRATA_ONE], "Juste pour tester", (Rectangle) { 200, 100, 600, 800 }, 40, 1, GRAY, BLACK);
 	//EndDrawing();
 	//system("pause");
 
-	LoadContext imgCtx = { 0 };
-	pthread_mutex_init(&imgCtx.mutex, NULL);
-
-	gs.loadCtx = &imgCtx;
-
-	pthread_t assetWorkerThread;
-	pthread_create(&assetWorkerThread, NULL, LoadAssetsWorker, &imgCtx);
 
 
 	//gs.playerNumber = 98;
@@ -101,14 +104,16 @@ int main()
 
 	while (current != SCREEN_GAME && current != SCREEN_EXIT) {
 		switch (current) {
-		case SCREEN_MENU:			current = RunMenu(&gs);			break;
-		case SCREEN_ADD_PLAYER:		current = RunAddPlayer(&gs);	break;
-		case SCREEN_RULES:			current = RunRules(&gs);		break;
-		case SCREEN_KEYBINDS:		current = RunKeybinds(&gs);		break;
-		default:					current = SCREEN_EXIT;			break;
+		case SCREEN_MENU:				current = RunMenu(&gs);					break;
+		case SCREEN_ADD_PLAYER:			current = RunAddPlayer(&gs);			break;
+		case SCREEN_RULES:				current = RunRules(&gs);				break;
+		case SCREEN_KEYBINDS:			current = RunKeybinds(&gs);				break;
+		default:						current = SCREEN_EXIT;					break;
 		}
 	}
 
+	SetMouseCursor(MOUSE_CURSOR_DEFAULT);
+	
 	if (current == SCREEN_EXIT) {
 
 		EndProgram(&gs);
@@ -117,20 +122,44 @@ int main()
 	}
 
 	if (current == SCREEN_GAME) {
-		pthread_join(assetWorkerThread, NULL);
 		int total = gs.loadCtx->cardsLoadedVRAM + gs.loadCtx->seasonsLoadedVRAM + gs.loadCtx->editsLoadedVRAM;
-		while (total < NUM_CARDS + NUM_EDITS + NUM_SEASONS) {
+		float f = 0;
+		while ((total < NUM_CARDS + NUM_EDITS + NUM_SEASONS || !gs.seed.isGenerated || !mountainsReady || gs.loadCtx->modelsLoaded < NUM_MODELS) && !WindowShouldClose()) {
 			LoadAssetToVRAM(&gs);
 			total = gs.loadCtx->cardsLoadedVRAM + gs.loadCtx->seasonsLoadedVRAM + gs.loadCtx->editsLoadedVRAM;
-			printf("En attente de tout charger, %d = %d + %d + %d\n", total, gs.loadCtx->cardsLoadedVRAM, gs.loadCtx->seasonsLoadedVRAM, gs.loadCtx->editsLoadedVRAM);
-			//Sleep(100);
+			//printf("En attente de tout charger, %d = %d + %d + %d\n", total, gs.loadCtx->cardsLoadedVRAM, gs.loadCtx->seasonsLoadedVRAM, gs.loadCtx->editsLoadedVRAM);
 
-			// AT THE END : ajouter un ecran de chargement
+			if (gs.seed.isGenerated && !mountainsReady) {
+				for (int i = 0; i < NOMBREMONTAGNE; i++) {
+					gs.seed.mountains[i] = FinalizeMountainModel(gs.seed.mountainImages[i]);
+					UnloadImage(gs.seed.mountainImages[i]);
+				}
+				mountainsReady = true;
+			}
+
+			f += GetFrameTime();
+			int j = (int)(f * 1.7f) % 4;
+			//printf("%f -> %d\n", f, j);
+
+			BeginDrawing();
+			ClearBackground(BGCOLOR);
+			DrawStrokeTextEx(gs.assets->fonts[FONT_FREDOKA_SB], TextFormat("Chargement en cours%s", j > 2 ? "..." : j > 1 ? ".." : j > 0 ? "." : ""), GetScreenWidth() / 2 - 500, GetScreenHeight() / 2 - 50, 100, 4, GRAY, BLACK, 5);
+
+			EndDrawing();
+
+			if (IsImageValid(gs.loadCtx->skyboxImg)) {
+				gs.assets->models.skybox = loadSkybox(false, gs.loadCtx->skyboxImg);
+				gs.loadCtx->modelsLoaded++;
+			}
 		}
-		
+
+		if (WindowShouldClose()) EndProgram(&gs);
+
+		pthread_join(assetWorkerThread, NULL);
+		pthread_join(seedThread, NULL);
 	}
 
-	SetMouseCursor(MOUSE_CURSOR_DEFAULT);
+
 
 	//int PNbre = 2;
 	//printf("Nombre de joueurs : ");     scanf("%d", &PNbre);    PNbre = (PNbre > 0) ? PNbre > MAX_PLAYER ? MAX_PLAYER : PNbre : 1;
@@ -312,7 +341,7 @@ void sort_players_by_score(GameState* gs) {
 
 void EndProgram(GameState* gs) {
 	for (int i = 0; i < FONT_COUNT; i++) {
-		UnloadFont(gs->assets.fonts[i]);
+		UnloadFont(gs->assets->fonts[i]);
 	}
 	CloseWindow();
 }

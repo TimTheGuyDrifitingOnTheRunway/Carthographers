@@ -20,11 +20,13 @@ void NextSeason(GameState* gs, Camera3D camera, ModelList models, Seed s2, int m
 void Season(GameState* gs, Camera3D camera, ModelList models);//première saison
 void Season2(GameState* gs, Camera3D camera, ModelList models, Seed s, int mountainSeed[2]);// 2ème saison et autre
 
+void RunGameLoop(GameState* gs, Camera camera);
+
 
 // Tour de jeu
 
-const ExploreCard* Turn(GameState* gs, int* isRuin, Camera3D *camera, int mountainSeed[2], ModelList models, Seed s);
-const ExploreCard* NextExploreCard(GameState* gs, int* isRuin);
+const ExploreCard* Turn(GameState* gs, Camera3D *camera, int mountainSeed[2], ModelList models, Seed s);
+const ExploreCard* NextExploreCard(GameState* gs);
 
 void DebugGameStats(GameState* gs);
 

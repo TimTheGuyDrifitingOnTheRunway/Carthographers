@@ -54,11 +54,11 @@ ScreenID RunMenu(GameState* gs) {
 
 		// Ajoute un bouton pour ajouter un joueur
 		DrawButton(&addBtn);
-		//if (gs->playerNumber >= MAX_PLAYER) DrawStrokeText(gs->assets.fonts[FONT_FREDOKA_CM], tmppl, (GetScreenWidth() - MeasureTextEx(gs->assets.fonts[FONT_FREDOKA_CM], tmppl, tmpplSize, NORMAL_SPACING).x) / 2, posY - 15, tmpplSize, RED, multiplyColor(DARKGRAY, 0.4f));
+		//if (gs->playerNumber >= MAX_PLAYER) DrawStrokeText(gs->assets->fonts[FONT_FREDOKA_CM], tmppl, (GetScreenWidth() - MeasureTextEx(gs->assets->fonts[FONT_FREDOKA_CM], tmppl, tmpplSize, NORMAL_SPACING).x) / 2, posY - 15, tmpplSize, RED, multiplyColor(DARKGRAY, 0.4f));
 		if (addBtn.validated) addPlayer = 1;
 
 		// afficher le nombre de joueurs
-		DrawStrokeTextEx(gs->assets.fonts[FONT_FREDOKA_CM], TextFormat("Il y a %s%d joueur%c", gs->playerNumber > 10 ? "déjà " : "", gs->playerNumber, gs->playerNumber > 1 ? 's' : ' '), addBtn.bounds.x, addBtn.bounds.y + addBtn.bounds.height + 5, 20,NORMAL_SPACING, WHITE, BLACK, 1);
+		DrawStrokeTextEx(gs->assets->fonts[FONT_FREDOKA_CM], TextFormat("Il y a %s%d joueur%c", gs->playerNumber > 10 ? "déjà " : "", gs->playerNumber, gs->playerNumber > 1 ? 's' : ' '), addBtn.bounds.x, addBtn.bounds.y + addBtn.bounds.height + 5, 20,NORMAL_SPACING, WHITE, BLACK, 1);
 
 		// Ajoute un bouton pour quitter le Jeu
 		DrawButton(&stopBtn);
@@ -102,16 +102,16 @@ ScreenID RunAddPlayer(GameState* gs) {
 	int posY = GetScreenHeight() / 20 + 30 + TITLE_FS + 20;
 
 	Rectangle menuBounds = (Rectangle){ 0 };
-	char addPplLabel[] = "Ajouter un nouveau joueur !"; 	int addPplFontSize = 50;
+	char addPplTitle[] = "Ajouter un nouveau joueur !"; 	int addPplTitleFS = 50;
 	Rectangle iptNameBox = (Rectangle){ 0 };
 	int d = 40; // Espacement entre les boutons
 
-	Button cclBtn = { .color1 = RED, .color2 = BLACK, .label = "Annuler", .labelFont = gs->assets.fonts[FONT_METAMORPHOUS], .labelColor = BLACK, .fontSize = 40, .corner = 90, .stroke = 3 };
-	Button addBtn = { .color1 = LIME, .color2 = BLACK, .label = "Ajouter", .labelFont = gs->assets.fonts[FONT_METAMORPHOUS], .labelColor = BLACK, .fontSize = 40, .corner = 90, .stroke = 3 };
+	Button cclBtn = { .color1 = RED, .color2 = BLACK, .label = "Annuler", .labelFont = gs->assets->fonts[FONT_METAMORPHOUS], .labelColor = BLACK, .fontSize = 40, .corner = 90, .stroke = 3 };
+	Button addBtn = { .color1 = LIME, .color2 = BLACK, .label = "Ajouter", .labelFont = gs->assets->fonts[FONT_METAMORPHOUS], .labelColor = BLACK, .fontSize = 40, .corner = 90, .stroke = 3 };
 
-	InputBox nameIptBox = { .maxLength = MAX_NAME_LENGTH,.dx = 5, .text = "", .length = 0, .fontSize = 30, .textFont = gs->assets.fonts[FONT_FREDOKA_CM], .active = 1, .validated = 0 };
+	InputBox nameIptBox = { .maxLength = MAX_NAME_LENGTH,.dx = 5, .text = "", .length = 0, .fontSize = 30, .textFont = gs->assets->fonts[FONT_FREDOKA_CM], .active = 1, .validated = 0 };
 	char addLabel[] = "Nom du nouveau joueur ";
-	int addLabelFontSize = 32;
+	int addLabelFS = 32;
 
 	bool add = false;
 
@@ -127,8 +127,8 @@ ScreenID RunAddPlayer(GameState* gs) {
 		addBtn.bounds = (Rectangle){ midX + 5, menuBounds.y + menuBounds.height - (addBtn.fontSize + 30) - 10, menuBounds.width / 2 - 10, addBtn.fontSize + 30 };
 		addBtn.hovered = CheckCollisionPointRec(GetMousePosition(), addBtn.bounds);
 
-		int addPplw = MeasureTextEx(nameIptBox.textFont, addLabel, addLabelFontSize, NORMAL_SPACING).x;
-		nameIptBox.bounds = (Rectangle){ menuBounds.x + 5 + addPplw + 5 + 2, menuBounds.y + addPplFontSize + 30 + 10, menuBounds.width - (5 + addPplw + 5) - 15, nameIptBox.fontSize + 8 };
+		int addPplw = MeasureTextEx(nameIptBox.textFont, addLabel, addLabelFS, NORMAL_SPACING).x;
+		nameIptBox.bounds = (Rectangle){ menuBounds.x + 5 + addPplw + 5 + 2, menuBounds.y + addPplTitleFS + 30 + 10, menuBounds.width - (5 + addPplw + 5) - 15, nameIptBox.fontSize + 8 };
 		nameIptBox.hovered = CheckCollisionPointRec(GetMousePosition(), nameIptBox.bounds);
 
 
@@ -149,9 +149,9 @@ ScreenID RunAddPlayer(GameState* gs) {
 		posY = DrawTitle(gs);
 
 		// Afficher le menu d'ajout
-		DrawTextEx(gs->assets.fonts[FONT_PIRATA_ONE], addPplLabel, (Vector2) { midX - MeasureTextEx(gs->assets.fonts[FONT_PIRATA_ONE], addPplLabel, addPplFontSize, NORMAL_SPACING).x / 2, menuBounds.y + 3 }, addPplFontSize, NORMAL_SPACING, WHITE);	// Affiche le titre du menu
+		DrawTextEx(gs->assets->fonts[FONT_PIRATA_ONE], addPplTitle, (Vector2) { midX - MeasureTextEx(gs->assets->fonts[FONT_PIRATA_ONE], addPplTitle, addPplTitleFS, NORMAL_SPACING).x / 2, menuBounds.y + 3 }, addPplTitleFS, NORMAL_SPACING, WHITE);	// Affiche le titre du menu
 
-		DrawTextEx(nameIptBox.textFont, addLabel, (Vector2) { menuBounds.x + 5, nameIptBox.bounds.y + (nameIptBox.bounds.height - addLabelFontSize) / 2 }, addLabelFontSize, NORMAL_SPACING, WHITE);
+		DrawTextEx(nameIptBox.textFont, addLabel, (Vector2) { menuBounds.x + 5, nameIptBox.bounds.y + (nameIptBox.bounds.height - addLabelFS) / 2 }, addLabelFS, NORMAL_SPACING, WHITE);
 		DrawFullInputBoxEx(&nameIptBox, 2, GRAY, LIGHTGRAY);
 
 		DrawButton(&cclBtn);
@@ -195,7 +195,7 @@ ScreenID RunRules(GameState* gs) {
 
 	Button Next = (Button){ .label = ">", .fontSize = 30, .labelColor = BLACK, .labelFont = GetFontDefault(), .corner = 90, .stroke = 3, .color1 = DARKGRAY, .color2 = LIME };
 	Button Previous = (Button){ .label = "<", .fontSize = 30, .labelColor = BLACK, .labelFont = GetFontDefault(), .corner = 90, .stroke = 3, .color1 = DARKGRAY, .color2 = RED };
-	Button Exit = (Button){ .label = "OK", .fontSize = 30, .labelColor = BLACK, .labelFont = gs->assets.fonts[FONT_FREDOKA_SB], .corner = 80, .stroke = 3, .color1 = DARKGRAY, .color2 = BLUE };
+	Button Exit = (Button){ .label = "OK", .fontSize = 30, .labelColor = BLACK, .labelFont = gs->assets->fonts[FONT_FREDOKA_SB], .corner = 80, .stroke = 3, .color1 = DARKGRAY, .color2 = BLUE };
 
 	Rectangle textZone;
 
@@ -229,11 +229,11 @@ ScreenID RunRules(GameState* gs) {
 		posY = DrawTitle(gs);
 		DrawTextWrappedEx(PAGE_FONT, pages[currentPage].Text, textZone, PAGE_FS, 1, WHITE, BLACK);
 
-		DrawStrokeTextEx(gs->assets.fonts[FONT_METAMORPHOUS], TextFormat("  %s", pages[currentPage].Title), textZone.x + 10, posY, 35, NORMAL_SPACING, BLACK, GOLD, 1);
+		DrawStrokeTextEx(gs->assets->fonts[FONT_METAMORPHOUS], TextFormat("  %s", pages[currentPage].Title), textZone.x + 10, posY, 35, NORMAL_SPACING, BLACK, GOLD, 1);
 
 		DrawRectangleRoundedLinesEx((Rectangle) { textZone.x - TEXT_ZONE_PADDING, textZone.y - TEXT_ZONE_PADDING, textZone.width + 2 * TEXT_ZONE_PADDING, textZone.height + 2 * TEXT_ZONE_PADDING, }, .05, 10, 2, multiplyColor(BROWN, 1.2f));
 
-		DrawStrokeText(gs->assets.fonts[FONT_METAMORPHOUS], TextFormat("%d / %d", currentPage + 1, PAGE_NB), midX - MeasureTextEx(gs->assets.fonts[FONT_METAMORPHOUS], TextFormat("%d / %d", currentPage + 1, PAGE_NB), 40, NORMAL_SPACING).x / 2, Previous.bounds.y, 40, GOLD, BLACK);
+		DrawStrokeText(gs->assets->fonts[FONT_METAMORPHOUS], TextFormat("%d / %d", currentPage + 1, PAGE_NB), midX - MeasureTextEx(gs->assets->fonts[FONT_METAMORPHOUS], TextFormat("%d / %d", currentPage + 1, PAGE_NB), 40, NORMAL_SPACING).x / 2, Previous.bounds.y, 40, GOLD, BLACK);
 
 		DrawButton(&Previous);
 		DrawButton(&Next);
@@ -264,7 +264,7 @@ ScreenID RunKeybinds(GameState* gs) {
 	Rectangle rCamera = (Rectangle){ 0, 0, MeasureTextEx(KEY_FONT, KEY_TEXT_CAMERA, KEY_FS, NORMAL_SPACING).x, KEY_FS };
 	Rectangle rPlace = (Rectangle){ 0, 0, MeasureTextEx(KEY_FONT, KEY_TEXT_PLACE, KEY_FS, NORMAL_SPACING).x, KEY_FS };
 
-	Button Exit = (Button){ .label = "OK", .fontSize = 30, .labelColor = BLACK, .labelFont = gs->assets.fonts[FONT_METAMORPHOUS], .corner = 80, .stroke = 3, .color1 = DARKGRAY, .color2 = BLUE, .bounds = (Rectangle){0, 0, 300, 0} };
+	Button Exit = (Button){ .label = "OK", .fontSize = 30, .labelColor = BLACK, .labelFont = gs->assets->fonts[FONT_METAMORPHOUS], .corner = 80, .stroke = 3, .color1 = DARKGRAY, .color2 = BLUE, .bounds = (Rectangle){0, 0, 300, 0} };
 
 	Rectangle* recTextList[] = { &rMove, &rColorSwitch, &rShapeSwitch, &rRotate, &rFlip, &rCamera, &rPlace, &Exit.bounds };
 
@@ -322,12 +322,12 @@ ScreenID RunKeybinds(GameState* gs) {
 
 int DrawTitle(GameState* gs) {
 	int posY = 0;
-	DrawStrokeTextEx(gs->assets.fonts[FONT_GRENZE_GOTISCH_B], C_TITLE, (GetScreenWidth() - MeasureTextEx(gs->assets.fonts[FONT_GRENZE_GOTISCH_B], C_TITLE, TITLE_FS, NORMAL_SPACING).x) / 2, posY, TITLE_FS, TITLE_SPACING, GOLD, BLACK, 2);
+	DrawStrokeTextEx(gs->assets->fonts[FONT_GRENZE_GOTISCH_B], C_TITLE, (GetScreenWidth() - MeasureTextEx(gs->assets->fonts[FONT_GRENZE_GOTISCH_B], C_TITLE, TITLE_FS, NORMAL_SPACING).x) / 2, posY, TITLE_FS, TITLE_SPACING, GOLD, BLACK, 2);
 	return posY + TITLE_FS - 10;
 }
 
 //void DrawTitleEx(GameState* gs, Rectangle r) {
-//	DrawStrokeTextEx(gs->assets.fonts[FONT_GRENZE_GOTISCH_B], C_TITLE, r.x + (r.width - MeasureText(C_TITLE, TITLE_FS)) / 2, r.y, TITLE_FS, GOLD, BLACK, 2);
+//	DrawStrokeTextEx(gs->assets->fonts[FONT_GRENZE_GOTISCH_B], C_TITLE, r.x + (r.width - MeasureText(C_TITLE, TITLE_FS)) / 2, r.y, TITLE_FS, GOLD, BLACK, 2);
 //}
 
 void DrawBackgroudMenu(Rectangle r) {
@@ -513,7 +513,7 @@ void UpdateInputBox(InputBox* box) {
 	if (!box->active) return;
 
 	if (IsKeyPressed(KEY_ENTER) && box->length > 0) {
-		printf("entré appuyé 1\n");
+		//printf("entré appuyé 1\n");
 		box->validated = true;
 	}
 	else	box->validated = false;
@@ -521,7 +521,7 @@ void UpdateInputBox(InputBox* box) {
 
 	int key = GetCharPressed();
 	while (key > 0) {
-		printf("key reçue : %d\n", key);
+		//printf("key reçue : %d\n", key);
 		if (IsCharAllowed((char)key) && box->length < box->maxLength - 1) {
 			box->text[box->length++] = (char)key;
 			box->text[box->length] = '\0';
@@ -535,12 +535,50 @@ void UpdateInputBox(InputBox* box) {
 }
 
 bool IsCharAllowed(char c) {
-	return (c >= 'a' && c <= 'z') || // minuscules
-		(c >= 'A' && c <= 'Z') ||	 // majuscules
-		(c >= '0' && c <= '9') ||	 // chiffres
-		(c == '-') ||				 // tiret
-		(c == '\'') ||				 // apostrophe
-		(c == ' ');					 // espace
+	return (c >= 'a' && c <= 'z') ||	// minuscules
+		(c >= 'A' && c <= 'Z') ||		// majuscules
+		(c >= '0' && c <= '9') ||		// chiffres
+		(c == '-') ||					// tiret
+		(c == '\'') ||					// apostrophe
+		(c == 'é') ||	(c == 'É') ||
+		(c == 'è') ||	(c == 'É') ||
+		(c == 'ë') ||	(c == 'Ë') ||
+		(c == 'ê') ||	(c == 'Ê') ||
+		(c == 'à') ||	(c == 'À') ||
+		(c == 'ç') ||	(c == 'Ç') ||
+		(c == 'ù') ||	(c == 'Ù') ||
+		(c == 'ü') ||	(c == 'Ü') ||
+		(c == 'û') ||	(c == 'Û') ||
+		(c == 'ô') ||	(c == 'Ô') ||
+		(c == 'ö') ||	(c == 'Ö') ||
+		(c == 'î') ||	(c == 'Î') ||
+		(c == 'ï') ||	(c == 'Ï') ||
+		(c == '[') ||	(c == ']') ||
+		(c == '(') ||	(c == ')') ||
+		(c == '{') ||	(c == '}') ||
+		(c == '<') ||	(c == '>') ||
+		(c == '+') ||	(c == '=') ||
+		(c == '/') ||	(c == '\\') ||
+		(c == '*') ||
+		(c == '\"') ||
+		(c == ',') ||
+		(c == ';') ||
+		(c == ':') ||
+		(c == '!') ||
+		(c == '§') ||
+		(c == '.') ||
+		(c == '?') ||
+		(c == '€') ||
+		(c == '$') ||
+		(c == 'µ') ||
+		(c == '£') ||
+		(c == '@') ||
+		(c == '&') ||
+		(c == '²') ||
+		(c == '¤') ||
+		(c == '~') ||
+		(c == '#') ||
+		(c == ' ');						// espace
 }
 
 void DrawFullInputBoxEx(InputBox* box, int stroke, Color bkgColor, Color strokeColor) {
@@ -553,8 +591,6 @@ void DrawFullInputBoxEx(InputBox* box, int stroke, Color bkgColor, Color strokeC
 		DrawRectangleLinesEx(box->bounds, stroke, strokeColor);
 
 	// Texte avec décalage dx et centralisation du texte en y
-
-
 	DrawTextEx(box->textFont, box->text, (Vector2) { box->bounds.x + box->dx, box->bounds.y + (box->bounds.height - box->fontSize) / 2 }, box->fontSize, NORMAL_SPACING, BLACK);
 
 	// Curseur clignotant centré en y
@@ -563,7 +599,7 @@ void DrawFullInputBoxEx(InputBox* box, int stroke, Color bkgColor, Color strokeC
 		DrawText("|", box->bounds.x + box->dx + tw + 2, box->bounds.y + (box->bounds.height - box->fontSize) / 2, box->fontSize, DARKGRAY);
 	}
 
-	if (box->validated)	printf("entré appuyé 2\n");
+	//if (box->validated)	printf("entré appuyé 2\n");
 
 }
 
@@ -644,6 +680,8 @@ void ImageRoundCorner(Image* image, float radius) {
 void* LoadAssetsWorker(void* arg) {
 	LoadContext* ctx = (LoadContext*)arg;
 	double start = GetTime();
+
+
 	for (int i = 0; i < NUM_CARDS; i++) {
 		const char* path = TextFormat("Assets/Images/Game Card/%s.png", expCards[i]->name);
 		Image img = LoadImage(path);
@@ -678,6 +716,9 @@ void* LoadAssetsWorker(void* arg) {
 		ctx->editsLoadedRAM++;
 		pthread_mutex_unlock(&ctx->mutex);
 	}
+
+	ctx->skyboxImg = LoadImage(PATH_TO_SKYBOX);
+
 	printf("\n\n Temps pris au total : %fs", (float)(GetTime() - start));
 	return NULL;
 }
@@ -687,7 +728,7 @@ void LoadAssetToVRAM(GameState* gs) {
 	pthread_mutex_lock(&gs->loadCtx->mutex);
 	if (gs->loadCtx->cardsLoadedRAM > gs->loadCtx->cardsLoadedVRAM) {
 		int i = gs->loadCtx->cardsLoadedVRAM;
-		gs->assets.cardImages[i] = LoadTextureFromImage(gs->loadCtx->cardsRAM[i]);
+		gs->assets->cardImages[i] = LoadTextureFromImage(gs->loadCtx->cardsRAM[i]);
 		gs->loadCtx->cardsLoadedVRAM++;
 		//printf("\nChargement de la carte %d en VRAM, %d, %d\n", i);
 
@@ -695,20 +736,75 @@ void LoadAssetToVRAM(GameState* gs) {
 	}
 	else if(gs->loadCtx->seasonsLoadedRAM > gs->loadCtx->seasonsLoadedVRAM) {
 		int i = gs->loadCtx->seasonsLoadedVRAM;
-		gs->assets.seasonImages[i] = LoadTextureFromImage(gs->loadCtx->seasonsRAM[i]);
+		gs->assets->seasonImages[i] = LoadTextureFromImage(gs->loadCtx->seasonsRAM[i]);
 		gs->loadCtx->seasonsLoadedVRAM++;
 		//printf("\nChargement de la saison %d en VRAM\n", i);
 		UnloadImage(gs->loadCtx->seasonsRAM[i]);
 	}
 	else if(gs->loadCtx->editsLoadedRAM > gs->loadCtx->editsLoadedVRAM) {
 		int i = gs->loadCtx->editsLoadedVRAM;
-		gs->assets.letterScrollsImage[i] = LoadTextureFromImage(gs->loadCtx->editsRAM[i]);
-		gs->assets.letterScrollsImage[i + NUM_EDITS] = LoadTextureFromImage(gs->loadCtx->editsRAM[i + NUM_EDITS]);
+		gs->assets->letterScrollsImage[i] = LoadTextureFromImage(gs->loadCtx->editsRAM[i]);
+		gs->assets->letterScrollsImage[i + NUM_EDITS] = LoadTextureFromImage(gs->loadCtx->editsRAM[i + NUM_EDITS]);
 		gs->loadCtx->editsLoadedVRAM++;
 		//printf("\nChargement de l'edit %d en VRAM\n", i);
 		UnloadImage(gs->loadCtx->editsRAM[i]);
 		UnloadImage(gs->loadCtx->editsRAM[i + NUM_EDITS]);
 	}
+	else if (gs->loadCtx->modelsLoaded < NUM_MODELS - 1) {
+		ModelList* m = &gs->assets->models;
+
+		switch (gs->loadCtx->modelsLoaded) {
+		case 0: 
+			m->tree = LoadModel(PATH_TO_TREE_MODEL); 
+			gs->loadCtx->modelsLoaded++;
+			break;
+		case 1: 
+			m->buisson = LoadModel(PATH_TO_BUSH_MODEL); 
+			gs->loadCtx->modelsLoaded++;
+			break;
+		case 2: 
+			m->house = LoadModel(PATH_TO_HOUSE); 
+			gs->loadCtx->modelsLoaded++;
+			break;
+		case 3: 
+			m->monster = LoadModel(PATH_TO_MONSTER); 
+			gs->loadCtx->modelsLoaded++;
+			break;
+		case 4: {
+			Mesh plane = GenMeshPlane(1.0f, 1.0f, 1, 1);
+			m->champs = LoadModelFromMesh(plane);
+			m->champs.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = LoadTexture(PATH_TO_CHAMPS_TEXTURE);
+			gs->loadCtx->modelsLoaded++;
+		} break;
+		case 5: {
+			Mesh plane = GenMeshPlane(1.0f, 1.0f, 1, 1);
+			m->water = LoadModelFromMesh(plane);
+			m->water.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = LoadTexture(PATH_TO_WATER_TEXTURE);
+			gs->loadCtx->modelsLoaded++;
+		} break;
+		case 6: {
+			Mesh plane = GenMeshPlane(1.0f, 1.0f, 1, 1);
+			m->monsterTile = LoadModelFromMesh(plane);
+			m->monsterTile.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = LoadTexture(PATH_TO_MONSTER_TEXTURE);
+			gs->loadCtx->modelsLoaded++;
+		} break;
+		case 7: {
+			Mesh plane = GenMeshPlane(1.0f, 1.0f, 1, 1);
+			m->forestTile = LoadModelFromMesh(plane);
+			m->forestTile.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = LoadTexture(PATH_TO_FORET_TEXTURE);
+			gs->loadCtx->modelsLoaded++;
+		} break;
+		case 8: {
+			Mesh plane = GenMeshPlane(1.0f, 1.0f, 1, 1);
+			m->vilageTile = LoadModelFromMesh(plane);
+			m->vilageTile.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = LoadTexture(PATH_TO_VILLAGE_TEXTURE);
+			gs->loadCtx->modelsLoaded++;
+		} break;
+		default: 
+			break;
+		}
+	}
+
 
 	pthread_mutex_unlock(&gs->loadCtx->mutex);
 
@@ -752,7 +848,7 @@ void DebugAssetViewer(GameState* gs) {
 
 			// Affichage en grille (ex: 5 cartes par ligne)
 			for (int i = 0; i < 21; i++) { // NUM_CARDS
-				Texture2D tex = gs->assets.cardImages[i];
+				Texture2D tex = gs->assets->cardImages[i];
 				if (tex.id != 0) {							// Si la texture est bien chargée
 					int col = i % 5;
 					int row = i / 5;
@@ -769,7 +865,7 @@ void DebugAssetViewer(GameState* gs) {
 			DrawText("ONGLET 2 : Saisons (Arrondies)", startX, startY, 20, BLACK);
 			startY += 40;
 			for (int i = 0; i < 4; i++) {					// NUM_SEASONS
-				Texture2D tex = gs->assets.seasonImages[i];
+				Texture2D tex = gs->assets->seasonImages[i];
 				if (tex.id != 0) {
 					DrawTextureEx(tex, (Vector2) { startX + i * (tex.width * scale + 20), startY }, 0.0f, scale, WHITE);
 				}
@@ -779,7 +875,7 @@ void DebugAssetViewer(GameState* gs) {
 			DrawText("ONGLET 3 : Edits (Bruts, pas d'arrondi ici)", startX, startY, 20, BLACK);
 			startY += 40;
 			for (int i = 0; i < NUM_EDITS * 2; i++) {		// NUM_EDITS
-				Texture2D tex = gs->assets.letterScrollsImage[i];
+				Texture2D tex = gs->assets->letterScrollsImage[i];
 				if (tex.id != 0) {
 					DrawTextureEx(tex, (Vector2) { startX + i * (tex.width + 20), startY }, 0.0f, 1, WHITE);
 					//DrawTexture(tex, startX + i * (tex.width + 20), startY, WHITE);

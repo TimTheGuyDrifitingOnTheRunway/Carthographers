@@ -9,9 +9,10 @@
 
 void DrawMapGrid(int slices, float spacing);
 void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Position mountainPos[NOMBREMONTAGNE], Seed s, ModelList models);
-int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D camera, Model mountains[NOMBREMONTAGNE], Seed s, ModelList models);
+void InitPlacementState(GameState* gs, FeuilleCarte f);
+//int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D camera, Model mountains[NOMBREMONTAGNE], Seed s, ModelList models);
 int GUIPlacementCard(GameState* gs, FeuilleCarte f, const ExploreCard* card, int score, int isRuin, int* coinCount, Camera3D *camera, Model mountains[NOMBREMONTAGNE], Seed s, ModelList models);
-int GUIplacementDefault(FeuilleCarte f, int  material, Camera3D camera, Model mountains[NOMBREMONTAGNE], Seed s, ModelList models);
+//int GUIplacementDefault(FeuilleCarte f, int  material, Camera3D camera, Model mountains[NOMBREMONTAGNE], Seed s, ModelList models);
 int GUIplacementDefaultCard(GameState* gs, FeuilleCarte f, const ExploreCard* card, int score, int isRuin, int* coinCount, Camera3D *camera, Model mountains[NOMBREMONTAGNE], Seed s, ModelList models);
 void GUIdrawGrille();
 void GUIUpdateCustomCamera(Camera3D *camera);
@@ -19,7 +20,9 @@ void GUIUpdateCustomCamera(Camera3D *camera);
 void GUIdisplayFinal(GameState gs, int mountainSeed[2], Seed s, ModelList models, Camera3D camera);
 
 void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera);
-void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state, int score, Camera3D camera, Model mountain[NOMBREMONTAGNE], Position mountainPos[NOMBREMONTAGNE], Seed s, ModelList models);
+void RenderPlacement(GameState* gs, FeuilleCarte f, int score, Camera3D camera, Seed s, ModelList models);
+void RenderPlacement3D(GameState* gs, FeuilleCarte f, Camera3D camera, ModelList models);
+void RenderPlacement2D(GameState* gs);
 void ApplyPlacement(FeuilleCarte f, PlacementState* state, int* coinCount);
 
 
@@ -35,7 +38,7 @@ void multiplyVector(Vector3* vector, double a);
 /*chargements des modeles et génération de textures*/
 
 ModelList loadModels();
-Model loadSkybox(bool useHDR);
+Model loadSkybox(bool useHDR, Image skyboxImage);
 
 static TextureCubemap GenTextureCubemap(Shader shader, Texture2D panorama, int size, int format);
 
@@ -52,6 +55,10 @@ Seed generateSeed(int mountainSeed[2]);
 void* generateSeedThread(void* arg);//génération parallèle de la seed
 void* generateRandomVilageImagesThread(void* arg);
 Image generateVillageImage(int x, int y);
+void* PreloadSeedWorker(void* arg);		// Gen de seed parallèle au menu
+Image PrepareMountainImage(int x, int y);
+Model FinalizeMountainModel(Image img);
+
 
 /*fonctions de décharge*/
 void UnloadSeed(Seed* s);
