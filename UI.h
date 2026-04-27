@@ -43,10 +43,11 @@ void DrawRectangleStroke(Rectangle rec, float lineThick, Color rectColor, Color 
 
 Color multiplyColor(Color color, float factor);
 
+
+
+
 void DebugAssetViewer(GameState* gs);
 
 
-// Lib3d functions but used in UI.c (to avoid circular inclusion)
 
-Model loadSkybox(bool useHDR, Image skyboxImage);
 

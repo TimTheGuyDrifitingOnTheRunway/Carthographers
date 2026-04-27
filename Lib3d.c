@@ -3,7 +3,7 @@
 
 /**************************************************Fontions jeux******************************************/
 
-void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Position mountainPos[NOMBREMONTAGNE], Seed s, ModelList models) {
+void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Position moutainPos[NOMBREMONTAGNE], Seed s, ModelList models) {
 	Image treeImage = s.treeImage;
 	int nb = 0;
 
@@ -134,12 +134,7 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Position mountainPos[NOMB
 					
 				case MONTAGNE:
 					color = GRAY;
-					if (nb < NOMBREMONTAGNE && s.mountains[nb].meshCount > 0) {
-						DrawModel(s.mountains[nb], (Vector3) { x - 0.5, 0.5f + y, z - 0.5 }, 1, GRAY);
-					}
-					else {
-						printf("\nnb = %d \n", nb);
-					}
+					DrawModel(mountains[nb], (Vector3) { x - 0.5, 0.5f + y, z - 0.5 }, 1, GRAY);
 					nb++;
 					break;
 				case MONSTRE:
@@ -164,8 +159,9 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Position mountainPos[NOMB
 				case CONFLICTVALUE:
 					color = RED;
 					for (int k = 0; k < NOMBREMONTAGNE; k++) {
-						if (mountainPos[k].x == i && mountainPos[k].y == j) {
+						if (moutainPos[k].x == i && moutainPos[k].y == j) {
 							nb++;//avance le compte montagne si collision avec une montagne pour ne pas faire spawn une montagne sur une autre
+
 						}
 					}
 					break;
@@ -211,7 +207,7 @@ void GUIdisplayFinal(GameState gs, int mountainSeed[2], Seed s, ModelList models
            
 			Position emptyMountainPos[NOMBREMONTAGNE];
 			for (int mi = 0; mi < NOMBREMONTAGNE; mi++) { emptyMountainPos[mi].x = -100; emptyMountainPos[mi].y = -100; }
-			GUIDrawFeuille(ps->map, tempMap, mountainPos ? mountainPos : emptyMountainPos, s, models);
+			GUIDrawFeuille(ps->map, tempMap, mountains, mountainPos ? mountainPos : emptyMountainPos, s, models);
 
 			GUIdrawGrille();
 
@@ -228,7 +224,7 @@ void GUIdisplayFinal(GameState gs, int mountainSeed[2], Seed s, ModelList models
 	}
 }
 
-/*int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D camera, Model mountains[NOMBREMONTAGNE], Seed s, ModelList models) {
+int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D camera, Model mountains[NOMBREMONTAGNE], Seed s, ModelList models) {
 	if (checkShape(f, shape)) {
 		Piece shapeCopy;
 		copyPiece(*shape, shapeCopy);
@@ -297,7 +293,7 @@ void GUIdisplayFinal(GameState gs, int mountainSeed[2], Seed s, ModelList models
 		printf("IL n'y a pas la place pour rentrer votre piece \n");
 		return GUIplacementDefault(f, material, camera, mountains, s, models);
 	}
-}*/
+}
 
 
 int GUIPlacementCard(GameState* gs, FeuilleCarte f, const ExploreCard* card, int score, int isRuin, int* coinCount, Camera3D *camera, Model mountains[NOMBREMONTAGNE], Seed s, ModelList models) {
@@ -310,63 +306,31 @@ int GUIPlacementCard(GameState* gs, FeuilleCarte f, const ExploreCard* card, int
 		return GUIplacementDefaultCard(gs, f, card, score, 0, coinCount, camera, mountains, s, models);
 
 	// Init état
-	InitPlacementState(gs, f);
+	PlacementState state = { 0 };
+	state.card = card;
+	state.isRuin = isRuin;
+	state.hasTwoShapes = card->pieceB != NULL;
+	state.hasTwoMat = card->terrainB != 0;
+	state.isRiftLands = card->isRiftLands;
+	state.RiftLandsMat = 2;
+	state.material = card->isEnemy ? MONSTRE : card->terrainA;
+	state.pos = (Position){ 6, 6 };
+	state.status = 0;
 
+	copyPiece(canFitA ? *card->pieceA : *card->pieceB, state.shapeCopy);
+	Position* mountainPos = getPositionsOfMaterial(f, MONTAGNE);//envoi la positions des montagnes pour avancer si un conflit à lieu entre une montagne et autre
 	// Boucle principale — logique et rendu séparés
-	while (gs->placementState.status == 0 && !WindowShouldClose()) {
-		UpdatePlacement(f, &gs->placementState, *camera);
-		RenderPlacement(gs, f, score, *camera, s, models);
+	while (state.status == 0 && !WindowShouldClose()) {
+		UpdatePlacement(f, &state, *camera);
+		RenderPlacement(gs, f, &state, score, *camera, mountains, mountainPos, s, models);
 		GUIUpdateCustomCamera(camera);
 		camera->target = (Vector3){ 0.0f, 0.0f, 0.0f };
 	}
 
 	if (WindowShouldClose()) { EndProgram(gs); exit(1); }
 
-	ApplyPlacement(f, &gs->placementState, coinCount);
+	ApplyPlacement(f, &state, coinCount);
 	return 1;
-}
-
-void InitPlacementState(GameState* gs, FeuilleCarte f) {
-	gs->placementState.card = gs->exploreDeck[gs->exploreIndex];
-
-	// Vérification que c'est une carte sous application de ruine
-	gs->placementState.isRuin = 0;
-	if (!gs->exploreDeck[gs->exploreIndex]->isEnemy) {
-		for (int i = 1; i < min(6, gs->exploreIndex); i++) {
-			if (gs->exploreDeck[gs->exploreIndex - i]->isRuin) { gs->placementState.isRuin = 1; break; }
-			else if (!gs->exploreDeck[gs->exploreIndex - i]->isEnemy) { break; }
-		}
-	}
-	// Vérification que c'est plaçable
-	int canFitA = gs->placementState.isRuin ? checkShapeOnRuin(f, gs->placementState.card->pieceA) : checkShape(f, gs->placementState.card->pieceA);
-	int canFitB = gs->placementState.card->pieceB ? (gs->placementState.isRuin ? checkShapeOnRuin(f, gs->placementState.card->pieceB) : checkShape(f, gs->placementState.card->pieceB)) : 0;
-	if (!canFitA && !canFitB) {
-		gs->placementState.isDefault = 1;
-		gs->placementState.isRuin = 0;
-		copyPiece(POINT, gs->placementState.shapeCopy);
-	}
-	else {
-		gs->placementState.isDefault = 0;
-		copyPiece(canFitA ? *gs->placementState.card->pieceA : *gs->placementState.card->pieceB, gs->placementState.shapeCopy);
-	}
-
-	if (gs->placementState.mountainPos[0].x == 0) {						// Un montagne ne peut pas se trouver su un bord, et placementState est initialisé à 0 au lancement de la partie, donc si les montagnes n'ont pas encore étés définies, .x = 0
-		Position* mountainPos = getPositionsOfMaterial(f, MONTAGNE);	// Envoi la positions des montagnes pour avancer si un conflit à lieu entre une montagne et autre
-		for (int i = 0; i < NOMBREMONTAGNE; i++) {
-			gs->placementState.mountainPos[i].x = mountainPos[i].x;
-			gs->placementState.mountainPos[i].y = mountainPos[i].y;
-		}
-		free(mountainPos);
-	}
-
-	gs->placementState.hasTwoShapes = gs->placementState.card->pieceB != NULL;
-	gs->placementState.hasTwoMat = gs->placementState.card->terrainB != 0;
-	gs->placementState.isRiftLands = gs->placementState.card->isRiftLands;
-	gs->placementState.RiftLandsMat = 2;
-	gs->placementState.material = gs->placementState.card->isEnemy ? MONSTRE : gs->placementState.card->terrainA;
-	gs->placementState.pos = (Position){ 6, 6 };
-	gs->placementState.status = 0;
-
 }
 
 void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera) {
@@ -377,17 +341,19 @@ void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera) {
 		state->pos, state->rotation, state->material);
 	tryDraw(f, state->feuilleVide, state->temp);
 	
-	state->drawable = state->drawable && (state->isRuin ? coversRuin(f, state->feuilleVide) : 1) && isDrawable(f, state->feuilleVide);
+	state->drawable = state->drawable && state->isRuin ? coversRuin(f, state->feuilleVide) : isDrawable(f, state->feuilleVide);
 
-	if (IsKeyPressed(KEY_SPACE) && state->drawable) {
-		state->status = 1;
-		return;//retourne immédiatement si la pièce est placée pour éviter de devoir attendre la fin de la boucle et éviter les problèmes de placement + déplacement en même temps (duplicatrion)
-	}
-	
 	Vector3 forward = { camera.target.x - camera.position.x, 0, camera.target.z - camera.position.z };
 	normalize(&forward);
 	Vector3 right = crossProduct(forward, camera.up);
 	normalize(&right);
+
+
+	state->drawable = state->drawable && (state->isRuin ? coversRuin(f, state->feuilleVide) : isDrawable(f, state->feuilleVide));
+	if (IsKeyPressed(KEY_SPACE) && state->drawable) {
+		state->status = 1;
+		return;//retourne immédiatement si la pièce est placée pour éviter de devoir attendre la fin de la boucle et éviter les problèmes de placement + déplacement en même temps (duplicatrion)
+	}
 
 	if (IsKeyPressed(UPP))		fabs(forward.x) > fabs(forward.z) ? (state->pos.x += forward.x > 0 ? 1 : -1) : (state->pos.y += forward.z > 0 ? 1 : -1);
 	if (IsKeyPressed(DOWNP))	fabs(forward.x) > fabs(forward.z) ? (state->pos.x += forward.x > 0 ? -1 : 1) : (state->pos.y += forward.z > 0 ? -1 : 1);
@@ -437,17 +403,99 @@ void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera) {
 		if (state->pos.y > SIZE - 2) state->pos.y -= 1;
 	}
 
+	
+
+	
+
+
 	//if (OOB) { state->pos.x = 5; state->pos.y = 5; }// reset si hors limite (se produit rarement, mais peut arriver lors de switch de forme si les 2 formes ne peuvent pas être placées au même endroit)
 }
 
-void RenderPlacement(GameState* gs, FeuilleCarte f, int score, Camera3D camera, Seed s, ModelList models) {
+void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state, int score, Camera3D camera, Model mountain[NOMBREMONTAGNE], Position mountainPos[NOMBREMONTAGNE], Seed s, ModelList models) {
 	//printf("\nPosition : %d,%d", state->pos.x, state->pos.y);
-	
+	int midX = GetScreenWidth() / 2;
+	int midY = GetScreenHeight() / 2;
+	static bool openPlayerPanel = 0;
+	static bool openCard = 0;
+	static float historyScrollOffset = 0.0f; // Offset de scroll pour l'historique de cartes
+	static bool openSeasonCard = 0;
+
+	Rectangle infoPanel = { 0, midY - 700 / 2, 400, 700 };
+	//Rectangle playerPanel = { midX * 2 - 400, 100, 400, 250 };
+
+	Rectangle editsRec = (Rectangle){ midX - 40, -60, 80, 120 };
+
+	// Calcul de la largeur de chaque edit séparément
+	const char* editLabels[4];
+	Rectangle editRects[4];
+
+	{
+		int len;		// réduction de la portée car nom commun
+		for (int i = 0; i < 4; i++) {
+			char lbl[] = "       %s  ";
+			len = strlen(gs->edits[i]->name) + strlen(lbl) - 2;
+			editLabels[i] = (char*)malloc(len * sizeof(char));
+			snprintf(editLabels[i], len, lbl, gs->edits[i]->name);
+			//printf("%d\n", (int)strlen(gs->edits[i]->name));
+			editRects[i].width = MeasureTextEx(EDITS_FONT, editLabels[i], EDITS_FS, NORMAL_SPACING).x;
+			editRects[i].height = editsRec.height / 2;
+			editsRec.width += editRects[i].width;
+			editsRec.x -= editRects[i].width / 2;
+		}
+	}
+
+	// Les positionner côte à côte
+	int startX = midX - editsRec.width / 2;
+	for (int i = 0; i < 4; i++) {
+		editRects[i].x = startX + 40;
+		editRects[i].y = 0;
+		startX += editRects[i].width + 8;
+	}
+
+	// Hover timer
+	static float hoverTime[5] = { 0 };		// Le dernier sert à éviter de désafficher puis réafficher si on bouge vite entre 2 édits
+	Vector2 mouse = GetMousePosition();
+	int tooltipTarget = -1;
+
+	for (int i = 0; i < 4; i++) {
+		if (CheckCollisionPointRec(mouse, editRects[i])) {
+			hoverTime[i] += GetFrameTime();
+			hoverTime[4] = hoverTime[4] > 0 ? 4 * .4f : hoverTime[4] + 4 * GetFrameTime();				// délai de 1 seconde avant de désafficher / réafficher (on multiplie par 4, car le temps est modifié 4 fois par frame, lors des vérifications des autres Edits)
+			//printf("\nSet Hover Delta Time = %.4f", hoverTime[4] / 4);
+		} else {
+			hoverTime[i] = 0.f;
+			hoverTime[4] -= GetFrameTime();
+			hoverTime[4] = max(hoverTime[4], -.4f);			
+			//printf("\nDec Hover Delta Time = %.4f", hoverTime[4] / 4);
+		}
+
+		if (hoverTime[i] >= .4f || (hoverTime[4] > 0 && hoverTime[i] >= .1f)) // .6 secondes ou .1 sec si déjà hover
+			tooltipTarget = i;
+	}
+
+	const char* seasonLabel = TextFormat("%s  %d/%d", seasons[gs->currentSeason]->name, gs->currentTime, seasons[gs->currentSeason]->maxTime);
+
+	Vector2 seasonLabelSize = MeasureTextEx(SEASON_FONT, seasonLabel, EDITS_FS, NORMAL_SPACING);
+	Rectangle seasonRec = (Rectangle){ midX - seasonLabelSize.x / 2 - 40, editsRec.y + editsRec.height - 50, seasonLabelSize.x + 80, 100 };
+
+	Vector2 playerPanelSize = MeasureTextEx(PLAYER_PANEL_FONT, gs->players[gs->playerIndex].name, PLAYER_PANEL_FS + 10, NORMAL_SPACING);
+	Rectangle playerPanel = (Rectangle){ GetScreenWidth() - 50 - (openPlayerPanel ? max(PLAYER_REC_WIDTH, playerPanelSize.x - 20) : 0), midY - PLAYER_REC_HEIGHT / 2, playerPanelSize.x + PLAYER_REC_HEIGHT, PLAYER_REC_HEIGHT };
+	openPlayerPanel = CheckCollisionPointRec(mouse, playerPanel);
 
 	BeginDrawing();
 	ClearBackground(BACKGROUND_COLOR);
 	BeginMode3D(camera);
-	RenderPlacement3D(gs, f, camera, models);
+
+
+	GUIDrawFeuille(f, state->temp, mountain, mountainPos, s, models);
+
+	for (int i = 0; i < SIZE; i++)
+		for (int j = 0; j < SIZE; j++)
+			if (state->temp[i][j] != f[i][j])
+				DrawCubeWires((Vector3) { (float)i - SIZE / 2, PLACEMENT_HEIGHT, (float)j - SIZE / 2 }, 1.0f, 1.0f, 1.0f, BORDERCOLOR);
+
+
+	GUIdrawGrille();
 	EndMode3D();
 
 	/**************************************************************** Affichage 2D ****************************************************************/
@@ -467,107 +515,18 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, int score, Camera3D camera, 
 	//if (state->isRuin) DrawText("Doit être placé sur une Ruine", 5, infoPanel.y + y1, 30, RED); y1 += 35;
 	//if (state->isRiftLands) DrawText("Tous matériaux disponibles !", 5, infoPanel.y + y1, 30, RED); y1 += 35;
 
-	RenderPlacement2D(gs);
-
-	EndDrawing();
-}
-
-
-void RenderPlacement3D(GameState* gs, FeuilleCarte f, Camera3D camera, ModelList models) {
-	GUIDrawFeuille(f, gs->placementState.temp, gs->placementState.mountainPos, gs->seed, models);
-
-	for (int i = 0; i < SIZE; i++)
-		for (int j = 0; j < SIZE; j++)
-			if (gs->placementState.temp[i][j] != f[i][j])
-				DrawCubeWires((Vector3) { (float)i - SIZE / 2, PLACEMENT_HEIGHT, (float)j - SIZE / 2 }, 1.0f, 1.0f, 1.0f, BORDERCOLOR);
-
-	GUIdrawGrille();
-}
-
-
-
-void RenderPlacement2D(GameState* gs) {
-	int midX = GetScreenWidth() / 2;
-	int midY = GetScreenHeight() / 2;
-	static bool openPlayerPanel = 0;
-	static bool openCard = 0;
-	static float historyScrollOffset = 0.0f; // Offset de scroll pour l'historique de cartes
-	static bool openSeasonCard = 0;
-
-	Rectangle infoPanel = { 0, midY - 700 / 2, 400, 700 };
-
-	Rectangle editsRec = (Rectangle){ midX - 40, -EDITS_FS * 1.2f, 80, EDITS_FS * 1.3f * 2 };
-
-	const char* editLabels[4];
-	Rectangle editRects[4];
-	{
-		int len;		// Réduction de la portée car nom commun
-		// Calcul de la largeur de chaque edit séparément
-		for (int i = 0; i < 4; i++) {
-			char lbl[] = "       %s  ";
-			len = strlen(gs->edits[i]->name) + strlen(lbl) - 2;
-			editLabels[i] = (char*)malloc(len * sizeof(char));
-			snprintf(editLabels[i], len, lbl, gs->edits[i]->name);
-			//printf("%d\n", (int)strlen(gs->edits[i]->name));
-			editRects[i].width = MeasureTextEx(EDITS_FONT, editLabels[i], EDITS_FS, NORMAL_SPACING).x;
-			editRects[i].height = editsRec.height / 2;
-			editsRec.width += editRects[i].width;
-			editsRec.x -= editRects[i].width / 2;
-		}
-	}
-
-	// Les positionner côte à côte
-	int startX = midX - editsRec.width / 2;
-	for (int i = 0; i < 4; i++) {
-		editRects[i].x = startX + 40;
-		editRects[i].y = editsRec.y + (editsRec.height * 3 / 4) - EDITS_FS * 6 / 10;	// 6/10 = 1/2 + 1/5
-		startX += editRects[i].width + 8;
-	}
-
-	// Hover timer
-	static float hoverTime[5] = { 0 };		// Le dernier sert à éviter de désafficher puis réafficher si on bouge vite entre 2 édits
-	Vector2 mouse = GetMousePosition();
-	int tooltipTarget = -1;
-
-	for (int i = 0; i < 4; i++) {
-		if (CheckCollisionPointRec(mouse, editRects[i])) {
-			hoverTime[i] += GetFrameTime();
-			hoverTime[4] = hoverTime[4] > 0 ? 4 * .4f : hoverTime[4] + 4 * GetFrameTime();				// délai de 1 seconde avant de désafficher / réafficher (on multiplie par 4, car le temps est modifié 4 fois par frame, lors des vérifications des autres Edits)
-			//printf("\nSet Hover Delta Time = %.4f", hoverTime[4] / 4);
-		}
-		else {
-			hoverTime[i] = 0.f;
-			hoverTime[4] -= GetFrameTime();
-			hoverTime[4] = max(hoverTime[4], -.4f);
-			//printf("\nDec Hover Delta Time = %.4f", hoverTime[4] / 4);
-		}
-
-		if (hoverTime[i] >= .4f || (hoverTime[4] > 0 && hoverTime[i] >= .1f)) // .6 secondes ou .1 sec si déjà hover
-			tooltipTarget = i;
-	}
-
-	const char* seasonLabel = TextFormat("%s  %d/%d", seasons[gs->currentSeason]->name, gs->currentTime, seasons[gs->currentSeason]->maxTime);
-
-	Vector2 seasonLabelSize = MeasureTextEx(SEASON_FONT, seasonLabel, SEASON_FS, NORMAL_SPACING);
-	Rectangle seasonRec = (Rectangle){ midX - seasonLabelSize.x / 2 - 40, editsRec.y + editsRec.height - 50, seasonLabelSize.x + 80, 100 };
-
-	Vector2 playerPanelSize = MeasureTextEx(PLAYER_PANEL_FONT, gs->players[gs->playerIndex].name, PLAYER_PANEL_FS + 10, NORMAL_SPACING);
-	Rectangle playerPanel = (Rectangle){ GetScreenWidth() - 50 - (openPlayerPanel ? max(PLAYER_REC_WIDTH, playerPanelSize.x - 20) : 0), midY - PLAYER_REC_HEIGHT / 2, playerPanelSize.x + PLAYER_REC_HEIGHT, PLAYER_REC_HEIGHT };
-	openPlayerPanel = CheckCollisionPointRec(mouse, playerPanel);
-
-	/**************************************************************** Passage à l'écriture ****************************************************************/
 
 	/******** Gestion de la Carte ********/
 
 	// Recherche de la carte par le nom
-	char* cardName = gs->placementState.card->name;
+	char* cardName = state->card->name;
 	int cardIndex = 0;
 	for (int i = 0; i < NUM_CARDS; i++) if (!strcmp(expCards[i]->name, cardName)) { cardIndex = i; break; }
 
 
 
 	// Affichage de la carte
-	Texture2D cardTex = gs->assets->cardImages[cardIndex];
+	Texture2D cardTex = gs->assets.cardImages[cardIndex];
 	int targetHeight = GetScreenHeight() * (openCard ? .6f : .4f);
 	float ratioCards = 1.4f;					// Format des cartes de Cartographers (ou poker)
 	int targetWidth = targetHeight / ratioCards;
@@ -577,17 +536,19 @@ void RenderPlacement2D(GameState* gs) {
 	int typeFS = 40 * (openCard ? .6f : .4f) * ((float)GetScreenHeight() / 1000.0f);
 
 
+	int ruinOffsetX = 0;
+	int ruinOffsetY = 0;
 	int mainOffsetX = 0;
 
 	if (openCard) {
-		int historyCount = gs->exploreIndex;
+		int historyCount = gs->exploreIndex - 1;
 		int histCardHeight = targetHeight * histVSmainCardRatio;
 		int histSpacing = histCardHeight + 10;
 
-		float maxScroll = (float)(historyCount * histSpacing - 10) + midY - targetHeight / 2.0f;
+		float maxScroll = (float)(historyCount * histSpacing) + midY - targetHeight/* / 2.0f*/;
 		historyScrollOffset += GetMouseWheelMove() * histSpacing * .4f;
-		if (historyScrollOffset > maxScroll)	historyScrollOffset = maxScroll;
 		if (historyScrollOffset < 0)			historyScrollOffset = 0;
+		if (historyScrollOffset > maxScroll)	historyScrollOffset = maxScroll;
 
 		if (historyCount > 0) {
 			int histCardHeight = targetHeight * histVSmainCardRatio;
@@ -610,11 +571,12 @@ void RenderPlacement2D(GameState* gs) {
 				int hCardIndex = 0;
 				for (int j = 0; j < NUM_CARDS; j++) if (!strcmp(expCards[j]->name, hCard->name)) { hCardIndex = j; break; }
 
-				Texture2D hTex = gs->assets->cardImages[hCardIndex];
+				Texture2D hTex = gs->assets.cardImages[hCardIndex];
 				Rectangle hDest = (Rectangle){ (float)histX, (float)cardY, (float)histCardWidth, (float)histCardHeight };
 				Rectangle hSource = (Rectangle){ 0, 0, (float)hTex.width, (float)hTex.height };
 
-				DrawTexturePro(hTex, hSource, hDest, (Vector2) { 0 }, 0, WHITE);
+				float alpha = 0.6f + 0.4f * ((float)(i + 1) / historyCount);
+				DrawTexturePro(hTex, hSource, hDest, (Vector2) { 0 }, 0, ColorAlpha(WHITE, alpha));
 
 				// Nom
 				int hFS = (int)(cardFS * histVSmainCardRatio);
@@ -639,11 +601,8 @@ void RenderPlacement2D(GameState* gs) {
 		historyScrollOffset = 0.0f;
 	}
 
-	if (gs->placementState.isRuin) {
-		DrawText("Placement avec Ruine !!", 100, midY - 300, 100, RED);
-	}
 
-	bool showRuin = gs->placementState.isRuin && !gs->placementState.card->isEnemy && !openCard;
+	bool showRuin = state->isRuin && !state->card->isEnemy && !openCard;
 	if (showRuin) {
 		// Chercher la carte ruine dans exploreDeck avant la carte actuelle
 		const ExploreCard* ruinCard = NULL;
@@ -658,12 +617,12 @@ void RenderPlacement2D(GameState* gs) {
 			int ruinIndex = 0;
 			for (int i = 0; i < NUM_CARDS; i++) if (!strcmp(expCards[i]->name, ruinCard->name)) { ruinIndex = i; break; }
 
-			Texture2D ruinTex = gs->assets->cardImages[ruinIndex];
+			Texture2D ruinTex = gs->assets.cardImages[ruinIndex];
 
 			// Décalage : ruine en haut-gauche, carte principale décalée à droite
-			int ruinOffsetX = -15;
-			int ruinOffsetY = -45;
-			mainOffsetX = 30;
+			ruinOffsetX = -15;
+			ruinOffsetY = -15;
+			mainOffsetX = 20;
 
 			Rectangle ruinDest = (Rectangle){
 				50 + ruinOffsetX,
@@ -686,7 +645,7 @@ void RenderPlacement2D(GameState* gs) {
 		destRec.x + targetWidth / 2 - MeasureTextEx(CARD_FONT, cardName, cardFS, NORMAL_SPACING).x / 2,
 		destRec.y + targetHeight * 49 / 100,
 		cardFS, NORMAL_SPACING, WHITE, BLACK, 2);
-	char* typeLbl = gs->placementState.card->isEnemy ? "AMBUSH" : "EXPLORE";
+	char* typeLbl = state->card->isEnemy ? "AMBUSH" : "EXPLORE";
 	DrawStrokeTextEx(CARD_FONT, typeLbl,
 		destRec.x + targetWidth / 2 - MeasureTextEx(CARD_FONT, typeLbl, typeFS, NORMAL_SPACING).x / 2,
 		destRec.y + targetHeight * 95.5f / 100 - typeFS,
@@ -716,15 +675,15 @@ void RenderPlacement2D(GameState* gs) {
 	//DrawText(TextFormat("Score : %d", score), playerPanel.x + 5, y2, 30, BLACK); y2 += 35;
 	//DrawText(TextFormat("Coins : %d", gs->players[gs->playerIndex].coinCount), playerPanel.x + 5, y2, 30, BLACK); y2 += 35;
 	DrawRectangleRoundedStrokeEx(playerPanel, .1f, 10, 3, LIGHTGRAY, DARKBROWN);
-	DrawStrokeTextEx(PLAYER_PANEL_FONT, gs->players[gs->playerIndex].name, playerPanel.x + 10, playerPanel.y + 5, PLAYER_PANEL_FS + 10, NORMAL_SPACING, WHITE, BLACK, 1);
-	DrawStrokeTextEx(PLAYER_PANEL_FONT, TextFormat("SCORE  %d", gs->players[gs->playerIndex].score), playerPanel.x + 10, playerPanel.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, NORMAL_SPACING, WHITE, BLACK, 1);										y2 += PLAYER_PANEL_FS + 10;
+	DrawStrokeTextEx(PLAYER_PANEL_FONT, gs->players[gs->playerIndex].name, playerPanel.x + 10, playerPanel.y + 5 , PLAYER_PANEL_FS + 10, NORMAL_SPACING, WHITE, BLACK, 1);
+	DrawStrokeTextEx(PLAYER_PANEL_FONT, TextFormat("SCORE  %d", score), playerPanel.x + 10, playerPanel.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, NORMAL_SPACING, WHITE, BLACK, 1);										y2 += PLAYER_PANEL_FS + 10;
 	DrawStrokeTextEx(PLAYER_PANEL_FONT, TextFormat("PIECES  %d", gs->players[gs->playerIndex].coinCount), playerPanel.x + 10, playerPanel.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, NORMAL_SPACING, WHITE, BLACK, 1);		y2 += PLAYER_PANEL_FS + 10;
 	//if (gs->isOnline) { DrawText(TextFormat("COINS  %d", gs->players[gs->playerIndex].coinCount), playerPanel.x + 10, playerPanel.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, BLACK); }
 
 	// Affichage des saisons
 	//DrawRectangleRoundedStrokeEx(seasonRec, 1.f, 10, 2, BGCOLOR, GREEN);
 
-	Texture2D seasonTex = gs->assets->seasonImages[gs->currentSeason];
+	Texture2D seasonTex = gs->assets.seasonImages[gs->currentSeason];
 
 	float scale = 250.f / (float)seasonTex.width;
 	//printf("\nTexure : %d %d, scale : %f",IsTextureValid(seasonTex), seasonTex.width, scale);
@@ -732,23 +691,23 @@ void RenderPlacement2D(GameState* gs) {
 	Rectangle seasonTexPlace = (Rectangle){ seasonCardV.x, seasonCardV.y, seasonTex.width * scale, seasonTex.height * scale };
 	DrawTextureEx(seasonTex, seasonCardV, 0, scale, WHITE);
 
-	DrawStrokeTextEx(SEASON_FONT, seasonLabel, seasonRec.x + 40, editsRec.y + editsRec.height + (openSeasonCard ? seasonTexPlace.height * 3 / 4 : 0), SEASON_FS, NORMAL_SPACING, GOLD, BLACK, 1);
+	DrawStrokeTextEx(SEASON_FONT, seasonLabel, seasonRec.x + 40, editsRec.y + editsRec.height + (openSeasonCard ? seasonTexPlace.height * 3 / 4 : 0), EDITS_FS, NORMAL_SPACING, GOLD, BLACK, 1);
 
 	Rectangle openSeasonRec = GetCollisionRec(editsRec, seasonTexPlace);
 	bool openSeasonCardA = CheckCollisionPointRec(mouse, openSeasonRec);
 	bool openSeasonCardB = CheckCollisionPointRec(mouse, seasonTexPlace);
 	openSeasonCard = (!openSeasonCardA && openSeasonCardB);
-
+	
 	// Edits & Saison
 	DrawRectangleRoundedStrokeEx(editsRec, 1.f, 10, 2, BGCOLOR, GOLD);
 	for (int i = 0; i < 4; i++) {
-		DrawStrokeTextEx(gs->assets->fonts[FONT_GRENZE_GOTISCH_L], editLabels[i], editRects[i].x, editRects[i].y + 10 - EDITS_FS / 5, EDITS_FS, NORMAL_SPACING, GOLD, BLACK, 1);
+		DrawStrokeTextEx(gs->assets.fonts[FONT_GRENZE_GOTISCH_L], editLabels[i], editRects[i].x, editRects[i].y + 10 - EDITS_FS / 5, EDITS_FS, NORMAL_SPACING, GOLD, BLACK, 1);
 		if (i == gs->currentSeason || i == (gs->currentSeason + 1) % NUM_SEASONS) {
-			Texture2D letterScrollTex = gs->assets->letterScrollsImage[i];
+			Texture2D letterScrollTex = gs->assets.letterScrollsImage[i];
 			DrawTextureEx(letterScrollTex, (Vector2) { editRects[i].x, editRects[i].y + 10 - EDITS_FS / 5 }, 0, (float)EDITS_FS / (float)letterScrollTex.height * 1.2f, WHITE);
 		}
 		else {
-			Texture2D letterScrollTex = gs->assets->letterScrollsImage[i + NUM_SEASONS];
+			Texture2D letterScrollTex = gs->assets.letterScrollsImage[i + NUM_SEASONS];
 			DrawTextureEx(letterScrollTex, (Vector2) { editRects[i].x, editRects[i].y + 10 - EDITS_FS / 5 }, 0, (float)EDITS_FS / (float)letterScrollTex.height * 1.2f, WHITE);
 		}
 		//printf("Impression de l'edit %d (nom %s) a la place (%d,%d), taille %d\n", i, editLabels[i], (int)editRects[i].x + 10, (int)editRects[i].y + 10, EDITS_FS);
@@ -760,23 +719,22 @@ void RenderPlacement2D(GameState* gs) {
 	if (tooltipTarget != -1) {	// Affiche les tooltips
 		const char* desc = gs->edits[tooltipTarget]->description;
 		Rectangle maxBounds = (Rectangle){ A_MID(20, mouse.x), mouse.y + 25, A_MID(mouse.x, GetScreenWidth() - mouse.x) - 20, 0 };
-		Vector2 recSize = MeasureTextWrappedEx(TOOLTIP_FONT, desc, maxBounds, TOOLTIP_FS);
+		Vector2 recSize = MeasureTextWrappedEx(TOOLTIP_FONT, desc, maxBounds, 20);
 		maxBounds.x = A_MID(mouse.x - recSize.x, maxBounds.x - 20) - 10;
 		maxBounds.width = recSize.x + 40;
 		maxBounds.height = recSize.y + 20;
 
 		DrawRectangleRoundedStrokeEx(maxBounds, 0.3f, 10, 2, ColorAlpha(BLACK, 0.65f), BLACK);
 
-		DrawTextWrappedEx(TOOLTIP_FONT, desc, (Rectangle) { maxBounds.x + 20, maxBounds.y + 10, maxBounds.width - 40, 0 }, TOOLTIP_FS, 1, WHITE, BLACK);
+		DrawTextWrappedEx(TOOLTIP_FONT, desc, (Rectangle) { maxBounds.x + 20, maxBounds.y + 10, maxBounds.width - 40, 0 }, 20, 1, WHITE, BLACK);
 
 	}
 #undef A_MID
 
+	EndDrawing();
+
 	for (int i = 0; i < 4; i++) free(editLabels[i]);
-
 }
-
-
 
 void ApplyPlacement(FeuilleCarte f, PlacementState* state, int* coinCount) {
 	int mountainBefore = countSurroundedMountains(f);
@@ -799,11 +757,11 @@ void DrawMapGrid(int slices, float spacing) {
 	}
 }
 
-/*int GUIplacementDefault(FeuilleCarte f, int  material, Camera3D camera, Model mountains[NOMBREMONTAGNE], Seed s, ModelList models) {
+int GUIplacementDefault(FeuilleCarte f, int  material, Camera3D camera, Model mountains[NOMBREMONTAGNE], Seed s, ModelList models) {
 	if (getEmptySpots(f) == 0) return 0;
 	GUIplacementShape(f, POINT, material, camera, mountains, s, models);
 	return 1;
-}*/
+}
 
 int GUIplacementDefaultCard(GameState* gs, FeuilleCarte f, const ExploreCard* card, int score, int isRuin, int* coinCount, Camera3D *camera, Model mountains[NOMBREMONTAGNE], Seed s, ModelList models) {
 	if (getEmptySpots(f) == 0) return 0;
@@ -835,8 +793,8 @@ void GUIUpdateCustomCamera(Camera3D* camera) {
 
 	normalize(&newPos);//normalise le vecteur de position
 
-	if (newPos.y > MINCAMERAHEIGHT && newPos.y < (float)MAXCAMERAHEIGHT) { // Bornes de la caméra
-		camera->position.x = newPos.x * rhoCam; // replace la caméra à son écart cible
+	if (newPos.y > 0.0f && newPos.y < (float)MAXCAMERAHEIGHT) {// évite les postions négatives
+		camera->position.x = newPos.x * rhoCam;// replace la caméra à son écart cible
 		camera->position.y = newPos.y * rhoCam;
 		camera->position.z = newPos.z * rhoCam;
 	}
@@ -900,7 +858,8 @@ void multiplyVector(Vector3* vector, double a) {
 /*****************génération de heighmap et models ***/
 
 
-Model generateMountain(int x, int y) {	// pour éviter d'avoir toujours la même montagne au lancement du jeu
+Model generateMountain(int x, int y) {
+	// pour éviter d'avoir toujours la même montagne au lancement du jeu
 	Image perlinNoise = GenImagePerlinNoise(PERLIN_SIZE, PERLIN_SIZE, x * 100, y * 100, PERLIN_SCALE);
 
 
@@ -977,7 +936,7 @@ ModelList loadModels() {
 	printf("Loading models \n");
 	models.tree = LoadModel(PATH_TO_TREE_MODEL);
 	models.buisson = LoadModel(PATH_TO_BUSH_MODEL);
-	//models.skybox = loadSkybox(false);
+	models.skybox = loadSkybox(false);
 	models.house = LoadModel(PATH_TO_HOUSE);
 	models.monster = LoadModel(PATH_TO_MONSTER);
 	// génération du plan pour afficher la texture de champs
@@ -985,7 +944,7 @@ ModelList loadModels() {
 	Mesh plane = GenMeshPlane(1.0f, 1.0f, 1, 1);//plan unique pour générer plusieurs modèles différents, pour éviter de générer plusieurs meshes identiques
 
 
-	Texture2D textureChamps = LoadTexture(PATH_TO_CHAMPS_TEXTURE);
+	Texture2D textureChamps = LoadTexture(PATH_TO_CHAMPS_TEXTURE);	
 	models.champs = LoadModelFromMesh(plane);
 	SetTextureWrap(textureChamps, TEXTURE_WRAP_CLAMP);
 	SetTextureFilter(textureChamps, TEXTURE_FILTER_POINT);
@@ -1002,6 +961,7 @@ ModelList loadModels() {
 
 	//idem mais pour le sol des monstres :
 	{
+		
 		Texture2D texture = LoadTexture(PATH_TO_MONSTER_TEXTURE);
 		models.monsterTile = LoadModelFromMesh(plane);
 		SetTextureWrap(texture, TEXTURE_WRAP_CLAMP);
@@ -1011,6 +971,7 @@ ModelList loadModels() {
 
 	//idem mais pour le sol de la foret
 	{
+	
 		Texture2D texture = LoadTexture(PATH_TO_FORET_TEXTURE);
 		models.forestTile = LoadModelFromMesh(plane);
 		SetTextureWrap(texture, TEXTURE_WRAP_CLAMP);
@@ -1018,8 +979,9 @@ ModelList loadModels() {
 		models.forestTile.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture;
 	}
 
-	//idem mais pour le sol des villages
+	//idem mais pour le sol de la foret
 	{
+
 		Texture2D texture = LoadTexture(PATH_TO_VILLAGE_TEXTURE);
 		models.vilageTile = LoadModelFromMesh(plane);
 		SetTextureWrap(texture, TEXTURE_WRAP_CLAMP);
@@ -1035,8 +997,8 @@ ModelList loadModels() {
 }
 
 
-Model loadSkybox(bool useHDR, Image skyboxImage) {
-	//double start = GetTime();
+Model loadSkybox(bool useHDR) {
+	double start = GetTime();
 	Mesh cube = GenMeshCube(1.0f, 1.0f, 1.0f);
 	Model skybox = LoadModelFromMesh(cube);
 
@@ -1046,16 +1008,21 @@ Model loadSkybox(bool useHDR, Image skyboxImage) {
 
 	// Load skybox shader and set required locations
 	// NOTE: Some locations are automatically set at shader loading
-	skybox.materials[0].shader = LoadShader(TextFormat(SKYBOX_SHADER_PATH_VS, GLSL_VERSION),
-		TextFormat(SKYBOX_SHADER_PATH_FS, GLSL_VERSION));
+	skybox.materials[0].shader = LoadShader(TextFormat(SKYBOX_SHADER_PATH, GLSL_VERSION),
+		TextFormat(SKYBOX_SHADER_PATH2, GLSL_VERSION));
+
+#define SKYBOX_SHADER_PATH "Assets/shaders/glsl%i/skybox.vs"
+#define SKYBOX_SHADER_PATH2 "Assets/shaders/glsl%i/skybox.fs"
+#define SKYBOX_CUBEMAP_SHADER_PATH "Assets/shaders/glsl%i/cubemap.vs"
+#define SKYBOX_CUBEMAP_SHADER_PATH "Assets/shaders/glsl%i/cubemap.fs"
 
 	SetShaderValue(skybox.materials[0].shader, GetShaderLocation(skybox.materials[0].shader, "environmentMap"), (int[1]) { MATERIAL_MAP_CUBEMAP }, SHADER_UNIFORM_INT);
 	SetShaderValue(skybox.materials[0].shader, GetShaderLocation(skybox.materials[0].shader, "doGamma"), (int[1]) { useHDR ? 1 : 0 }, SHADER_UNIFORM_INT);
 	SetShaderValue(skybox.materials[0].shader, GetShaderLocation(skybox.materials[0].shader, "vflipped"), (int[1]) { useHDR ? 1 : 0 }, SHADER_UNIFORM_INT);
 
 	// Load cubemap shader and setup required shader locations
-	Shader shdrCubemap = LoadShader(TextFormat(SKYBOX_CUBEMAP_SHADER_PATH_VS, GLSL_VERSION),
-		TextFormat(SKYBOX_CUBEMAP_SHADER_PATH_FS, GLSL_VERSION));
+	Shader shdrCubemap = LoadShader(TextFormat(SKYBOX_CUBEMAP_SHADER_PATH, GLSL_VERSION),
+		TextFormat(SKYBOX_CUBEMAP_SHADER_PATH, GLSL_VERSION));
 
 	SetShaderValue(shdrCubemap, GetShaderLocation(shdrCubemap, "equirectangularMap"), (int[1]) { 0 }, SHADER_UNIFORM_INT);
 
@@ -1072,13 +1039,16 @@ Model loadSkybox(bool useHDR, Image skyboxImage) {
 		// NOTE 1: New texture is generated rendering to texture, shader calculates the sphere->cube coordinates mapping
 		// NOTE 2: It seems on some Android devices WebGL, fbo does not properly support a FLOAT-based attachment,
 		// despite texture can be successfully created.. so using PIXELFORMAT_UNCOMPRESSED_R8G8B8A8 instead of PIXELFORMAT_UNCOMPRESSED_R32G32B32A32
-		skybox.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture = GenTextureCubemap(shdrCubemap, panorama, SKYBOX_RES, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
+		skybox.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture = GenTextureCubemap(shdrCubemap, panorama, 1024, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
 
 		UnloadTexture(panorama);        // Texture not required anymore, cubemap already generated
 	}
 	else
 	{
-		skybox.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture = LoadTextureCubemap(skyboxImage, CUBEMAP_LAYOUT_AUTO_DETECT);
+
+		Image image = LoadImage(PATH_TO_SKYBOX);
+		skybox.materials[0].maps[MATERIAL_MAP_CUBEMAP].texture = LoadTextureCubemap(image, CUBEMAP_LAYOUT_AUTO_DETECT);
+		UnloadImage(image);
 	}
 	//printf("\n La skybox a mis %f temps à se charger\n", (float)(GetTime() - start));
 	return skybox;
@@ -1202,10 +1172,11 @@ Seed generateSeed(int mountainSeed[2]) {//génère une seed aléatoire pour les 
 	pthread_create(&thread2, NULL, generateRandomOfsetImagesThread, NULL);
 	pthread_create(&thread3, NULL, generateRandomVilageImagesThread, NULL);
 
+	s.isGenerated = 1;
 	s.treeImage = generateForestImage(mountainSeed[0] * 10, mountainSeed[1] * 10);
 
-	pthread_join(thread1, (void**)&pResult1);
 	pthread_join(thread2, (void**)&pResult2);
+	pthread_join(thread1, (void**)&pResult1);
 	pthread_join(thread3, (void**)&pResult3);
 	
 
@@ -1258,7 +1229,7 @@ void UnloadSeed(Seed* s) {
 	s->isGenerated = 0;
 	printf("[INFO] seed unloaded \n");
 }
-void UnloadModels(ModelList* models) {	//décharge manuellement les models meme si raylib le fait automatiquement
+void UnloadModels(ModelList* models) {//décharge manuellement les models meme si raylib le fait automatiquement
 	UnloadModel(models->tree);
 	UnloadModel(models->buisson);
 	UnloadModel(models->skybox);
@@ -1272,69 +1243,9 @@ void UnloadModels(ModelList* models) {	//décharge manuellement les models meme 
 	printf("[INFO] models unloaded \n");
 }
 
-Image PrepareMountainImage(int x, int y) {
-	Image perlinNoise = GenImagePerlinNoise(PERLIN_SIZE, PERLIN_SIZE, x * 100, y * 100, PERLIN_SCALE);
 
 
-	for (int y = 0; y < PERLIN_SIZE; y++) {// fallof pour avoir des bords smooths
-		for (int x = 0; x < PERLIN_SIZE; x++) {
 
-			float nx = (float)x / (float)PERLIN_SIZE * 2.0f - 1.0f;
-			float ny = (float)y / (float)PERLIN_SIZE * 2.0f - 1.0f;
-
-			float fx = 1.0f - powf(fabsf((float)x / PERLIN_SIZE * 2.0f - 1.0f), PERLIN_MODEL_SMOOTHING);
-			float fy = 1.0f - powf(fabsf((float)y / PERLIN_SIZE * 2.0f - 1.0f), PERLIN_MODEL_SMOOTHING);
-			float falloff = fx * fy;
-
-			if (falloff < 0) falloff = 0;
-
-			Color c = GetImageColor(perlinNoise, x, y);
-			float height = (float)c.r / 255.0f;
-
-			height *= falloff;
-
-			unsigned char h = (unsigned char)(height * 255.0f);
-			ImageDrawPixel(&perlinNoise, x, y, (Color) { h, h, h, 255 });
-		}
-	}
-
-
-	ImageDrawLineV(&perlinNoise, (Vector2) { 0, 0 }, (Vector2) { 0, PERLIN_SIZE }, MOUNTAIN_MODEL_COLOR);
-	ImageDrawLineV(&perlinNoise, (Vector2) { PERLIN_SIZE - 1, 0 }, (Vector2) { PERLIN_SIZE - 1, PERLIN_SIZE }, MOUNTAIN_MODEL_COLOR);// bordure noire pour éviter les artefacts de texture sur les bords du modèle
-	ImageDrawLineV(&perlinNoise, (Vector2) { 0, 0 }, (Vector2) { PERLIN_SIZE, 0 }, MOUNTAIN_MODEL_COLOR);
-	ImageDrawLineV(&perlinNoise, (Vector2) { 0, PERLIN_SIZE - 1 }, (Vector2) { PERLIN_SIZE, PERLIN_SIZE - 1 }, MOUNTAIN_MODEL_COLOR);
-
-	return perlinNoise;
-}
-
-Model FinalizeMountainModel(Image img) {
-	Mesh mesh = GenMeshHeightmap(img, (Vector3) { MOUNTAIN_MODEL_SIZE, MOUNTAIN_MODEL_HEIGHT, MOUNTAIN_MODEL_SIZE });
-	Model model = LoadModelFromMesh(mesh);
-
-	Image temp = ImageCopy(img);
-	ImageColorBrightness(&temp, 100);
-	Texture2D texture = LoadTextureFromImage(temp);
-	model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture;
-
-	UnloadImage(temp);
-	return model;
-}
-
-void* PreloadSeedWorker(void* arg) {
-	GameState* gs = (GameState*)arg;
-	int mSeed[2] = { randInt(0, 100), randInt(0, 100) };
-
-	// Génération des images de base
-	gs->seed = generateSeed(mSeed);
-
-	// Génération des 5 images de montagnes
-	for (int i = 0; i < NOMBREMONTAGNE; i++) {
-		gs->seed.mountainImages[i] = PrepareMountainImage(i + mSeed[1], i + mSeed[0]);
-	}
-
-	gs->seed.isGenerated = true;
-	return NULL;
-}
 
 
 /***************************Sound management****************/

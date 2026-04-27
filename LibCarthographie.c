@@ -278,7 +278,7 @@ Position* getPositionsOfMaterial(FeuilleCarte f, int material) {
 	int occurences = getOccurencesOf(f, material);
 	if (occurences == 0) return NULL;
 
-	Position* positions = (Position*)malloc(sizeof(Position) * occurences);
+	Position* positions = malloc(sizeof(Position) * occurences);
 	if (positions == NULL) return NULL; // allocation failed
 
 	int k = 0;

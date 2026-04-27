@@ -35,7 +35,7 @@ const ScoringCard Shieldgate = { 3, calcShieldgate, "Shieldgate", "Gagnez deux �
 // 🗺️ Cartes liées à la Structure et au Remplissage Global
 const ScoringCard Borderlands = { 4, calcBorderlands, "Borderlands", "Gagnez six Étoiles de Réputation pour chaque ligne ou colonne complète (cases remplies)." };
 const ScoringCard BrokenRoad = { 4, calcBrokenRoad, "The Broken Road", "Gagnez trois Étoiles de Réputation pour chaque ligne diagonale complète (cases remplies) qui touche les bords gauche et inférieur de la Carte." };
-const ScoringCard LostBarony = { 4, calcLostBarony, "Lost Barony", "Gagnez trois Étoiles de Réputation pour chaque case d'un côté du plus grand carré de cases remplies (ex: un carré de 5x5=15 Étoiles)." };
+const ScoringCard LostBarony = { 4, calcLostBarony, "Lost Barony", "Gagnez trois Étoiles de Réputation pour chaque case d'un côté du plus grand carré de cases remplies (ex: un carré de 4x4=12 Étoiles)." };
 const ScoringCard TheCauldrons = { 4, calcTheCauldrons, "The Cauldrons", "Gagnez une Étoile de Réputation pour chaque case vide entouré des quatre côtés par des cases remplies ou le bord de la Carte." };
 
 /*// 🌳 Cartes liees a la Foret
@@ -94,6 +94,13 @@ const ExploreCard FlayerIncursion = { .name = "Flayer Incursion", .isEnemy = 1, 
 
 const ExploreCard* expCards[NUM_CARDS] = { &FarmLands, &ForgottenForest, &Hamlet, &GreatRiver, &HinterlandStream, &Homestead, &Orchard, &Marshlands, &TreetopVillage, &FishingVillage, &OutpostRuins, &TempleRuins, &RiftLands, &GoblinAttack, &BugbearAssault, &KoboldOnslaught, &GnollRaid, &OgreCharge, &InsectoidInvasion, &RatmanStrike, &FlayerIncursion };
 
+/*TODO: 
+* Mise en place du jeu complet
+* Tour de jeu
+* Passer d'un tour à l'autre
+* 
+*/
+
 
 
 void SetupGame(GameState* gs) { 	// Initialisation du jeu
@@ -121,6 +128,7 @@ void SetupGame(GameState* gs) { 	// Initialisation du jeu
 	for (int i = 0; i < 13; i++) {
 		gs->exploreDeck[i] = expCards[i];
 	}
+	InitDeck(gs);
 
 	// Initialisation du 1er tour
 	gs->currentSeason = 0;
@@ -176,10 +184,7 @@ void InitDeck(GameState* gs) {
 	// Setup du deck
 	// Il faut enlever les cartes ennemies qui ont étés jouées pendant la saison
 	for (int i = 0; i < gs->exploreIndex; i++) {
-		if (gs->exploreDeck[i]->isEnemy) {
-			gs->exploreDeck[i] = NULL;
-			gs->deckSize--;
-		}
+		if (gs->exploreDeck[i]->isEnemy) gs->exploreDeck[i] = NULL;
 	}
 
 	int j = 0;
@@ -237,9 +242,8 @@ void InitScoringCards(GameState* gs) {
 
 void StartGame(GameState* gs, Camera3D camera) {
 	printf("\n\n\n\nLancement du jeu !\n\n\n\n");
-	//ModelList models = loadModels();
-	//Season(gs, camera, gs->assets->models);
-	RunGameLoop(gs, camera);
+	ModelList models = loadModels();
+	Season(gs, camera, models);
 }
 
 // Saisons
@@ -260,7 +264,7 @@ void Season(GameState* gs, Camera3D camera, ModelList models) {
 	gs->currentTime = 0;
 	int isRuin = 0;
 	while (gs->currentTime < seasons[gs->currentSeason]->maxTime) {
-		Turn(gs, &camera, mountainSeed, models, s);
+		Turn(gs, &isRuin, &camera, mountainSeed, models, s);
 	}
 	pthread_join(thread, (void**)&s2);
 	Seed S2 = *s2;
@@ -279,7 +283,7 @@ void Season2(GameState* gs, Camera3D camera, ModelList models, Seed s, int mount
 	gs->currentTime = 0;
 	int isRuin = 0;
 	while (gs->currentTime < seasons[gs->currentSeason]->maxTime) {
-		Turn(gs, &camera, mountainSeed, models, s);
+		Turn(gs, &isRuin, &camera, mountainSeed, models, s);
 	}
 	pthread_join(thread, (void**)&s2);
 	Seed S2 = *s2;
@@ -291,7 +295,7 @@ void Season2(GameState* gs, Camera3D camera, ModelList models, Seed s, int mount
 
 void NextSeason(GameState *gs, Camera3D camera, ModelList models, Seed s2, int mountainSeed[2]) {
 	InitDeck(gs);
-	gs->exploreIndex = -1;		// -1, car il est directement incrémenté lors du début de tour
+	gs->exploreIndex = 0;
 	
 
 	// calculs des points
@@ -316,8 +320,8 @@ void NextSeason(GameState *gs, Camera3D camera, ModelList models, Seed s2, int m
 }
 
 // Tour de jeu
-const ExploreCard* Turn(GameState* gs, Camera3D *camera, int mountainSeed[2], ModelList models, Seed s) {
-	const ExploreCard* card = NextExploreCard(gs);
+const ExploreCard* Turn(GameState* gs, int* isRuin, Camera3D *camera, int mountainSeed[2], ModelList models, Seed s) {
+	const ExploreCard* card = NextExploreCard(gs, isRuin);
 	gs->currentTime += card->time;
 
 	for (int p = 0; p < gs->playerNumber; p++) {
@@ -328,138 +332,23 @@ const ExploreCard* Turn(GameState* gs, Camera3D *camera, int mountainSeed[2], Mo
 		
 		generateMountainsModels(mountains, gs->players[(p + card->rotation + gs->playerNumber) % gs->playerNumber].map, mountainSeed);
 		printf("--- Tour de %s %d/%d---\n", ps->name, p + 1, gs->playerNumber);
-		GUIPlacementCard(gs, gs->players[(p + card->rotation + gs->playerNumber) % gs->playerNumber].map, card, ps->score, (gs->placementState.isRuin && !card->isEnemy), &ps->coinCount, camera, mountains, s, models);	// p + card->rotation + gs->playerNumber car (-1 % playerNumber) renvoie -1
+		GUIPlacementCard(gs, gs->players[(p + card->rotation + gs->playerNumber) % gs->playerNumber].map, card, ps->score, (*isRuin && !card->isEnemy), &ps->coinCount, camera, mountains, s, models);	// p + card->rotation + gs->playerNumber car (-1 % playerNumber) renvoie -1
 	}
 
 	if (card->isEnemy) gs->deckSize--;
-	else gs->placementState.isRuin = 0;
+	else *isRuin = 0;
 	return card;
 }
-const ExploreCard* NextExploreCard(GameState* gs) {
+const ExploreCard* NextExploreCard(GameState* gs, int *isRuin) {
 	const ExploreCard* card;
 	do {
-		gs->exploreIndex++;
 		card = gs->exploreDeck[gs->exploreIndex];
-		if (card && card->isRuin) gs->placementState.isRuin = 1;
-		printf("Carte choisie %d, %d\n\n", gs->exploreIndex, gs->placementState.isRuin);
+		if (card && card->isRuin) *isRuin = 1;
+		gs->exploreIndex++;
+		printf("Carte choisie %d, %d\n\n", gs->exploreIndex, *isRuin);
 	} while (card && card->isRuin);
 	return card;
 }
 
-void RunGameLoop(GameState* gs, Camera camera) {
-	GamePhase currentPhase = PHASE_INIT_SEASON;
-	gs->currentSeason = 0;
-	gs->playerIndex = 0;
 
-	while (!WindowShouldClose()) {
-
-		// --- 1. MISE À JOUR LOGIQUE (UPDATE) ---
-		switch (currentPhase) {
-		case PHASE_INIT_GAME:
-			if (gs->gameType != 2) {
-				if (gs->playerNumber == 1) {
-					gs->gameType = 0;
-				}
-				else {
-					gs->gameType = 1;
-				}
-			}
-		case PHASE_INIT_SEASON:								// Mélange des cartes, setup de la saison
-			gs->currentTime = 0;
-			gs->placementState.isRuin = 0;
-			gs->playerIndex = 0;
-			InitDeck(gs);									// On InitDeck aavnt pour qu'il puisse dégager les monstres
-			gs->exploreIndex = -1;							// -1, car il est directement incrémenté lors du début de tour
-			currentPhase = PHASE_DRAW_CARD;
-			break;
-
-		case PHASE_DRAW_CARD:								// On tire la carte de la manche et initialise le placementState
-			NextExploreCard(gs);
-			InitPlacementState(gs, gs->players[(gs->playerIndex + gs->exploreDeck[gs->exploreIndex]->rotation + gs->playerNumber) % gs->playerNumber].map); // Reset la position de la pièce
-			gs->currentTime += gs->exploreDeck[gs->exploreIndex]->time;
-			currentPhase = PHASE_PLACEMENT;
-			break;
-
-		case PHASE_PLACEMENT:								// Mise à jour des inputs pour le joueur actuel
-			UpdatePlacement(gs->players[gs->playerIndex].map, &gs->placementState, camera);
-
-			if (gs->placementState.status == 1) {
-				ApplyPlacement(gs->players[gs->playerIndex].map, &gs->placementState, &gs->players[gs->playerIndex].coinCount);
-				currentPhase = PHASE_WAITING_OTHERS;
-			}
-			break;
-
-		case PHASE_WAITING_OTHERS:							// Local : passage au joueur suivant, online : attente des autres joueurs
-
-			if (gs->gameType == 1 || gs->gameType == 0) { // MODE MULTI LOCAL
-				if (++gs->playerIndex < gs->playerNumber) {
-					// Au tour du joueur suivant
-					currentPhase = PHASE_PLACEMENT;
-				}
-				else {
-					// Tout le monde a joué ce tour, on passe au tour suivant
-					if (gs->currentTime >= seasons[gs->currentSeason]->maxTime) {
-						currentPhase = PHASE_END_SEASON;
-					}
-					else {
-						gs->playerIndex = 0;
-						currentPhase = PHASE_DRAW_CARD;
-					}
-				}
-			}
-			else if (gs->gameType == 2) { // MODE RÉSEAU (plus tard)
-				// if (paquet "NEXT_TURN" reçu) -> currentPhase = PHASE_DRAW_CARD;
-			}
-			break;
-		case PHASE_END_SEASON:
-
-			// calculs des points
-			for (int p = 0; p < gs->playerNumber; p++) {
-				PlayerState* ps = &gs->players[p];
-				printf("\n\nCalcul des points pour %s :\n", ps->name);
-				int p1 = gs->edits[seasons[gs->currentSeason]->EditA]->fctCaluls(ps->map);
-				printf("\n%s a donne %d points", gs->edits[seasons[gs->currentSeason]->EditA]->name, p1);
-				int p2 = gs->edits[seasons[gs->currentSeason]->EditB]->fctCaluls(ps->map);
-				printf("\n%s a donne %d points", gs->edits[seasons[gs->currentSeason]->EditB]->name, p2);
-				printf("\nLes coins ont donne %d points", ps->coinCount);
-				int Epts = calcEnenmyPoints(ps->map);
-				printf("\nLes ennemis ont enleve %d points", Epts);
-				int pts = p1 + p2 + ps->coinCount - Epts;
-				ps->score += pts;
-				printf("\nPoints cette saison : %d\nPoints totaux : %d\n\n", pts, ps->score);
-
-			}
-
-			if (++gs->currentSeason < 4) currentPhase = PHASE_INIT_SEASON;
-			else currentPhase = PHASE_END_GAME;
-			break;
-		case PHASE_END_GAME:
-			// ajouter une action de fin
-			return;
-			break;
-
-		}
-
-		// --- 2. AFFICHAGE (DRAW) ---
-		BeginDrawing();
-
-		// On dessine selon la phase
-		if (currentPhase == PHASE_PLACEMENT || currentPhase == PHASE_WAITING_OTHERS) {
-			ClearBackground(BACKGROUND_COLOR);
-			BeginMode3D(camera);
-			// Dessin du plateau du gs->playerIndex actuel
-			RenderPlacement3D(gs, gs->players[(gs->playerIndex + gs->exploreDeck[gs->exploreIndex]->rotation + gs->playerNumber) % gs->playerNumber].map, camera, gs->assets->models);
-			GUIUpdateCustomCamera(&camera);
-			camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
-			EndMode3D();
-			RenderPlacement2D(gs);
-
-			if (currentPhase == PHASE_WAITING_OTHERS && gs->gameType == 2) {
-				DrawText("En attente des autres joueurs...", 10, 10, 20, RED);
-			}
-		}
-
-		EndDrawing();
-	}
-}
 

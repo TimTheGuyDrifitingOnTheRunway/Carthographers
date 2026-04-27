@@ -3,6 +3,9 @@
 
 #include "Consts.h"
 
+
+
+
 //
 
 typedef int FeuilleCarte[SIZE][SIZE];
@@ -20,37 +23,15 @@ typedef struct InfoGroupe {
 }InfoGroupe;
 
 typedef enum {
-	FONT_GRENZE_GOTISCH_B,	// Police d'écriture GrenzeGotish Bold
+	FONT_GRENZE_GOTISCH_B,   // Police d'écriture GrenzeGotish Bold
 	FONT_GRENZE_GOTISCH_L,	// Police d'écriture GrenzeGotish Light
-	FONT_PIRATA_ONE,		// Police d'écriture PirataOne
+	FONT_PIRATA_ONE,        // Police d'écriture PirataOne
 	FONT_FREDOKA_SB,		// Police d'écriture Fredoka en Semi Bold
-	FONT_FREDOKA_CM,		// Police d'écriture Fredoka en Compressed et Medium
+	FONT_FREDOKA_CM,        // Police d'écriture Fredoka en Compressed et Medium
 	FONT_METAMORPHOUS,		// Police d'écriture Metamorphous
 	FONT_COUNT				// Nombre de Polices d'écriture
 } FontNames;
 
-typedef enum {
-	PHASE_MAIN_MENU,		// Dans le menu de jeu
-	PHASE_LOBBY,			// Joueur dans un lobby, en attendant le début de la partie
-	PHASE_INIT_GAME,		// Lancement de la partie
-	PHASE_INIT_SEASON,		// Tirage des cartes, setup
-	PHASE_DRAW_CARD,		// Phase de tirage de la prochaine carte
-	PHASE_PLACEMENT,		// Le joueur manipule sa pièce
-	PHASE_WAITING_OTHERS,	// Le joueur a validé, on attend les autres joueurs
-	PHASE_END_SEASON,		// Calcul des scores de la saison
-	PHASE_END_GAME,			// Fin de la partie
-} GamePhase;
-
-
-typedef enum {
-	SCREEN_MENU,
-	SCREEN_ADD_PLAYER,
-	SCREEN_RULES,
-	SCREEN_KEYBINDS,
-	SCREEN_LANGUAGE,
-	SCREEN_GAME,
-	SCREEN_EXIT
-} ScreenID;
 
 
 // GameManager.h
@@ -97,7 +78,6 @@ typedef struct {
 	Image cardsRAM[NUM_CARDS];
 	Image seasonsRAM[NUM_SEASONS];
 	Image editsRAM[NUM_EDITS * 2];
-	Image skyboxImg;
 
 	int cardsLoadedRAM;
 	int seasonsLoadedRAM;
@@ -107,8 +87,6 @@ typedef struct {
 	int seasonsLoadedVRAM;
 	int editsLoadedVRAM;
 
-	int modelsLoaded;
-
 	pthread_mutex_t mutex;
 } LoadContext;
 
@@ -116,9 +94,32 @@ typedef struct PlayerState {
 	FeuilleCarte map;
 	int coinCount;
 	int score;
-	char name[MAX_NAME_LENGTH];
+	char name[20];
 } PlayerState;
 
+typedef struct AssetBank {
+	Font fonts[FONT_COUNT];
+	Texture2D cardImages[NUM_CARDS];
+	Texture2D seasonImages[NUM_SEASONS];
+	Texture2D letterScrollsImage[NUM_SEASONS * 2];		// 2 fois plus pour stocker les Textures en nuances de Gris
+} AssetBank;
+
+typedef struct GameState {
+	int playerNumber;			// Nombre de joueurs
+	PlayerState* players;
+	int playerIndex;			// Index du joueur actuel
+	int currentTime;
+	int currentSeason;
+	const ScoringCard* edits[4];
+	const ExploreCard* exploreDeck[17];
+	int exploreIndex;			// Index de la carte actuelle
+	int deckSize;				// Taille actuelle du deck
+
+	bool isOnline;
+
+	AssetBank assets;
+	LoadContext* loadCtx;
+} GameState;
 
 
 // Lib3D.h
@@ -131,7 +132,6 @@ typedef struct PlacementState {
 	int         material;
 	int         drawable;
 	int         isRuin;
-	int			isDefault;
 	int         hasTwoShapes;
 	int         hasTwoMat;
 	int         isRiftLands;
@@ -140,7 +140,6 @@ typedef struct PlacementState {
 	FeuilleCarte temp;          // f + feuilleVide fusionnés pour rendu
 	const ExploreCard* card;
 	int status;                 // 0 = En placement, 1 = placé
-	Position mountainPos[NOMBREMONTAGNE];
 } PlacementState;
 
 
@@ -173,6 +172,15 @@ typedef struct {
 	bool validated;
 } InputBox;
 
+typedef enum {
+	SCREEN_MENU,
+	SCREEN_ADD_PLAYER,
+	SCREEN_RULES,
+	SCREEN_KEYBINDS,
+	SCREEN_LANGUAGE,
+	SCREEN_GAME,
+	SCREEN_EXIT
+} ScreenID;
 
 typedef struct RulePage {
 	char* Text;
@@ -191,7 +199,7 @@ typedef struct {
     Model monsterTile;
     Model forestTile;
 	Model vilageTile;
-}ModelList;		// Liste des modèles à charger au lancement. Si ajout, penser à changer TOTAL_MODELS_TO_LOAD
+}ModelList;
 
 
 typedef struct {
@@ -199,37 +207,7 @@ typedef struct {
 	Image treeImage;
 	Image OfsetImagex;
     Image OfsetImagey;
-	Image villageImage;
-	Image mountainImages[NOMBREMONTAGNE];	// Stockage temporaire des images
-	Model mountains[NOMBREMONTAGNE];		// Modèles finaux
+    Image villageImage;
 
 }Seed;
 
-
-typedef struct AssetBank {
-	Font fonts[FONT_COUNT];
-	Texture2D cardImages[NUM_CARDS];
-	Texture2D seasonImages[NUM_SEASONS];
-	Texture2D letterScrollsImage[NUM_EDITS * 2];		// 2 fois plus pour stocker les Textures en nuances de Gris
-	ModelList models;
-} AssetBank;
-
-
-typedef struct GameState {
-	int playerNumber;			// Nombre de joueurs
-	PlayerState* players;
-	int playerIndex;			// Index du joueur actuel
-	int currentTime;
-	int currentSeason;
-	const ScoringCard* edits[4];
-	const ExploreCard* exploreDeck[17];
-	int exploreIndex;			// Index de la carte actuelle
-	int deckSize;				// Taille actuelle du deck
-
-	int gameType;				// 0 : Solo, 1 : Multijoueur local, 2 : Online
-
-	AssetBank* assets;
-	LoadContext* loadCtx;
-	PlacementState placementState;
-	Seed seed;
-} GameState;
