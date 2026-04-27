@@ -179,6 +179,8 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 
 void GUIdisplayFinal(GameState gs, int mountainSeed[2], Seed s, ModelList models, Camera3D camera) {
 	int i = 0;
+	
+	
     while (i < gs.playerNumber) {
 		gs.playerIndex = i;
 		PlayerState* ps = &gs.players[i];
@@ -212,9 +214,12 @@ void GUIdisplayFinal(GameState gs, int mountainSeed[2], Seed s, ModelList models
 			GUIdrawGrille();
 
 			EndMode3D();
+
+			drawFinalUi(&gs);
 			EndDrawing(); // Fin de l'affichage
 
 			if (IsKeyPressed(KEY_SPACE)) break;
+			
 		}
 
 		if (mountainPos) free(mountainPos);
@@ -1299,3 +1304,6 @@ void* SoundThread(void* args) {		//thread de gestion de l'audio séparé afin d'
 	CloseAudioDevice();
 	return NULL;
 }
+
+
+

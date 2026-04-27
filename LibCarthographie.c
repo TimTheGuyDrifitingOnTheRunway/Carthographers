@@ -40,7 +40,8 @@ const Piece B_Z = { {0,0,1},{1,1,1},{1,0,0} };
 
 
 /******************************FONCTIONS SOUS PROGRAMMES************************/
-void initCarte(FeuilleCarte f, int montagneActive) {  // Dépréciée
+// Initialise une carte vide, optionnellement avec des montagnes (déprécié)
+void initCarte(FeuilleCarte f, int montagneActive) {
 
 	for (int i = 0; i < SIZE; i++) {
 		for (int j = 0; j < SIZE; j++) {
@@ -59,6 +60,7 @@ void initCarte(FeuilleCarte f, int montagneActive) {  // Dépréciée
 
 }
 
+// Initialise une carte vide avec optionnellement des montagnes et des ruines
 void initCarte2(FeuilleCarte f, int montagneActive, int ruinsActive) {
 
 	for (int i = 0; i < SIZE; i++) {
@@ -89,6 +91,7 @@ void initCarte2(FeuilleCarte f, int montagneActive, int ruinsActive) {
 }
 
 
+// Génère les positions aléatoires des montagnes en respectant la distance minimale
 void setupMontagnePosition(int posMontage[NOMBREMONTAGNE][2]) {
 	Position* op = emptyPositionList(NOMBREMONTAGNE);
 
@@ -118,6 +121,7 @@ void setupMontagnePosition(int posMontage[NOMBREMONTAGNE][2]) {
 	free(op);
 }
 
+// Inverse horizontalement une pièce (effet miroir)
 void flipShape(Piece shape) {
 	for (int i = 0; i < PIECESIZE; i++) {
 		for (int j = 0; j < PIECESIZE / 2; j++) {
@@ -129,6 +133,7 @@ void flipShape(Piece shape) {
 
 }
 
+// Génère les positions aléatoires des ruines en respectant la distance minimale et sans chevaucher les montagnes
 void setupRuinsPosition(FeuilleCarte f, int posRuins[NOMBRERUINE][2]) {
 	Position* op = emptyPositionList(NOMBRERUINE);
 	int a = 0;
@@ -164,6 +169,7 @@ void setupRuinsPosition(FeuilleCarte f, int posRuins[NOMBRERUINE][2]) {
 }
 
 
+// Affiche la carte en mode texte (débogage)
 void displayCarte(FeuilleCarte f) {
 	for (int i = 0; i < SIZE; i++) {
 		for (int j = 0; j < SIZE; j++) {
@@ -174,10 +180,12 @@ void displayCarte(FeuilleCarte f) {
 	}
 }
 
+// Génère un nombre aléatoire entre min et max (inclus)
 int randInt(int min, int max) {
 	return (rand() % (max + 1 - min)) + min;
 }
 
+// Calcule la distance euclidienne entre deux positions
 float distPos(Position a, Position b) {
 
 	float val = (float)((a.x - b.x) * (a.x - b.x)) + ((a.y - b.y) * (a.y - b.y));
@@ -185,16 +193,19 @@ float distPos(Position a, Position b) {
 }
 
 
+// Vérifie si une position est dans les limites de la carte
 int isPositionInCarte(Position pos) {
 	if ((pos.x < SIZE) && (pos.x >= 0) && (pos.y < SIZE) && (pos.y >= 0)) return 1;
 	return 0;
 }
 
+// Vérifie si des coordonnées sont dans les limites de la carte
 int isInCarte(int x, int y) {
 	if ((x < SIZE) && (x >= 0) && (y < SIZE) && (y >= 0)) return 1;
 	return 0;
 }
 
+// Copie une pièce vers une autre
 void copyPiece(const Piece pieceFrom, Piece pieceTo) {
 	for (int i = 0; i < PIECESIZE; i++) {
 		for (int j = 0; j < PIECESIZE; j++) {
@@ -204,6 +215,7 @@ void copyPiece(const Piece pieceFrom, Piece pieceTo) {
 	}
 }
 
+// Copie une feuille de carte vers une autre
 void copyCarte(FeuilleCarte Ffrom, FeuilleCarte Fto) {
 	for (int i = 0; i < SIZE; i++) {
 		for (int j = 0; j < SIZE; j++) {
@@ -212,22 +224,26 @@ void copyCarte(FeuilleCarte Ffrom, FeuilleCarte Fto) {
 	}
 }
 
+// Récupère le matériau à une position donnée (ignorant les ruines)
 int getMaterialAtPos(FeuilleCarte f, Position pos) {
 	if (isInCarte(pos.x, pos.y)) { return (f[pos.x][pos.y] % RUINE); }
 	return OUTOFBOUND;
 }
 
+// Récupère le matériau aux coordonnées données
 int getMaterialAt(FeuilleCarte f, int x, int y) {
 	if (isInCarte(x, y)) { return (f[x][y] % RUINE); }
 	return OUTOFBOUND;
 }
 
 
+// Vérifie si une position contient un matériau spécifique
 int isPosMaterial(FeuilleCarte f, Position pos, int material) {
 	return getMaterialAtPos(f, pos) == material;
 }
 
-void getVoisinMaterialPos(FeuilleCarte f, Position pos, int material, Position listeVoisins[4]) {// retourne dans listeVoisins les positions des voisins de pos qui sont du material
+// Récupère les voisins adjacents d'une position ayant un matériau spécifique
+void getVoisinMaterialPos(FeuilleCarte f, Position pos, int material, Position listeVoisins[4]) {
 	Position posCible;
 	int k = 0;
 	/*for (int i = -1; i < 2; i++) {
@@ -254,6 +270,7 @@ void getVoisinMaterialPos(FeuilleCarte f, Position pos, int material, Position l
 	}
 }
 
+// Compte le nombre de cases vides dans la carte
 int getEmptySpots(FeuilleCarte f) {
 	int count = 0;
 	for (int i = 0; i < SIZE; i++) {
@@ -264,6 +281,7 @@ int getEmptySpots(FeuilleCarte f) {
 	return count;
 }
 
+// Compte le nombre de cases contenant un matériau spécifique
 int getOccurencesOf(FeuilleCarte f, int material) {
 	int count = 0;
 	for (int i = 0; i < SIZE; i++) {
@@ -274,6 +292,7 @@ int getOccurencesOf(FeuilleCarte f, int material) {
 	return count;
 }
 
+// Retourne array des positions contenant un matériau spécifique
 Position* getPositionsOfMaterial(FeuilleCarte f, int material) {
 	int occurences = getOccurencesOf(f, material);
 	if (occurences == 0) return NULL;
@@ -294,6 +313,7 @@ Position* getPositionsOfMaterial(FeuilleCarte f, int material) {
 	return positions;
 }
 
+// Copie une feuille de carte vers une autre
 void copyFeuilleCarte(FeuilleCarte Ffrom, FeuilleCarte Fto) {
 
 	for (int i = 0; i < SIZE; i++) {
@@ -304,6 +324,7 @@ void copyFeuilleCarte(FeuilleCarte Ffrom, FeuilleCarte Fto) {
 }
 
 
+// Crée et initialise une liste vide de positions
 Position* emptyPositionList(int size) {
 	Position* pos = malloc(sizeof(Position) * size);
 	Position p;
@@ -316,7 +337,8 @@ Position* emptyPositionList(int size) {
 	return pos;
 }
 
-int isGroupAtPosNeighborWithMaterial(FeuilleCarte f, Position pos, int material, int includeBorder) {/// revoit 1 si le groupe à la position pos est voisin avec un groupe de meteriau material ou la bordure (si include border est actif)
+// Vérifie si un groupe est adjacent à un matériau spécifique ou à la bordure
+int isGroupAtPosNeighborWithMaterial(FeuilleCarte f, Position pos, int material, int includeBorder) {
 	FeuilleCarte temp;
 	int groupMaterial = f[pos.x][pos.y];
 	printf("metirial cible : %d \n", groupMaterial);
@@ -339,7 +361,8 @@ int isGroupAtPosNeighborWithMaterial(FeuilleCarte f, Position pos, int material,
 
 }
 
-int GroupNextStep(FeuilleCarte temp, int material, int materialToAvoid, int includeBorder) {//fonction recurrente du calcul de voisinage
+// Étape récursive du calcul d'adjacence de groupe
+int GroupNextStep(FeuilleCarte temp, int material, int materialToAvoid, int includeBorder) {
 	int retour = 0;
 	for (int i = 0; i < SIZE; i++) {
 		for (int j = 0; j < SIZE; j++) {
@@ -369,6 +392,7 @@ int GroupNextStep(FeuilleCarte temp, int material, int materialToAvoid, int incl
 	return 1;
 }
 
+// Vérifie si toutes les positions d'un groupe ont été traitées
 int isAllProcessed(FeuilleCarte f) {
 	for (int i = 0; i < SIZE; i++) {
 		for (int j = 0; j < SIZE; j++) {
@@ -379,6 +403,7 @@ int isAllProcessed(FeuilleCarte f) {
 }
 
 
+// Explore récursivement un groupe connecté de terrains pour calculer ses statistiques
 void exploreGroup(FeuilleCarte f, int x, int y, FeuilleCarte visited, FeuilleCarte voisinsVisited, InfoGroupe* info) {
 	int material = getMaterialAt(f, x, y);
 
