@@ -131,6 +131,7 @@
     <ClCompile Include="Lib3d.c" />
     <ClCompile Include="LibCarthographie.c" />
     <ClCompile Include="main.c" />
+    <ClCompile Include="NetworkManager.c" />
     <ClCompile Include="UI.c" />
   </ItemGroup>
   <ItemGroup>
@@ -139,6 +140,7 @@
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="Lib3d.h" />
     <ClInclude Include="LibCarthographie.h" />
+    <ClInclude Include="NetworkManager.h" />
     <ClInclude Include="Structs.h" />
     <ClInclude Include="UI.h" />
   </ItemGroup>

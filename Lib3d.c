@@ -51,7 +51,7 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Position mountainPos[NOMB
 			if (temp[i][j] >= RUINE) {
 				float x = i - (SIZE - 1) / 2.0f;
 				float z = j - (SIZE - 1) / 2.0f;
-				float y = - CASE_HEIGHT / 2.f;   // Half height so cube is under the grid
+				float y = - CASE_HEIGHT / 2.f;   // Half height so cube is over the grid
 
 
 
@@ -505,7 +505,7 @@ void RenderPlacement2D(GameState* gs) {
 		// Calcul de la largeur de chaque edit séparément
 		for (int i = 0; i < 4; i++) {
 			char lbl[] = "       %s  ";
-			len = strlen(gs->edits[i]->name) + strlen(lbl) - 2;
+			len = (int)strlen(gs->edits[i]->name) + strlen(lbl) - 2;
 			editLabels[i] = (char*)malloc(len * sizeof(char));
 			snprintf(editLabels[i], len, lbl, gs->edits[i]->name);
 			//printf("%d\n", (int)strlen(gs->edits[i]->name));

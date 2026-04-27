@@ -2,6 +2,8 @@
 //Ce document est là pour réunir toutes les déclarations de Structures au même endroit
 
 #include "Consts.h"
+#include "NetworkManager.h"
+
 
 //
 
@@ -232,4 +234,5 @@ typedef struct GameState {
 	LoadContext* loadCtx;
 	PlacementState placementState;
 	Seed seed;
+	NetworkState net;
 } GameState;

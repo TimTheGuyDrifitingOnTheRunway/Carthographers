@@ -16,9 +16,11 @@
 #include <time.h>
 #include <math.h>
 #include <string.h>
+
 #include <raylib.h>
 #include <rlgl.h>
 #include <raymath.h>
+
 #include <pthread.h>
 
 
@@ -196,8 +198,8 @@
 /********Constantes de montagnes ******/
 #define PERLIN_SIZE 100
 #define MOUNTAIN_MODEL_SIZE 1
-#define MOUNTAIN_MODEL_HEIGHT 1.5
-#define PERLIN_SCALE 0.8
+#define MOUNTAIN_MODEL_HEIGHT 1.5f
+#define PERLIN_SCALE 0.8f
 #define MOUNTAIN_MODEL_COLOR BLACK
 #define PERLIN_MODEL_SMOOTHING 3.0f
 /****Constantes des forets ***************/

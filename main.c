@@ -13,6 +13,9 @@ int main()
 
 	// Création d'un thread pour charger les images (et les modèles 3D après)
 
+	/*for (unsigned long long i = 0; i < 18446744073709551615; i++) {
+		printf("\nHolala, qui va la ? C'est le numero %llu", i);
+	}*/
 
 	// Initialization
 	int screenWidth = 1280;

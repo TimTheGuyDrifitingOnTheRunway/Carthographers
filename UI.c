@@ -231,7 +231,7 @@ ScreenID RunRules(GameState* gs) {
 
 		DrawStrokeTextEx(gs->assets->fonts[FONT_METAMORPHOUS], TextFormat("  %s", pages[currentPage].Title), textZone.x + 10, posY, 35, NORMAL_SPACING, BLACK, GOLD, 1);
 
-		DrawRectangleRoundedLinesEx((Rectangle) { textZone.x - TEXT_ZONE_PADDING, textZone.y - TEXT_ZONE_PADDING, textZone.width + 2 * TEXT_ZONE_PADDING, textZone.height + 2 * TEXT_ZONE_PADDING, }, .05, 10, 2, multiplyColor(BROWN, 1.2f));
+		DrawRectangleRoundedLinesEx((Rectangle) { textZone.x - TEXT_ZONE_PADDING, textZone.y - TEXT_ZONE_PADDING, textZone.width + 2 * TEXT_ZONE_PADDING, textZone.height + 2 * TEXT_ZONE_PADDING, }, .05f, 10, 2, multiplyColor(BROWN, 1.2f));
 
 		DrawStrokeText(gs->assets->fonts[FONT_METAMORPHOUS], TextFormat("%d / %d", currentPage + 1, PAGE_NB), midX - MeasureTextEx(gs->assets->fonts[FONT_METAMORPHOUS], TextFormat("%d / %d", currentPage + 1, PAGE_NB), 40, NORMAL_SPACING).x / 2, Previous.bounds.y, 40, GOLD, BLACK);
 
@@ -352,7 +352,7 @@ Vector2 MeasureTextWrappedEx(Font font, const char* text, Rectangle r, int fs) {
 	int wordSize = 0;
 	char c = 'a';										// Char actuel
 	int drawSize = 0;									// Taille dessinée
-	int len = strlen(text);
+	int len = (int)strlen(text);
 
 	float maxReachedX = r.x;  // ← suivi du X max atteint
 
@@ -399,7 +399,7 @@ Vector2 DrawTextWrappedEx(Font font, const char* text, Rectangle r, int fs, int 
 	int wordSize = 0;
 	char c = 'a';										// Char actuel
 	int drawSize = 0;									// Taille dessinée
-	int len = strlen(text);
+	int len = (int)strlen(text);
 
 	float maxReachedX = r.x;  // ← suivi du X max atteint
 
