@@ -346,7 +346,7 @@ void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera) {
 		state->pos, state->rotation, state->material);
 	tryDraw(f, state->feuilleVide, state->temp);
 	
-	state->drawable = state->drawable && state->isRuin ? coversRuin(f, state->feuilleVide) : isDrawable(f, state->feuilleVide);
+	state->drawable = state->drawable && (state->isRuin ? coversRuin(f, state->feuilleVide) :1) && isDrawable(f, state->feuilleVide);
 
 	Vector3 forward = { camera.target.x - camera.position.x, 0, camera.target.z - camera.position.z };
 	normalize(&forward);
