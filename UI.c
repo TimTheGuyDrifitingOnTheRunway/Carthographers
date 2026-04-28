@@ -805,16 +805,18 @@ void DebugAssetViewer(GameState* gs) {
 	}
 }
 
-void drawFinalUi(GameState *gs) {
+void drawFinalUi(GameState *gs, int pparedit[5]) {
 	int y2 = 20;
 	//printf("\nPosition : %d,%d", state->pos.x, state->pos.y);
 	int midX = GetScreenWidth() / 2;
 	int midY = GetScreenHeight() / 2;
 	Vector2 playerPanelSize = MeasureTextEx(PLAYER_PANEL_FONT, gs->players[gs->playerIndex].name, PLAYER_PANEL_FS + 10, NORMAL_SPACING);
-	Rectangle playerPanel = (Rectangle){ GetScreenWidth() - 50 - ( max(PLAYER_REC_WIDTH, playerPanelSize.x - 20)), midY - PLAYER_REC_HEIGHT / 2, playerPanelSize.x + PLAYER_REC_HEIGHT, PLAYER_REC_HEIGHT };
+	Rectangle playerPanel = (Rectangle){ GetScreenWidth() - 60 - ( max(PLAYER_REC_WIDTH, playerPanelSize.x - 20)), midY - PLAYER_REC_HEIGHT / 2, playerPanelSize.x + PLAYER_REC_HEIGHT, PLAYER_REC_HEIGHT };
 	Rectangle editsRec = (Rectangle){ midX - 40, -60, 80, 180 };
 	
 	Rectangle editRects;
+	int pperdu = pparedit[4];
+	int pgagne = gs->players[gs->playerIndex].score + pperdu >0 ? gs->players[gs->playerIndex].score + pperdu : 0;
 	
 	editRects.width = MeasureTextEx(EDITS_FONT, "FIN DU JEUX", EDITS_FS*2, NORMAL_SPACING).x;
 	editRects.height = editsRec.height / 2;
@@ -823,10 +825,23 @@ void drawFinalUi(GameState *gs) {
 	editRects.x = editsRec.x + (editsRec.width - editRects.width) / 2;
 	editRects.y = 0;
 
+	
+
+
 	DrawRectangleRoundedStrokeEx(playerPanel, .1f, 10, 3, LIGHTGRAY, DARKBROWN);
 	DrawStrokeTextEx(PLAYER_PANEL_FONT, gs->players[gs->playerIndex].name, playerPanel.x + 8, playerPanel.y + 5, PLAYER_PANEL_FS + 10, NORMAL_SPACING, WHITE, BLACK, 1);
-	DrawStrokeTextEx(PLAYER_PANEL_FONT, TextFormat("SCORE : %d", gs->players[gs->playerIndex].score), playerPanel.x + 8, playerPanel.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, NORMAL_SPACING, WHITE, BLACK, 1);
-	DrawStrokeTextEx(PLAYER_PANEL_FONT, TextFormat(gs->playerIndex+1 ==1 ? "CLASSEMENT :  %d er" : "CLASSEMENT :  %d eme", gs->playerIndex+1), playerPanel.x + 8, playerPanel.y + PLAYER_PANEL_FS*2 + y2, PLAYER_PANEL_FS, NORMAL_SPACING, WHITE, BLACK, 1);
+	DrawStrokeTextEx(PLAYER_PANEL_FONT, "SCORE ", playerPanel.x + 8, playerPanel.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS*1.1f, NORMAL_SPACING, WHITE, BLACK, 1);
+
+	//for (int i = 1; i < 5; i++)DrawStrokeTextEx(PLAYER_PANEL_FONT, TextFormat("%s  : %d",gs->edits[i-1]->name, pparedit[i - 1]), playerPanel.x + 8, playerPanel.y + PLAYER_PANEL_FS * (i+2) + y2, PLAYER_PANEL_FS*0.9f, NORMAL_SPACING, i%2 ==0 ? WHITE : BROWN, BLACK, 1);
+	DrawStrokeTextEx(PLAYER_PANEL_FONT, TextFormat("Points des édits : %d", pgagne), playerPanel.x + 8, playerPanel.y + PLAYER_PANEL_FS * 3 + y2, PLAYER_PANEL_FS, NORMAL_SPACING, WHITE, BLACK, 1);
+
+	DrawStrokeTextEx(PLAYER_PANEL_FONT, TextFormat("Pièces : %d", gs->players[gs->playerIndex].coinCount), playerPanel.x + 8, playerPanel.y + PLAYER_PANEL_FS*4 + y2, PLAYER_PANEL_FS, NORMAL_SPACING, GOLD, BLACK, 1);
+	DrawStrokeTextEx(PLAYER_PANEL_FONT, TextFormat("Points perdus : %d", pperdu), playerPanel.x + 8, playerPanel.y + PLAYER_PANEL_FS * 5 + y2, PLAYER_PANEL_FS, NORMAL_SPACING, RED, BLACK, 1);
+
+	DrawStrokeTextEx(PLAYER_PANEL_FONT, TextFormat("SCORE Final : %d", gs->players[gs->playerIndex].score), playerPanel.x + 8, playerPanel.y + PLAYER_PANEL_FS*6 + y2, PLAYER_PANEL_FS, NORMAL_SPACING, YELLOW, BLACK, 1);
+	DrawStrokeTextEx(PLAYER_PANEL_FONT, TextFormat(gs->playerIndex+1 ==1 ? "CLASSEMENT :  %d er" : "CLASSEMENT :  %d eme", gs->playerIndex+1), playerPanel.x + 8, playerPanel.y + PLAYER_PANEL_FS*8 + y2, PLAYER_PANEL_FS, NORMAL_SPACING, gs->playerIndex + 1 == 1 ? GOLD : WHITE,  BLACK, 1);
 	DrawRectangleRoundedStrokeEx(editsRec, 1.f, 10, 2, BGCOLOR, GOLD);
 	DrawStrokeTextEx(gs->assets.fonts[FONT_GRENZE_GOTISCH_L], "FIN DU JEUX", editRects.x, editRects.y , EDITS_FS*2, NORMAL_SPACING, GOLD, BLACK, 1);
+
+
 }
