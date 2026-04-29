@@ -53,9 +53,9 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 				float z = j - (SIZE - 1) / 2.0f;
 				float y = - CASE_HEIGHT / 2.f;   // Half height so cube is under the grid
 
-
-
-				DrawCube((Vector3) { x, y, z }, 1.0f, 1.0f, 1.0f, DARKGRAY);
+				float orientation = pow(ColorToHSV(GetImageColor(s.OfsetImagex, j , i )).z+1.0f, 10.0F);
+				DrawModelEx(models.ruin, (Vector3) { x, y, z }, (Vector3) { 0, 1, 0 }, 47.0f* orientation, (Vector3) { RUIN_SIZE, RUIN_SIZE*1.1f, RUIN_SIZE }, /*(Color) { 000, 100, 255, 255 }*/ WHITE);
+				DrawCube((Vector3) { x, y-0.5, z }, 1.0f, 0.50f, 1.0f, DARKGRAY);
 				DrawCubeWires((Vector3) { x, y, z }, 1.0f, 1.0f, 1.0f, BLACK);
 			}
 			if (getMaterialAtPos(temp, (Position) { i, j }) != 0) {
@@ -182,8 +182,16 @@ void GUIdisplayFinal(GameState gs, int mountainSeed[2], Seed s, ModelList models
 	
 	
     while (i < gs.playerNumber) {
+		
+
 		gs.playerIndex = i;
 		PlayerState* ps = &gs.players[i];
+
+		int pointsParEdit[5] = { 0, 0, 0, 0 , 0};
+		for (int i = 0; i < 4; i++) {
+			if (gs.edits[i]) pointsParEdit[i] = (gs.edits[i]->fctCaluls)(ps->map);
+		}
+		pointsParEdit[4] = calcEnenmyPoints(ps->map);
 		Model mountains[NOMBREMONTAGNE];
 
 		/* Get mountain positions (malloc'd) and generate models once. */
@@ -215,17 +223,28 @@ void GUIdisplayFinal(GameState gs, int mountainSeed[2], Seed s, ModelList models
 
 			EndMode3D();
 
-			drawFinalUi(&gs);
+			drawFinalUi(&gs, pointsParEdit);
 			EndDrawing(); // Fin de l'affichage
 
-			if (IsKeyPressed(KEY_SPACE)) break;
+			if (IsKeyPressed(END_PREV_KEY)) {
+				i = i > 0 ? i - 1 : i;
+				break;
+			}
+			if (IsKeyPressed(END_NEXT_KEY)) {
+				i = i <gs.playerNumber-1 ? i + 1 : i;
+				break;
+			}
+			if (IsKeyPressed(KEY_SPACE)) {
+				i = gs.playerNumber; // Exit outer loop
+				break;
+			}
 			
 		}
 
 		if (mountainPos) free(mountainPos);
 		if (WindowShouldClose()) break;
 
-		i++;
+		
 	}
 }
 
@@ -944,6 +963,7 @@ ModelList loadModels() {
 	models.skybox = loadSkybox(false);
 	models.house = LoadModel(PATH_TO_HOUSE);
 	models.monster = LoadModel(PATH_TO_MONSTER);
+	models.ruin = LoadModel(PATH_TO_RUIN);
 	// génération du plan pour afficher la texture de champs
 
 	Mesh plane = GenMeshPlane(1.0f, 1.0f, 1, 1);//plan unique pour générer plusieurs modèles différents, pour éviter de générer plusieurs meshes identiques
@@ -1219,6 +1239,7 @@ Image generateVillageImage(int x, int y) {
 
 void* generateRandomVilageImagesThread(void* arg) {
 	Image* img;
+	srand(time(NULL));//besoin de re-initialiser le génératuer random parce que thread séparé
 	do {
 		img = malloc(sizeof(Image));
 		*img = generateVillageImage(randInt(0, 100) * 10, randInt(0, 100) * 10);

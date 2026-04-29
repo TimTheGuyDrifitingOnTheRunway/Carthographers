@@ -200,6 +200,7 @@ typedef struct {
     Model monsterTile;
     Model forestTile;
 	Model vilageTile;
+	Model ruin;
 }ModelList;
 
 

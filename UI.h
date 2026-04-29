@@ -29,7 +29,7 @@ void UpdateInputBox(InputBox* box);
 bool IsCharAllowed(char c);
 void DrawFullInputBoxEx(InputBox* box, int stroke, Color bkgColor, Color strokeColor);
 
-void drawFinalUi(GameState *gs);
+void drawFinalUi(GameState *gs, int pparedit[5]);
 
 // Fonctions pour gérer le chargement des ressources
 void* LoadAssetsWorker(void* arg);
