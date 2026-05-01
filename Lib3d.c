@@ -1171,7 +1171,7 @@ static TextureCubemap GenTextureCubemap(Shader shader, Texture2D panorama, int s
 
 
 Image generateOffsetImage(int x, int y) {
-	printf("generating perlin noise map \n");
+	printf("[SEED] Generating perlin noise map \n");
 	Image perlinNoise = GenImagePerlinNoise(OFSET_IMAGE_SIZE, OFSET_IMAGE_SIZE, x * 100, y * 100, OFSET_IMAGE_SCALE);
 	
 	return perlinNoise;
@@ -1227,7 +1227,7 @@ void* generateSeedThread(void* arg) {
 
 
 Image generateVillageImage(int x, int y) {
-	printf("generating perlin noise Ofset \n");
+	printf("[seed] Generating perlin noise Ofset \n");
 	Image perlinNoise = GenImagePerlinNoise(VILLAGE_IMAGE_SIZE, VILLAGE_IMAGE_SIZE, x * 100, y * 100, VILLAGE_IMAGE_SCALE);
 
 	return perlinNoise;

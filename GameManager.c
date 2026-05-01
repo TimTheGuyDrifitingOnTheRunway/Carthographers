@@ -339,7 +339,13 @@ const ExploreCard* Turn(GameState* gs, int* isRuin, Camera3D *camera, int mounta
 
 		generateMountainsModels(mountains, gs->players[(p + card->rotation + gs->playerNumber) % gs->playerNumber].map, mountainSeed);
 		printf("--- Tour de %s %d/%d---\n", ps->name, p + 1, gs->playerNumber);
-		GUIPlacementCard(gs, gs->players[(p + card->rotation + gs->playerNumber) % gs->playerNumber].map, card, ps->score, (*isRuin && !card->isEnemy), &ps->coinCount, camera, mountains, s, models);
+		if (gs->playerNumber == 1 && card->isEnemy) {
+			autoPlacement(gs->players[0].map, card->pieceA, MONSTRE);
+			gs->currentTime += card->time;
+		}
+		else {
+			GUIPlacementCard(gs, gs->players[(p + card->rotation + gs->playerNumber) % gs->playerNumber].map, card, ps->score, (*isRuin && !card->isEnemy), &ps->coinCount, camera, mountains, s, models);
+		}
 	}
 
 	if (card->isEnemy) gs->deckSize--;
@@ -353,7 +359,9 @@ const ExploreCard* NextExploreCard(GameState* gs, int *isRuin) {
 		card = gs->exploreDeck[gs->exploreIndex];
 		if (card && card->isRuin) *isRuin = 1;
 		gs->exploreIndex++;
+
 		printf("Carte choisie %d, %d\n\n", gs->exploreIndex, *isRuin);
+
 	} while (card && card->isRuin);
 	return card;
 }
