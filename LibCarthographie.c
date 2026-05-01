@@ -6,17 +6,17 @@
 const Piece POINT = { {0,0,0},{0,1,0},{0,0,0} };
 const Piece NOTHING = { {0,0,0},{0,0,0},{0,0,0} };
 
-const Piece U = { {1, 0, 1},{1, 1, 1},{0, 0 ,0} };
+const Piece U = { {0, 1, 1},{0, 1, 0},{0, 1, 1} };
 
 const Piece L = { {0, 1, 0},{0, 1, 0},{0, 1, 1} };
-const Piece L_L = { {1,0,0},{1,1,0},{0,0,0} };
+const Piece L_L = { {0,1,0},{0,1,1},{0,0,0} };
 const Piece B_L = { {1,0,0},{1,0,0},{1,1,1} };
 
 const Piece LINE = { {0,0,0},{1,1,1},{0,0,0} };
 const Piece L_LINE = { {0,0,0},{1,1,0},{0,0,0} };
 
 const Piece T = { {1,1,1},{0,1,0},{0,1,0} };
-const Piece L_T = { {0,0,0},{1,1,1},{0,1,0} };
+const Piece L_T = { {0,1,0},{0,1,1},{0,1,0} };
 
 const Piece CUBE = { {1,1,0},{1,1,0},{0,0,0} };
 const Piece CUBE_WITH_POINT = { {1,1,0},{1,1,0},{1,0,0} };
@@ -29,7 +29,7 @@ const Piece L_DIAG = { {1,0,0},{0,1,0},{0,0,0} };
 const Piece CROSS = { {0,1,0},{1,1,1},{0,1,0} };
 const Piece STAIRS = { {1,1,0},{0,1,1},{0,0,1} };
 const Piece STRANGE = {
-	{0,0,1},
+	{1,0,0},
 	{1,1,1},
 	{0,1,0} };
 

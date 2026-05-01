@@ -77,6 +77,10 @@
 #define PLACEMENT_HEIGHT 1.0f
 #define CASE_HEIGHT 1.0f
 
+#define INDIC_FS 60
+#define INDIC_FONT gs->assets.fonts[FONT_GRENZE_GOTISCH_L]
+
+
 #define SPEEDY 5 // constantes inverse de vitesse
 #define SPEEDX 7
 
@@ -100,10 +104,12 @@
 #define RIGHTC KEY_RIGHT
 #define LEFTC KEY_LEFT
 
-#define MAXCAMERAHEIGHT 0.8
+#define MAXCAMERAHEIGHT 0.9f
+#define MINCAMERAHEIGHT -0.07f
 
 
-// Constantes du Menu
+
+// Constantes du Menu in game
 #define SEASON_FS 40
 #define SEASON_FONT gs->assets.fonts[FONT_GRENZE_GOTISCH_B]
 
