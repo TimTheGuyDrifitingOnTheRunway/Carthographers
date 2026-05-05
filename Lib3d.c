@@ -6,6 +6,9 @@
 void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Position moutainPos[NOMBREMONTAGNE], Seed s, ModelList models) {
 	Image treeImage = s.treeImage;
 	int nb = 0;
+	bool troll = IsModelValid(models.cat);
+	static int rot = 0;
+	if (troll)rot+=3;
 
 	//rendu de skybox:
 
@@ -120,8 +123,11 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 						clamp(rzOfset, -0.1f, 0.1f);
 						if ((-0.5f + (float)k / HOUSE_DIVIDER + rxOfset < FOREST_BORDER) && (-0.5f + (float)k / HOUSE_DIVIDER + rxOfset) > -FOREST_BORDER && (-0.5 + (float)l / HOUSE_DIVIDER + rzOfset) < FOREST_BORDER && (-0.5 + (float)l / HOUSE_DIVIDER + rzOfset) > -FOREST_BORDER) {
 
-							if (lum > HOUSE_TRESHOLD) DrawModelEx(models.house, (Vector3) { x - 0.5f + (float)k / HOUSE_DIVIDER + rxOfset, y + 0.53f, z - 0.5 + (float)l / HOUSE_DIVIDER + rzOfset }, (Vector3) { 0, 1, 0 }, 0, (Vector3) { HOUSE_SIZE, HOUSE_SIZE, HOUSE_SIZE }, WHITE);
 
+							if (lum > HOUSE_TRESHOLD) {
+								if (!troll)DrawModelEx(models.house, (Vector3) { x - 0.5f + (float)k / HOUSE_DIVIDER + rxOfset, y + 0.53f, z - 0.5 + (float)l / HOUSE_DIVIDER + rzOfset }, (Vector3) { 0, 1, 0 }, 0, (Vector3) { HOUSE_SIZE, HOUSE_SIZE, HOUSE_SIZE }, WHITE);
+								else DrawModelEx(models.cat, (Vector3) { x - 0.5f + (float)k / HOUSE_DIVIDER + rxOfset, y + 0.53f, z - 0.5 + (float)l / HOUSE_DIVIDER + rzOfset }, (Vector3) { 0, 1, 0 }, rot, (Vector3) { CAT_SIZE, CAT_SIZE, CAT_SIZE }, WHITE);
+							}
 						}
 					}
 
@@ -955,7 +961,7 @@ Image generateForestImage(int x, int y) {
 
 
 
-ModelList loadModels() {
+ModelList loadModels(bool troll) {
 	ModelList models;
 	printf("Loading models \n");
 	models.tree = LoadModel(PATH_TO_TREE_MODEL);
@@ -1015,9 +1021,16 @@ ModelList loadModels() {
 	}
 
 
+	if (troll) {
+		models.cat = LoadModel(PATH_TO_CAT);
+	}
 
 
 	printf("models succesfully laoded\n");
+
+
+
+
 	return models;
 }
 

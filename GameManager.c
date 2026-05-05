@@ -240,7 +240,8 @@ void InitScoringCards(GameState* gs) {
 // Lance le jeu en démarrant la première saison
 void StartGame(GameState* gs, Camera3D camera) {
 	printf("\n\n\n\nLancement du jeu !\n\n\n\n");
-	ModelList models = loadModels();
+	printf("trool mode : %d \n", strcmp(gs->players[0].name, "Danny"));
+	ModelList models = loadModels( strcmp(  gs->players[0].name, "Danny")==0 ? true : false);
 	Season(gs, camera, models);
 }
 

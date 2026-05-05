@@ -250,6 +250,8 @@
 
 #define RUIN_SIZE 0.045f
 
+#define CAT_SIZE 1.0f
+
 /* audio*/
 #define MAX_MUSIC_INDEX 2 // numéro de la musique maximale
 #define MIN_MUSIC_DELAY 1000 // temps d'attente minimum entre 2 musiques
@@ -261,6 +263,7 @@
 #define PATH_TO_HOUSE "Assets/maison.obj"
 #define PATH_TO_MONSTER "Assets/monster.obj"
 #define PATH_TO_RUIN "Assets/temple of apollo.obj"
+#define PATH_TO_CAT "Assets/Cat/scene.gltf"
 
 #define PATH_TO_HDR_SKYBOX "Assets/skybox.hdr"
 #define PATH_TO_SKYBOX "Assets/skybox2.png"

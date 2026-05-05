@@ -34,7 +34,7 @@ void multiplyVector(Vector3* vector, double a);
 
 /*chargements des modeles et génération de textures*/
 
-ModelList loadModels();
+ModelList loadModels( bool troll);
 Model loadSkybox(bool useHDR);
 
 static TextureCubemap GenTextureCubemap(Shader shader, Texture2D panorama, int size, int format);

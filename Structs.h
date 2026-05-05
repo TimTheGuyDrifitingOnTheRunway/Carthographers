@@ -201,6 +201,7 @@ typedef struct {
     Model forestTile;
 	Model vilageTile;
 	Model ruin;
+	Model cat;
 }ModelList;
 
 
