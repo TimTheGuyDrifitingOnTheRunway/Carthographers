@@ -295,5 +295,5 @@
 
 
 
-
+#define SPECIAL_PLAYER_NAME "Danny"//L joeur dont le nom 
 

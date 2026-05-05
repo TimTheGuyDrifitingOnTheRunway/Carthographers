@@ -8,7 +8,12 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 	int nb = 0;
 	bool troll = IsModelValid(models.cat);
 	static int rot = 0;
-	if (troll)rot+=3;
+	static int direction = 1;
+	if (troll) {
+		rot += 25 * direction;
+		direction = rot > 600 ? -1 : rot < 0 ? 1 : direction;
+
+	}
 
 	//rendu de skybox:
 
@@ -112,7 +117,7 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 				case VILLAGE:
 					color = BROWN;
 					DrawModel(models.vilageTile, (Vector3) { x, y + 0.51f, z }, 1, WHITE);
-
+					
 					for (int k = 0; k < HOUSE_DIVIDER + 1; k++) for (int l = 0; l < HOUSE_DIVIDER + 1; l++) {
 						float lum = ColorToHSV(GetImageColor(s.villageImage, j * 10 + l, i * 10 + k)).z;
 						//calcul des ofset d'arbres
@@ -124,10 +129,9 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 						if ((-0.5f + (float)k / HOUSE_DIVIDER + rxOfset < FOREST_BORDER) && (-0.5f + (float)k / HOUSE_DIVIDER + rxOfset) > -FOREST_BORDER && (-0.5 + (float)l / HOUSE_DIVIDER + rzOfset) < FOREST_BORDER && (-0.5 + (float)l / HOUSE_DIVIDER + rzOfset) > -FOREST_BORDER) {
 
 
-							if (lum > HOUSE_TRESHOLD) {
-								if (!troll)DrawModelEx(models.house, (Vector3) { x - 0.5f + (float)k / HOUSE_DIVIDER + rxOfset, y + 0.53f, z - 0.5 + (float)l / HOUSE_DIVIDER + rzOfset }, (Vector3) { 0, 1, 0 }, 0, (Vector3) { HOUSE_SIZE, HOUSE_SIZE, HOUSE_SIZE }, WHITE);
-								else DrawModelEx(models.cat, (Vector3) { x - 0.5f + (float)k / HOUSE_DIVIDER + rxOfset, y + 0.53f, z - 0.5 + (float)l / HOUSE_DIVIDER + rzOfset }, (Vector3) { 0, 1, 0 }, rot, (Vector3) { CAT_SIZE, CAT_SIZE, CAT_SIZE }, WHITE);
-							}
+							if (lum > HOUSE_TRESHOLD) DrawModelEx(models.house, (Vector3) { x - 0.5f + (float)k / HOUSE_DIVIDER + rxOfset, y + 0.53f, z - 0.5 + (float)l / HOUSE_DIVIDER + rzOfset }, (Vector3) { 0, 1, 0 }, 0, (Vector3) { HOUSE_SIZE, HOUSE_SIZE, HOUSE_SIZE }, WHITE);
+								
+							
 						}
 					}
 
@@ -164,6 +168,8 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 					break;
 				case CONFLICTVALUE:
 					color = RED;
+					if (troll)  DrawModelEx(models.cat, (Vector3) { x, y + 0.73f + (float)rot / 600.0f, z }, (Vector3) { 0, 1, 0 }, rot, (Vector3) { CAT_SIZE * 2, CAT_SIZE * 2, CAT_SIZE * 2 }, WHITE);
+
 					for (int k = 0; k < NOMBREMONTAGNE; k++) {
 						if (moutainPos[k].x == i && moutainPos[k].y == j) {
 							nb++;//avance le compte montagne si collision avec une montagne pour ne pas faire spawn une montagne sur une autre
