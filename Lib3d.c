@@ -1055,10 +1055,8 @@ Model loadSkybox(bool useHDR) {
 	skybox.materials[0].shader = LoadShader(TextFormat(SKYBOX_SHADER_PATH, GLSL_VERSION),
 		TextFormat(SKYBOX_SHADER_PATH2, GLSL_VERSION));
 
-#define SKYBOX_SHADER_PATH "Assets/shaders/glsl%i/skybox.vs"
-#define SKYBOX_SHADER_PATH2 "Assets/shaders/glsl%i/skybox.fs"
-#define SKYBOX_CUBEMAP_SHADER_PATH "Assets/shaders/glsl%i/cubemap.vs"
-#define SKYBOX_CUBEMAP_SHADER_PATH "Assets/shaders/glsl%i/cubemap.fs"
+
+
 
 	SetShaderValue(skybox.materials[0].shader, GetShaderLocation(skybox.materials[0].shader, "environmentMap"), (int[1]) { MATERIAL_MAP_CUBEMAP }, SHADER_UNIFORM_INT);
 	SetShaderValue(skybox.materials[0].shader, GetShaderLocation(skybox.materials[0].shader, "doGamma"), (int[1]) { useHDR ? 1 : 0 }, SHADER_UNIFORM_INT);
@@ -1066,7 +1064,7 @@ Model loadSkybox(bool useHDR) {
 
 	// Load cubemap shader and setup required shader locations
 	Shader shdrCubemap = LoadShader(TextFormat(SKYBOX_CUBEMAP_SHADER_PATH, GLSL_VERSION),
-		TextFormat(SKYBOX_CUBEMAP_SHADER_PATH, GLSL_VERSION));
+		TextFormat(SKYBOX_CUBEMAP_SHADER_PATH2, GLSL_VERSION));
 
 	SetShaderValue(shdrCubemap, GetShaderLocation(shdrCubemap, "equirectangularMap"), (int[1]) { 0 }, SHADER_UNIFORM_INT);
 

@@ -25,7 +25,7 @@
 /*OPTIONS DE DEBOGAGE */
 #define cc// DEBUG_FORET : affiche la noisemap source de foret
 #define cc // DEBUG_UI_FIN : permet de sauter les 3 premières saisons pour tester directement la fin de partie et le classement des joueurs
-#define VERBOSE // VERBOSE : affiche des messages de debug dans la console pour suivre le déroulement du jeu et les calculs de points
+#define CC // VERBOSE : affiche des messages de debug dans la console pour suivre le déroulement du jeu et les calculs de points
 
 
 /*****MACROS****/
@@ -276,7 +276,7 @@
 #define SKYBOX_SHADER_PATH "Assets/shaders/glsl%i/skybox.vs"
 #define SKYBOX_SHADER_PATH2 "Assets/shaders/glsl%i/skybox.fs"
 #define SKYBOX_CUBEMAP_SHADER_PATH "Assets/shaders/glsl%i/cubemap.vs"
-#define SKYBOX_CUBEMAP_SHADER_PATH "Assets/shaders/glsl%i/cubemap.fs"
+#define SKYBOX_CUBEMAP_SHADER_PATH2 "Assets/shaders/glsl%i/cubemap.fs"
 
 #define PATH_TO_AUDIO "Assets/Sounds/music"
 
