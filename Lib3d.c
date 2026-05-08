@@ -965,6 +965,27 @@ Image generateForestImage(int x, int y) {
 }
 
 
+ModelImage loadModelsImage() {
+	ModelImage imgs;
+	imgs.fieldImage = LoadImage(PATH_TO_CHAMPS_TEXTURE);
+	imgs.forestImage = LoadImage(PATH_TO_FORET_TEXTURE);
+	imgs.monsterImage = LoadImage(PATH_TO_MONSTER_TEXTURE);
+	imgs.villageImage = LoadImage(PATH_TO_VILLAGE_TEXTURE);
+	imgs.waterImage = LoadImage(PATH_TO_WATER_TEXTURE);
+	return imgs;
+}
+
+void* ModelLoaderThread(void* arg) {//thread de chargemetn des textues dans la ram pour ganger du temps au lancement du jeu, pour éviter les freezes pendant le chargement des modèles
+	ModelImage* imgs = NULL;
+	LoadContext* ctx = (LoadContext*)arg;
+	while(imgs ==NULL)imgs = (ModelImage*)malloc(sizeof(ModelImage));
+	//Sleep(15000);
+	//pthread_mutex_lock(&ctx->mutex);
+	*imgs = loadModelsImage();
+	//pthread_mutex_unlock(&ctx->mutex);
+	return imgs;
+}
+
 
 ModelList loadModels(bool troll) {
 	ModelList models;
@@ -1038,7 +1059,78 @@ ModelList loadModels(bool troll) {
 
 	return models;
 }
+ModelList loadModelsFromImage(ModelImage imgs, bool troll) {
+	ModelList models;
+	printf("Loading models \n");
+	models.tree = LoadModel(PATH_TO_TREE_MODEL);
+	models.buisson = LoadModel(PATH_TO_BUSH_MODEL);
+	models.skybox = loadSkybox(false);
+	models.house = LoadModel(PATH_TO_HOUSE);
+	models.monster = LoadModel(PATH_TO_MONSTER);
+	models.ruin = LoadModel(PATH_TO_RUIN);
+	// génération du plan pour afficher la texture de champs
 
+	Mesh plane = GenMeshPlane(1.0f, 1.0f, 1, 1);//plan unique pour générer plusieurs modèles différents, pour éviter de générer plusieurs meshes identiques
+
+
+	Texture2D textureChamps = LoadTextureFromImage(imgs.fieldImage);
+	models.champs = LoadModelFromMesh(plane);
+	SetTextureWrap(textureChamps, TEXTURE_WRAP_CLAMP);
+	SetTextureFilter(textureChamps, TEXTURE_FILTER_POINT);
+	models.champs.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textureChamps;
+
+	//idem mais pour l'eau :
+
+
+	Texture2D textureWater = LoadTextureFromImage(imgs.waterImage);
+	models.water = LoadModelFromMesh(plane);
+	SetTextureWrap(textureWater, TEXTURE_WRAP_CLAMP);
+	SetTextureFilter(textureWater, TEXTURE_FILTER_POINT);
+	models.water.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textureWater;
+
+	//idem mais pour le sol des monstres :
+	{
+
+		Texture2D texture = LoadTextureFromImage(imgs.monsterImage);
+		models.monsterTile = LoadModelFromMesh(plane);
+		SetTextureWrap(texture, TEXTURE_WRAP_CLAMP);
+		SetTextureFilter(texture, TEXTURE_FILTER_POINT);
+		models.monsterTile.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture;
+	}
+
+	//idem mais pour le sol de la foret
+	{
+
+		Texture2D texture = LoadTextureFromImage(imgs.forestImage);
+		models.forestTile = LoadModelFromMesh(plane);
+		SetTextureWrap(texture, TEXTURE_WRAP_CLAMP);
+		SetTextureFilter(texture, TEXTURE_FILTER_POINT);
+		models.forestTile.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture;
+	}
+
+	//idem mais pour le sol de la foret
+	{
+
+		Texture2D texture = LoadTextureFromImage(imgs.villageImage);
+		models.vilageTile = LoadModelFromMesh(plane);
+		SetTextureWrap(texture, TEXTURE_WRAP_CLAMP);
+		SetTextureFilter(texture, TEXTURE_FILTER_POINT);
+		models.vilageTile.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture;
+	}
+
+
+	if (troll) {
+		models.cat = LoadModel(PATH_TO_CAT);
+	}
+
+
+	printf("models succesfully laoded\n");
+
+
+
+
+	return models;
+}
 
 Model loadSkybox(bool useHDR) {
 
@@ -1342,5 +1434,43 @@ void* SoundThread(void* args) {		//thread de gestion de l'audio séparé afin d'
 	return NULL;
 }
 
+#define TEMPS_TRANSITION 3.0f
+
+void GUIDisplayNewSeason(Camera3D* camera, GameState *gs) {
+	double startTime = GetTime();
+	double DisplayRime = GetTime() - startTime;
+	
+	int midX = GetScreenWidth() / 2;
+	int midY = GetScreenHeight() / 2;
+
+	Rectangle editsRec = (Rectangle){ midX - 40, -60, 80, 180 };
+
+	Rectangle editRects;
+	printf(" validité de la font : %d\n", IsFontValid(gs->assets.fonts[FONT_GRENZE_GOTISCH_L]));
 
 
+	editRects.width = MeasureTextEx(EDITS_FONT, "Fin de Saison", EDITS_FS * 2, NORMAL_SPACING).x;
+	editRects.height = editsRec.height / 2;
+	editsRec.width += editRects.width;
+	editsRec.x -= editRects.width / 2;
+	editRects.x = editsRec.x + (editsRec.width - editRects.width) / 2;
+	editRects.y = 0;
+	while (!WindowShouldClose() && DisplayRime < TEMPS_TRANSITION) {
+		DisplayRime = GetTime() - startTime;
+		float alpha = 1.0f - (DisplayRime / TEMPS_TRANSITION);
+		BeginDrawing();
+		ClearBackground(BLACK);
+
+		
+		if (gs->currentSeason < NUM_SEASONS - 1) {
+			DrawTextureEx(gs->assets.seasonImages[gs->currentSeason + 1], (Vector2) { midX, midY - 125 }, 0, 0.5f, ColorAlpha(WHITE, 1 - alpha));
+			DrawTextureEx(gs->assets.seasonImages[gs->currentSeason], (Vector2) { midX - 2.5f * 125, midY - 125 }, 0, 0.5f, ColorAlpha(WHITE, alpha)); 
+		}
+		else DrawTextureEx(gs->assets.seasonImages[gs->currentSeason], (Vector2) { midX -  125, midY - 125 }, 0, 0.5f, ColorAlpha(WHITE, alpha));
+		DrawStrokeTextEx(gs->assets.fonts[FONT_GRENZE_GOTISCH_L], "Fin de Saison", editRects.x, editRects.y, EDITS_FS * 2, NORMAL_SPACING, GOLD, BLACK, 1);
+		EndDrawing();
+	}
+
+
+
+}

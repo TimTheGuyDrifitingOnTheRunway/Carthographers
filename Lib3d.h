@@ -21,7 +21,7 @@ void GUIdisplayFinal(GameState gs, int mountainSeed[2], Seed s, ModelList models
 void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera);
 void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state, int score, Camera3D camera, Model mountain[NOMBREMONTAGNE], Position mountainPos[NOMBREMONTAGNE], Seed s, ModelList models);
 void ApplyPlacement(FeuilleCarte f, PlacementState* state, int* coinCount);
-
+void GUIDisplayNewSeason(Camera3D *camera, GameState *gs);
 
 /** Fonctions utilitaires UI **/
 
@@ -33,7 +33,9 @@ Vector3 crossProduct(Vector3 vectora, Vector3 vectorb);
 void multiplyVector(Vector3* vector, double a);
 
 /*chargements des modeles et génération de textures*/
-
+void* ModelLoaderThread(void* arg);
+ModelList loadModelsFromImage(ModelImage imgs, bool troll);
+ModelImage loadModelsImage();
 ModelList loadModels( bool troll);
 Model loadSkybox(bool useHDR);
 
