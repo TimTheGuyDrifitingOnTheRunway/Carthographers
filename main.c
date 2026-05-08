@@ -26,10 +26,11 @@ int main()
 
 	SetTargetFPS(60);
 
-	pthread_t soundThread, modelThread;
+	pthread_t soundThread, modelThread, SeedThread;
 	int keep = 1;
 	pthread_create(&soundThread, NULL, SoundThread, &keep);
-	
+	int mountainSeed[2] = { randInt(0, 100), randInt(0, 100) };
+	pthread_create(&SeedThread, NULL, generateSeedThread, mountainSeed);
 
 	//ToggleBorderlessWindowed();
 	
@@ -171,11 +172,15 @@ int main()
 	//printf("\n\n\n\n Debug BSG \n\n\n\n");
 	ModelImage *models_ptr;
 	pthread_join(modelThread, (void**)&models_ptr);//attente de la fin du thread de chargement des textures de 3d
-
 	ModelImage models = *models_ptr;
 	free(models_ptr);
 
-	StartGame(&gs, camera, models);
+	Seed* s_ptr;
+	pthread_join(SeedThread, (void**)&s_ptr);
+	Seed s = *s_ptr;
+	free(s_ptr);// récupération de la seed et libération de la mémoire
+
+	StartGame(&gs, camera, models, s, mountainSeed);
 
 	//printf("\n\n\n\n Debug ASG \n\n\n\n");
 
