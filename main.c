@@ -26,9 +26,10 @@ int main()
 
 	SetTargetFPS(60);
 
-	pthread_t soundThread;
+	pthread_t soundThread, modelThread;
 	int keep = 1;
 	pthread_create(&soundThread, NULL, SoundThread, &keep);
+	
 
 	//ToggleBorderlessWindowed();
 	
@@ -93,7 +94,7 @@ int main()
 
 	pthread_t assetWorkerThread;
 	pthread_create(&assetWorkerThread, NULL, LoadAssetsWorker, &imgCtx);
-
+	pthread_create(&modelThread, NULL, ModelLoaderThread, &imgCtx);
 
 	//gs.playerNumber = 98;
 	ScreenID current = SCREEN_MENU;
@@ -168,8 +169,13 @@ int main()
 	camera.projection = CAMERA_PERSPECTIVE;             // Camera mode type
 
 	//printf("\n\n\n\n Debug BSG \n\n\n\n");
+	ModelImage *models_ptr;
+	pthread_join(modelThread, (void**)&models_ptr);//attente de la fin du thread de chargement des textures de 3d
 
-	StartGame(&gs, camera);
+	ModelImage models = *models_ptr;
+	free(models_ptr);
+
+	StartGame(&gs, camera, models);
 
 	//printf("\n\n\n\n Debug ASG \n\n\n\n");
 

@@ -204,6 +204,15 @@ typedef struct {
 	Model cat;
 }ModelList;
 
+typedef struct  {
+	Image forestImage;
+	Image villageImage;
+	Image fieldImage;
+	Image monsterImage;
+	Image waterImage;
+}ModelImage;
+
+
 
 typedef struct {
 	bool isGenerated;

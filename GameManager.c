@@ -238,9 +238,9 @@ void InitScoringCards(GameState* gs) {
 }
 
 // Lance le jeu en démarrant la première saison
-void StartGame(GameState* gs, Camera3D camera) {
+void StartGame(GameState* gs, Camera3D camera, ModelImage modelsImage) {
+	ModelList models = loadModelsFromImage(modelsImage,strcmp(gs->players[0].name, SPECIAL_PLAYER_NAME) == 0);
 	printf("\n\n\n\nLancement du jeu !\n\n\n\n");
-	ModelList models = loadModels( strcmp(  gs->players[0].name, SPECIAL_PLAYER_NAME)==0 ? true : false);
 	Season(gs, camera, models);
 }
 
@@ -312,6 +312,7 @@ void NextSeason(GameState *gs, Camera3D camera, ModelList models, Seed s2, int m
 		printf("\nPoints cette saison : %d\nPoints totaux : %d\n\n", pts, ps->score);
 
 	}
+	GUIDisplayNewSeason(&camera, gs);
 
 #ifdef DEBUG_UI_FIN
 	if (++gs->currentSeason < 1) Season2(gs, camera, models, s2, mountainSeed);
