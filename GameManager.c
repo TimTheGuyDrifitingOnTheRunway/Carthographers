@@ -238,10 +238,11 @@ void InitScoringCards(GameState* gs) {
 }
 
 // Lance le jeu en démarrant la première saison
-void StartGame(GameState* gs, Camera3D camera, ModelImage modelsImage) {
+void StartGame(GameState* gs, Camera3D camera, ModelImage modelsImage, Seed s, int seed[2]) {
+	printf("seed : (%d, %d)\n", seed[0], seed[1]);
 	ModelList models = loadModelsFromImage(modelsImage,strcmp(gs->players[0].name, SPECIAL_PLAYER_NAME) == 0);
 	printf("\n\n\n\nLancement du jeu !\n\n\n\n");
-	Season(gs, camera, models);
+	Season2(gs, camera, models, s, seed);
 }
 
 // Exécute une saison complète avec tous les tours jusqu'à la limite de temps, génère les seeds en parallèle
@@ -277,7 +278,7 @@ void Season2(GameState* gs, Camera3D camera, ModelList models, Seed s, int mount
 	Seed* s2;
 	pthread_t thread;
 	pthread_create(&thread, NULL, generateSeedThread, mountainSeed2);
-
+	printf("seed in Season : %d %d\n", mountainSeed[0], mountainSeed[1]);
 	gs->currentTime = 0;
 	int isRuin = 0;
 	while (gs->currentTime < seasons[gs->currentSeason]->maxTime) {
@@ -331,7 +332,7 @@ void NextSeason(GameState *gs, Camera3D camera, ModelList models, Seed s2, int m
 const ExploreCard* Turn(GameState* gs, int* isRuin, Camera3D *camera, int mountainSeed[2], ModelList models, Seed s) {
 	const ExploreCard* card = NextExploreCard(gs, isRuin);
 	gs->currentTime += card->time;
-
+	
 	for (int p = 0; p < gs->playerNumber; p++) {
 		gs->playerIndex = p;
 		PlayerState* ps = &gs->players[p];

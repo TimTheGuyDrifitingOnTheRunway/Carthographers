@@ -15,7 +15,7 @@ void EndGame(GameState* gs, int nbPlayers);
 
 void sort_players_by_score(GameState* gs);
 
-void StartGame(GameState* gs, Camera3D camera, ModelImage models);
+void StartGame(GameState* gs, Camera3D camera, ModelImage modelsImage, Seed s, int seed[2]);
 // Saison 
 void NextSeason(GameState* gs, Camera3D camera, ModelList models, Seed s2, int mountainSeed[2]);
 void Season(GameState* gs, Camera3D camera, ModelList models);//première saison

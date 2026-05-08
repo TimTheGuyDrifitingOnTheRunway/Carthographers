@@ -62,7 +62,7 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 				float y = - CASE_HEIGHT / 2.f;   // Half height so cube is under the grid
 
 				float orientation = pow(ColorToHSV(GetImageColor(s.OfsetImagex, j , i )).z+1.0f, 10.0F);
-				DrawModelEx(models.ruin, (Vector3) { x, y, z }, (Vector3) { 0, 1, 0 }, 47.0f* orientation, (Vector3) { RUIN_SIZE, RUIN_SIZE*1.1f, RUIN_SIZE }, /*(Color) { 000, 100, 255, 255 }*/ WHITE);
+				DrawModelEx(models.ruin, (Vector3) { x, y+ (float)(temp[i][j] > RUINE)*1.5f+ (float)(temp[i][j]!= f[i][j])/2.0f, z }, (Vector3) { 0, 1, 0 }, 47.0f * orientation, (Vector3) { RUIN_SIZE / 1.3f, RUIN_SIZE * 1.1f, RUIN_SIZE / 1.3f }, WHITE);//placement avec ajustement de hauteur
 				DrawCube((Vector3) { x, y-0.5, z }, 1.0f, 0.50f, 1.0f, DARKGRAY);
 				DrawCubeWires((Vector3) { x, y, z }, 1.0f, 1.0f, 1.0f, BLACK);
 			}
@@ -951,6 +951,7 @@ void generateMountainsModels(Model mountains[NOMBREMONTAGNE], FeuilleCarte f, in
     Position* pos = getPositionsOfMaterial(f, MONTAGNE);
 	int count = getOccurencesOf(f, MONTAGNE);
 	if (pos == NULL || count == 0) return;
+	
 	for (int i = 0; i < count && i < NOMBREMONTAGNE; i++) {
 		mountains[i] = generateMountain(pos[i].x + mountainSeed[1], pos[i].y + mountainSeed[0]);
 	}
