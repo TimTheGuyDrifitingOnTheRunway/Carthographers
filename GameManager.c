@@ -21,9 +21,9 @@ const ScoringCard GreenBough = { 1, calcGreenBough, "Green Bough", "Gagnez une �
 const ScoringCard StoneSideQuest = { 1, calcStoneSideQuest, "Stone Side Quest", "Gagnez trois Étoiles de Réputation pour chaque case Montagne connectée à une autre case Montagne par un Groupe de cases Forêt." };
 
 // 🌾 Cartes liées à l'Eau et aux Champs
-const ScoringCard CanalLake = { 2, calcCanalLake, "Canal Lake", "Gagnez une Étoile de Réputation pour chaque case Eau adjacente à au moins une case Champs. Gagnez une Étoile de Réputation pour chaque case Champs adjacente à au moins une case Eau." }; 
+const ScoringCard CanalLake = { 2, calcCanalLake, "Canal Lake", "Gagnez une Étoile de Réputation pour chaque case Eau adjacente à au moins une case Champs. Gagnez une Étoile de Réputation pour chaque case Champs adjacente à au moins une case Eau." };
 const ScoringCard ShoreSideExpanse = { 2, calcShoreSideExpanse, "Shore Side Expanse", "Gagnez trois Étoiles de Réputation pour chaque Groupe de cases Champs non adjacents à une case Eau ou au bord de la Carte. Gagnez trois Étoiles de Réputation pour chaque Groupe de cases Eau non adjacents à une case Champs ou au bord de la Carte." };
-const ScoringCard GoldenGranary = { 2, calcGoldenGranary, "The Golden Granary", "Gagnez une Étoile de Réputation pour chaque case Eau adjacente à une case Ruine. Gagnez trois Étoiles de Réputation pour chaque case Champs sur une case Ruines." }; 
+const ScoringCard GoldenGranary = { 2, calcGoldenGranary, "The Golden Granary", "Gagnez une Étoile de Réputation pour chaque case Eau adjacente à une case Ruine. Gagnez trois Étoiles de Réputation pour chaque case Champs sur une case Ruines." };
 const ScoringCard MagesValley = { 2, calcMagesValley, "Mages Valley", "Gagnez deux Étoiles de Réputation pour chaque case Eau adjacente à une case Montagne. Gagnez une Étoile de Réputation pour chaque case Champs adjacente à une case Montagne." };
 
 // 🏠 Cartes liées aux Villages
@@ -94,11 +94,11 @@ const ExploreCard FlayerIncursion = { .name = "Flayer Incursion", .isEnemy = 1, 
 
 const ExploreCard* expCards[NUM_CARDS] = { &FarmLands, &ForgottenForest, &Hamlet, &GreatRiver, &HinterlandStream, &Homestead, &Orchard, &Marshlands, &TreetopVillage, &FishingVillage, &OutpostRuins, &TempleRuins, &RiftLands, &GoblinAttack, &BugbearAssault, &KoboldOnslaught, &GnollRaid, &OgreCharge, &InsectoidInvasion, &RatmanStrike, &FlayerIncursion };
 
-/*TODO: 
+/*TODO:
 * Mise en place du jeu complet
 * Tour de jeu
 * Passer d'un tour à l'autre
-* 
+*
 */
 
 
@@ -240,13 +240,13 @@ void InitScoringCards(GameState* gs) {
 // Lance le jeu en démarrant la première saison
 void StartGame(GameState* gs, Camera3D camera) {
 	printf("\n\n\n\nLancement du jeu !\n\n\n\n");
-	ModelList models = loadModels();
+	ModelList models = loadModels( strcmp(  gs->players[0].name, SPECIAL_PLAYER_NAME)==0 ? true : false);
 	Season(gs, camera, models);
 }
 
 // Exécute une saison complète avec tous les tours jusqu'à la limite de temps, génère les seeds en parallèle
 void Season(GameState* gs, Camera3D camera, ModelList models) {
-	Model mountains[NOMBREMONTAGNE];
+
 	int mountainSeed[2] = { randInt(0, 100), randInt(0, 100) };
 	int mountainSeed2[2] = { randInt(0, 100), randInt(0, 100) };
 	clock_t begin = clock();
@@ -271,7 +271,7 @@ void Season(GameState* gs, Camera3D camera, ModelList models) {
 
 // Exécute une saison avec une seed déjà générée
 void Season2(GameState* gs, Camera3D camera, ModelList models, Seed s, int mountainSeed[2]) {
-	Model mountains[NOMBREMONTAGNE];
+;
 	int mountainSeed2[2] = { randInt(0, 100), randInt(0, 100) };
 
 	Seed* s2;
@@ -317,11 +317,12 @@ void NextSeason(GameState *gs, Camera3D camera, ModelList models, Seed s2, int m
 	if (++gs->currentSeason < 1) Season2(gs, camera, models, s2, mountainSeed);
 #else
 	if (++gs->currentSeason < 4) Season2(gs, camera, models, s2, mountainSeed);
+#endif
 	else {
 		sort_players_by_score(gs);
 		GUIdisplayFinal(*gs, mountainSeed, s2, models, camera);
 	}
-#endif
+
 
 }
 
@@ -338,7 +339,13 @@ const ExploreCard* Turn(GameState* gs, int* isRuin, Camera3D *camera, int mounta
 
 		generateMountainsModels(mountains, gs->players[(p + card->rotation + gs->playerNumber) % gs->playerNumber].map, mountainSeed);
 		printf("--- Tour de %s %d/%d---\n", ps->name, p + 1, gs->playerNumber);
-		GUIPlacementCard(gs, gs->players[(p + card->rotation + gs->playerNumber) % gs->playerNumber].map, card, ps->score, (*isRuin && !card->isEnemy), &ps->coinCount, camera, mountains, s, models);
+		if (gs->playerNumber == 1 && card->isEnemy) {
+			autoPlacement(gs->players[0].map, card->pieceA, MONSTRE);
+			gs->currentTime += card->time;
+		}
+		else {
+			GUIPlacementCard(gs, gs->players[(p + card->rotation + gs->playerNumber) % gs->playerNumber].map, card, ps->score, (*isRuin && !card->isEnemy), &ps->coinCount, camera, mountains, s, models);
+		}
 	}
 
 	if (card->isEnemy) gs->deckSize--;
@@ -352,7 +359,9 @@ const ExploreCard* NextExploreCard(GameState* gs, int *isRuin) {
 		card = gs->exploreDeck[gs->exploreIndex];
 		if (card && card->isRuin) *isRuin = 1;
 		gs->exploreIndex++;
+
 		printf("Carte choisie %d, %d\n\n", gs->exploreIndex, *isRuin);
+
 	} while (card && card->isRuin);
 	return card;
 }

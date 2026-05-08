@@ -6,17 +6,17 @@
 const Piece POINT = { {0,0,0},{0,1,0},{0,0,0} };
 const Piece NOTHING = { {0,0,0},{0,0,0},{0,0,0} };
 
-const Piece U = { {1, 0, 1},{1, 1, 1},{0, 0 ,0} };
+const Piece U = { {0, 1, 1},{0, 1, 0},{0, 1, 1} };
 
 const Piece L = { {0, 1, 0},{0, 1, 0},{0, 1, 1} };
-const Piece L_L = { {1,0,0},{1,1,0},{0,0,0} };
+const Piece L_L = { {0,1,0},{0,1,1},{0,0,0} };
 const Piece B_L = { {1,0,0},{1,0,0},{1,1,1} };
 
 const Piece LINE = { {0,0,0},{1,1,1},{0,0,0} };
 const Piece L_LINE = { {0,0,0},{1,1,0},{0,0,0} };
 
 const Piece T = { {1,1,1},{0,1,0},{0,1,0} };
-const Piece L_T = { {0,0,0},{1,1,1},{0,1,0} };
+const Piece L_T = { {0,1,0},{0,1,1},{0,1,0} };
 
 const Piece CUBE = { {1,1,0},{1,1,0},{0,0,0} };
 const Piece CUBE_WITH_POINT = { {1,1,0},{1,1,0},{1,0,0} };
@@ -29,7 +29,7 @@ const Piece L_DIAG = { {1,0,0},{0,1,0},{0,0,0} };
 const Piece CROSS = { {0,1,0},{1,1,1},{0,1,0} };
 const Piece STAIRS = { {1,1,0},{0,1,1},{0,0,1} };
 const Piece STRANGE = {
-	{0,0,1},
+	{1,0,0},
 	{1,1,1},
 	{0,1,0} };
 
@@ -113,7 +113,9 @@ void setupMontagnePosition(int posMontage[NOMBREMONTAGNE][2]) {
 			posMontage[i][0] = np.x;
 			posMontage[i][1] = np.y;
 			op[i] = np;
+#ifdef VERBOSE
 			printf("Mountain %d pos : %d, %d \n", i, np.x, np.y);
+#endif
 		}
 		else i--;
 
@@ -155,7 +157,9 @@ void setupRuinsPosition(FeuilleCarte f, int posRuins[NOMBRERUINE][2]) {
 			posRuins[i][0] = np.x;
 			posRuins[i][1] = np.y;
 			op[i] = np;
+#ifdef VERBOSE
 			printf("Ruins %d pos : %d, %d \n", i, np.x, np.y);
+#endif
 		}
 		else if (a > 1000) {
 			i = 0;
@@ -341,7 +345,9 @@ Position* emptyPositionList(int size) {
 int isGroupAtPosNeighborWithMaterial(FeuilleCarte f, Position pos, int material, int includeBorder) {
 	FeuilleCarte temp;
 	int groupMaterial = f[pos.x][pos.y];
+#ifdef VERBOSE
 	printf("metirial cible : %d \n", groupMaterial);
+#endif
 	copyFeuilleCarte(f, temp);
 	temp[pos.x][pos.y] = ACTUAL;
 	if (temp[pos.x][pos.y] == 0) return 0;
@@ -458,7 +464,9 @@ int RecenseEveryGroups(FeuilleCarte f, InfoGroupe listeGroupes[SIZE * SIZE]) {
 			}
 		}
 	}
+#ifdef VERBOSE
 	printf("Recensement des groupes effectué en %f secondes\n", (float)(clock() - start));
+#endif
 	return nbGroupes;
 }
 
@@ -691,6 +699,69 @@ int placementShape(FeuilleCarte f, const Piece shape, int material) {
 
 }
 
+
+int autoPlacement(FeuilleCarte f, const Piece shape, int material) {
+	if (checkShape(f, shape)) {
+		Position pos, maxpos;
+		pos.x = 0;
+		pos.y = 0;
+
+		int drawable = 0;
+		int malusmax = -1;
+		FeuilleCarte feuilleVide, temp;
+		int rotation = randInt(0, 4);
+
+		do {
+			initCarte(feuilleVide, FALSE);
+			drawable = drawShape(feuilleVide, shape, pos, rotation, material);
+			tryDraw(f, feuilleVide, temp);
+			drawable = drawable && isDrawable(f, feuilleVide);
+#ifdef VERBOSE
+			printf("[PLACEMENT AUTO] position testée : (%d , %d ) drawable : %d \n", pos.x, pos.y, drawable);
+
+#endif // VERBOSE
+
+
+			if (drawable) {
+
+				int malus = NombreVoisionDeMat(temp, material, 1, 0);
+
+#ifdef VERBOSE
+				printf("[PLACEMENT AUTO] position testée : (%d , %d ) malus : %d \n", pos.x, pos.y, malus);
+#endif
+				if (malus > malusmax) {
+					malusmax = malus;
+					maxpos = pos;
+				}
+
+			}
+			pos.x++;
+				if (pos.x == SIZE) {
+					pos.x = 0;
+					pos.y++;
+				}
+
+
+		} while (pos.y < SIZE);
+		initCarte(feuilleVide, FALSE);
+#ifdef VERBOSE
+		printf(" [PLACEMENT AUTO]position optimale trouvée : (%d , %d ) avec un malus de %d \n", maxpos.x, maxpos.y, malusmax);
+
+#endif
+		if (drawShape(feuilleVide, shape, maxpos, rotation, material) && isDrawable(f, feuilleVide)) {
+			pos = maxpos;
+		}
+		else {
+#ifdef VERBOSE
+			printf(" [PLACEMENT AUTO]Erreur dans l'autoPlacement, aucune position trouvée malgré la vérification préalable\n");
+#endif
+			return 0;
+		}
+		draw(f, feuilleVide);
+		return 1;
+	}
+	return 0;
+}
 
 
 /**************************FONCTIONS DE VERIFICATION DE SOLUTION***************************/
@@ -979,7 +1050,7 @@ int calcCanalLake(FeuilleCarte f) {
 	return somme;
 }
 
-int pointAdjacensce(FeuilleCarte f, int material1, int material2) {
+int pointAdjacensce(FeuilleCarte f, int material1, int material2) {// compte le nombre de cases de material1 adjacentes à au moins une case de material2
 	int somme = 0;
 	int valid = 0;
 	Position d[4] = { {0,1}, {0,-1}, {1,0}, {-1,0} };
@@ -992,6 +1063,26 @@ int pointAdjacensce(FeuilleCarte f, int material1, int material2) {
 				}
 			}
 			if (valid) somme++;
+		}
+	}
+	return somme;
+}
+
+int NombreVoisionDeMat(FeuilleCarte f, int material, int ignoreRuins, int margin) {//retourne le nombre de voisins d'un materiau, avec ignore ruine et marge depuis les bords
+
+	int somme = 0;
+	Position d[4] = { {0,1}, {0,-1}, {1,0}, {-1,0} };
+	for (int i = margin; i < SIZE-margin; i++) {
+		for (int j = margin; j < SIZE-margin; j++) {
+			if (getMaterialAt(f, i, j) == material) {
+				for (int k = 0; k < 4; k++) {
+					if(ignoreRuins) {
+
+						if (getMaterialAt(f, i + d[k].x, j + d[k].y)%100 >0) somme++;
+					}
+					else if (getMaterialAt(f, i + d[k].x, j + d[k].y) > 0) { somme++; }
+				}
+			}
 		}
 	}
 	return somme;
@@ -1316,7 +1407,9 @@ int calcEnenmyPoints(FeuilleCarte f) {
 				for (int k = 0; k < 4; k++) {
 					if (getMaterialAt(f, i + d[k].x, j + d[k].y) == MONSTRE) { // Si un enemy est voisin
 						valid = 1;
+#ifdef VERBOSE
 						printf("Case vide en (%d,%d) perd un point a cause du monstre en (%d,%d)\n", i, j, i + d[k].x, j + d[k].y);
+#endif
 						break;
 					}
 				}
@@ -1324,7 +1417,9 @@ int calcEnenmyPoints(FeuilleCarte f) {
 			}
 		}
 	}
+#ifdef VERBOSE
 	printf("\npoints perdus par les ennemis : %d\n\n", somme);
+#endif
 	return somme;
 }
 

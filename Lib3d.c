@@ -6,6 +6,14 @@
 void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Position moutainPos[NOMBREMONTAGNE], Seed s, ModelList models) {
 	Image treeImage = s.treeImage;
 	int nb = 0;
+	bool troll = IsModelValid(models.cat);
+	static int rot = 0;
+	static int direction = 1;
+	if (troll) {
+		rot += 25 * direction;
+		direction = rot > 600 ? -1 : rot < 0 ? 1 : direction;
+
+	}
 
 	//rendu de skybox:
 
@@ -53,9 +61,9 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 				float z = j - (SIZE - 1) / 2.0f;
 				float y = - CASE_HEIGHT / 2.f;   // Half height so cube is under the grid
 
-
-
-				DrawCube((Vector3) { x, y, z }, 1.0f, 1.0f, 1.0f, DARKGRAY);
+				float orientation = pow(ColorToHSV(GetImageColor(s.OfsetImagex, j , i )).z+1.0f, 10.0F);
+				DrawModelEx(models.ruin, (Vector3) { x, y, z }, (Vector3) { 0, 1, 0 }, 47.0f* orientation, (Vector3) { RUIN_SIZE, RUIN_SIZE*1.1f, RUIN_SIZE }, /*(Color) { 000, 100, 255, 255 }*/ WHITE);
+				DrawCube((Vector3) { x, y-0.5, z }, 1.0f, 0.50f, 1.0f, DARKGRAY);
 				DrawCubeWires((Vector3) { x, y, z }, 1.0f, 1.0f, 1.0f, BLACK);
 			}
 			if (getMaterialAtPos(temp, (Position) { i, j }) != 0) {
@@ -70,7 +78,7 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 				switch (getMaterialAtPos(temp, (Position) { i, j })) {
 				case EAU:
 					color = BLUE;
-					DrawModel(models.water, (Vector3) { x, y + 0.51f, z }, 1, WHITE);//dessin de la tyles avant tout 
+					DrawModel(models.water, (Vector3) { x, y + 0.51f, z }, 1, WHITE);//dessin de la tyles avant tout
 
 					break;
 				case FORET:
@@ -120,18 +128,20 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 						clamp(rzOfset, -0.1f, 0.1f);
 						if ((-0.5f + (float)k / HOUSE_DIVIDER + rxOfset < FOREST_BORDER) && (-0.5f + (float)k / HOUSE_DIVIDER + rxOfset) > -FOREST_BORDER && (-0.5 + (float)l / HOUSE_DIVIDER + rzOfset) < FOREST_BORDER && (-0.5 + (float)l / HOUSE_DIVIDER + rzOfset) > -FOREST_BORDER) {
 
+
 							if (lum > HOUSE_TRESHOLD) DrawModelEx(models.house, (Vector3) { x - 0.5f + (float)k / HOUSE_DIVIDER + rxOfset, y + 0.53f, z - 0.5 + (float)l / HOUSE_DIVIDER + rzOfset }, (Vector3) { 0, 1, 0 }, 0, (Vector3) { HOUSE_SIZE, HOUSE_SIZE, HOUSE_SIZE }, WHITE);
+
 
 						}
 					}
 
 					break;
 				case CHAMPS:
-					
+
 					DrawModel(models.champs, (Vector3) { x, y + CASE_HEIGHT / 2 + .01f, z }, 1, WHITE);
 					color = YELLOW;
 					break;
-					
+
 				case MONTAGNE:
 					color = GRAY;
 					DrawModel(mountains[nb], (Vector3) { x - 0.5, 0.5f + y, z - 0.5 }, 1, GRAY);
@@ -158,6 +168,8 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 					break;
 				case CONFLICTVALUE:
 					color = RED;
+					if (troll)  DrawModelEx(models.cat, (Vector3) { x, y + 0.73f + (float)rot / 600.0f, z }, (Vector3) { 0, 1, 0 }, rot, (Vector3) { CAT_SIZE * 2, CAT_SIZE * 2, CAT_SIZE * 2 }, WHITE);
+
 					for (int k = 0; k < NOMBREMONTAGNE; k++) {
 						if (moutainPos[k].x == i && moutainPos[k].y == j) {
 							nb++;//avance le compte montagne si collision avec une montagne pour ne pas faire spawn une montagne sur une autre
@@ -179,11 +191,19 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 
 void GUIdisplayFinal(GameState gs, int mountainSeed[2], Seed s, ModelList models, Camera3D camera) {
 	int i = 0;
-	
-	
+
+
     while (i < gs.playerNumber) {
+
+
 		gs.playerIndex = i;
 		PlayerState* ps = &gs.players[i];
+
+		int pointsParEdit[5] = { 0, 0, 0, 0 , 0};
+		for (int i = 0; i < 4; i++) {
+			if (gs.edits[i]) pointsParEdit[i] = (gs.edits[i]->fctCaluls)(ps->map);
+		}
+		pointsParEdit[4] = calcEnenmyPoints(ps->map);
 		Model mountains[NOMBREMONTAGNE];
 
 		/* Get mountain positions (malloc'd) and generate models once. */
@@ -206,7 +226,7 @@ void GUIdisplayFinal(GameState gs, int mountainSeed[2], Seed s, ModelList models
 			BeginDrawing(); // Début de l'affichage
 			ClearBackground(RAYWHITE);
 			BeginMode3D(camera);
-           
+
 			Position emptyMountainPos[NOMBREMONTAGNE];
 			for (int mi = 0; mi < NOMBREMONTAGNE; mi++) { emptyMountainPos[mi].x = -100; emptyMountainPos[mi].y = -100; }
 			GUIDrawFeuille(ps->map, tempMap, mountains, mountainPos ? mountainPos : emptyMountainPos, s, models);
@@ -215,17 +235,28 @@ void GUIdisplayFinal(GameState gs, int mountainSeed[2], Seed s, ModelList models
 
 			EndMode3D();
 
-			drawFinalUi(&gs);
+			drawFinalUi(&gs, pointsParEdit);
 			EndDrawing(); // Fin de l'affichage
 
-			if (IsKeyPressed(KEY_SPACE)) break;
-			
+			if (IsKeyPressed(END_PREV_KEY)) {
+				i = i > 0 ? i - 1 : i;
+				break;
+			}
+			if (IsKeyPressed(END_NEXT_KEY)) {
+				i = i <gs.playerNumber-1 ? i + 1 : i;
+				break;
+			}
+			if (IsKeyPressed(KEY_SPACE)) {
+				i = gs.playerNumber; // Exit outer loop
+				break;
+			}
+
 		}
 
 		if (mountainPos) free(mountainPos);
 		if (WindowShouldClose()) break;
 
-		i++;
+
 	}
 }
 
@@ -239,8 +270,7 @@ int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D
 		pos.y = 6;
 		int drawable = 0;
 		FeuilleCarte feuilleVide, temp;
-		float accX = (float)pos.x;
-		float accY = (float)pos.y;
+
 
 		int done = 0;
 		Position* mountainPos = getPositionsOfMaterial(f, MONTAGNE);//envoi la positions des montagnes pour avancer si un conflit à lieu entre une montagne et autre
@@ -345,8 +375,8 @@ void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera) {
 	state->drawable = drawShape(state->feuilleVide, state->shapeCopy,
 		state->pos, state->rotation, state->material);
 	tryDraw(f, state->feuilleVide, state->temp);
-	
-	state->drawable = state->drawable && state->isRuin ? coversRuin(f, state->feuilleVide) : isDrawable(f, state->feuilleVide);
+
+	state->drawable = state->drawable && (state->isRuin ? coversRuin(f, state->feuilleVide) :1) && isDrawable(f, state->feuilleVide);
 
 	Vector3 forward = { camera.target.x - camera.position.x, 0, camera.target.z - camera.position.z };
 	normalize(&forward);
@@ -408,9 +438,9 @@ void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera) {
 		if (state->pos.y > SIZE - 2) state->pos.y -= 1;
 	}
 
-	
 
-	
+
+
 
 
 	//if (OOB) { state->pos.x = 5; state->pos.y = 5; }// reset si hors limite (se produit rarement, mais peut arriver lors de switch de forme si les 2 formes ne peuvent pas être placées au même endroit)
@@ -425,7 +455,7 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 	static float historyScrollOffset = 0.0f; // Offset de scroll pour l'historique de cartes
 	static bool openSeasonCard = 0;
 
-	Rectangle infoPanel = { 0, midY - 700 / 2, 400, 700 };
+
 	//Rectangle playerPanel = { midX * 2 - 400, 100, 400, 250 };
 
 	Rectangle editsRec = (Rectangle){ midX - 40, -60, 80, 120 };
@@ -470,7 +500,7 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 		} else {
 			hoverTime[i] = 0.f;
 			hoverTime[4] -= GetFrameTime();
-			hoverTime[4] = max(hoverTime[4], -.4f);			
+			hoverTime[4] = max(hoverTime[4], -.4f);
 			//printf("\nDec Hover Delta Time = %.4f", hoverTime[4] / 4);
 		}
 
@@ -702,7 +732,7 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 	bool openSeasonCardA = CheckCollisionPointRec(mouse, openSeasonRec);
 	bool openSeasonCardB = CheckCollisionPointRec(mouse, seasonTexPlace);
 	openSeasonCard = (!openSeasonCardA && openSeasonCardB);
-	
+
 	// Edits & Saison
 	DrawRectangleRoundedStrokeEx(editsRec, 1.f, 10, 2, BGCOLOR, GOLD);
 	for (int i = 0; i < 4; i++) {
@@ -798,7 +828,7 @@ void GUIUpdateCustomCamera(Camera3D* camera) {
 
 	normalize(&newPos);//normalise le vecteur de position
 
-	if (newPos.y > 0.0f && newPos.y < (float)MAXCAMERAHEIGHT) {// évite les postions négatives
+	if (newPos.y > MINCAMERAHEIGHT && newPos.y < (float)MAXCAMERAHEIGHT) {	// évite les postions négatives
 		camera->position.x = newPos.x * rhoCam;// replace la caméra à son écart cible
 		camera->position.y = newPos.y * rhoCam;
 		camera->position.z = newPos.z * rhoCam;
@@ -871,8 +901,8 @@ Model generateMountain(int x, int y) {
 	for (int y = 0; y < PERLIN_SIZE; y++) {// fallof pour avoir des bords smooths
 		for (int x = 0; x < PERLIN_SIZE; x++) {
 
-			float nx = (float)x / (float)PERLIN_SIZE * 2.0f - 1.0f;
-			float ny = (float)y / (float)PERLIN_SIZE * 2.0f - 1.0f;
+
+
 
 			float fx = 1.0f - powf(fabsf((float)x / PERLIN_SIZE * 2.0f - 1.0f), PERLIN_MODEL_SMOOTHING);
 			float fy = 1.0f - powf(fabsf((float)y / PERLIN_SIZE * 2.0f - 1.0f), PERLIN_MODEL_SMOOTHING);
@@ -936,7 +966,7 @@ Image generateForestImage(int x, int y) {
 
 
 
-ModelList loadModels() {
+ModelList loadModels(bool troll) {
 	ModelList models;
 	printf("Loading models \n");
 	models.tree = LoadModel(PATH_TO_TREE_MODEL);
@@ -944,12 +974,13 @@ ModelList loadModels() {
 	models.skybox = loadSkybox(false);
 	models.house = LoadModel(PATH_TO_HOUSE);
 	models.monster = LoadModel(PATH_TO_MONSTER);
+	models.ruin = LoadModel(PATH_TO_RUIN);
 	// génération du plan pour afficher la texture de champs
 
 	Mesh plane = GenMeshPlane(1.0f, 1.0f, 1, 1);//plan unique pour générer plusieurs modèles différents, pour éviter de générer plusieurs meshes identiques
 
 
-	Texture2D textureChamps = LoadTexture(PATH_TO_CHAMPS_TEXTURE);	
+	Texture2D textureChamps = LoadTexture(PATH_TO_CHAMPS_TEXTURE);
 	models.champs = LoadModelFromMesh(plane);
 	SetTextureWrap(textureChamps, TEXTURE_WRAP_CLAMP);
 	SetTextureFilter(textureChamps, TEXTURE_FILTER_POINT);
@@ -957,7 +988,7 @@ ModelList loadModels() {
 
 	//idem mais pour l'eau :
 
-	
+
 	Texture2D textureWater = LoadTexture(PATH_TO_WATER_TEXTURE);
 	models.water = LoadModelFromMesh(plane);
 	SetTextureWrap(textureWater, TEXTURE_WRAP_CLAMP);
@@ -966,7 +997,7 @@ ModelList loadModels() {
 
 	//idem mais pour le sol des monstres :
 	{
-		
+
 		Texture2D texture = LoadTexture(PATH_TO_MONSTER_TEXTURE);
 		models.monsterTile = LoadModelFromMesh(plane);
 		SetTextureWrap(texture, TEXTURE_WRAP_CLAMP);
@@ -976,7 +1007,7 @@ ModelList loadModels() {
 
 	//idem mais pour le sol de la foret
 	{
-	
+
 		Texture2D texture = LoadTexture(PATH_TO_FORET_TEXTURE);
 		models.forestTile = LoadModelFromMesh(plane);
 		SetTextureWrap(texture, TEXTURE_WRAP_CLAMP);
@@ -995,15 +1026,22 @@ ModelList loadModels() {
 	}
 
 
+	if (troll) {
+		models.cat = LoadModel(PATH_TO_CAT);
+	}
 
 
 	printf("models succesfully laoded\n");
+
+
+
+
 	return models;
 }
 
 
 Model loadSkybox(bool useHDR) {
-	double start = GetTime();
+
 	Mesh cube = GenMeshCube(1.0f, 1.0f, 1.0f);
 	Model skybox = LoadModelFromMesh(cube);
 
@@ -1016,10 +1054,8 @@ Model loadSkybox(bool useHDR) {
 	skybox.materials[0].shader = LoadShader(TextFormat(SKYBOX_SHADER_PATH, GLSL_VERSION),
 		TextFormat(SKYBOX_SHADER_PATH2, GLSL_VERSION));
 
-#define SKYBOX_SHADER_PATH "Assets/shaders/glsl%i/skybox.vs"
-#define SKYBOX_SHADER_PATH2 "Assets/shaders/glsl%i/skybox.fs"
-#define SKYBOX_CUBEMAP_SHADER_PATH "Assets/shaders/glsl%i/cubemap.vs"
-#define SKYBOX_CUBEMAP_SHADER_PATH "Assets/shaders/glsl%i/cubemap.fs"
+
+
 
 	SetShaderValue(skybox.materials[0].shader, GetShaderLocation(skybox.materials[0].shader, "environmentMap"), (int[1]) { MATERIAL_MAP_CUBEMAP }, SHADER_UNIFORM_INT);
 	SetShaderValue(skybox.materials[0].shader, GetShaderLocation(skybox.materials[0].shader, "doGamma"), (int[1]) { useHDR ? 1 : 0 }, SHADER_UNIFORM_INT);
@@ -1027,7 +1063,7 @@ Model loadSkybox(bool useHDR) {
 
 	// Load cubemap shader and setup required shader locations
 	Shader shdrCubemap = LoadShader(TextFormat(SKYBOX_CUBEMAP_SHADER_PATH, GLSL_VERSION),
-		TextFormat(SKYBOX_CUBEMAP_SHADER_PATH, GLSL_VERSION));
+		TextFormat(SKYBOX_CUBEMAP_SHADER_PATH2, GLSL_VERSION));
 
 	SetShaderValue(shdrCubemap, GetShaderLocation(shdrCubemap, "equirectangularMap"), (int[1]) { 0 }, SHADER_UNIFORM_INT);
 
@@ -1151,9 +1187,9 @@ static TextureCubemap GenTextureCubemap(Shader shader, Texture2D panorama, int s
 
 
 Image generateOffsetImage(int x, int y) {
-	printf("generating perlin noise map \n");
+	printf("[SEED] Generating perlin noise map \n");
 	Image perlinNoise = GenImagePerlinNoise(OFSET_IMAGE_SIZE, OFSET_IMAGE_SIZE, x * 100, y * 100, OFSET_IMAGE_SCALE);
-	
+
 	return perlinNoise;
 
 
@@ -1183,7 +1219,7 @@ Seed generateSeed(int mountainSeed[2]) {//génère une seed aléatoire pour les 
 	pthread_join(thread2, (void**)&pResult2);
 	pthread_join(thread1, (void**)&pResult1);
 	pthread_join(thread3, (void**)&pResult3);
-	
+
 
 
 	s.OfsetImagex = *pResult1;
@@ -1192,7 +1228,7 @@ Seed generateSeed(int mountainSeed[2]) {//génère une seed aléatoire pour les 
 	free(pResult3);
 	free(pResult1);
 	free(pResult2);
-	
+
 	return s;
 }
 
@@ -1207,7 +1243,7 @@ void* generateSeedThread(void* arg) {
 
 
 Image generateVillageImage(int x, int y) {
-	printf("generating perlin noise Ofset \n");
+	printf("[seed] Generating perlin noise Ofset \n");
 	Image perlinNoise = GenImagePerlinNoise(VILLAGE_IMAGE_SIZE, VILLAGE_IMAGE_SIZE, x * 100, y * 100, VILLAGE_IMAGE_SCALE);
 
 	return perlinNoise;
@@ -1219,6 +1255,7 @@ Image generateVillageImage(int x, int y) {
 
 void* generateRandomVilageImagesThread(void* arg) {
 	Image* img;
+	srand(time(NULL));//besoin de re-initialiser le génératuer random parce que thread séparé
 	do {
 		img = malloc(sizeof(Image));
 		*img = generateVillageImage(randInt(0, 100) * 10, randInt(0, 100) * 10);
@@ -1293,7 +1330,7 @@ void* SoundThread(void* args) {		//thread de gestion de l'audio séparé afin d'
 			musicIndex = new_index;
 			sprintf(musicPath, "%s%d.mp3", PATH_TO_AUDIO, musicIndex);
 			music = LoadMusicStream(musicPath);
-		
+
 			SetMusicPan(music, pan);
 			SetMusicVolume(music, volume);
 			PlayMusicStream(music);

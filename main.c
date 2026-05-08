@@ -16,7 +16,7 @@ int main()
 	// Initialization
 	int screenWidth = 1280;
 	int screenHeight = 720;
-	int flag = 0;
+
 	printf("\n\n\n\n\n\n Debug 1 \n\n\n\n\n\n");
 
 
@@ -31,15 +31,13 @@ int main()
 	pthread_create(&soundThread, NULL, SoundThread, &keep);
 
 	//ToggleBorderlessWindowed();
-	
 
 
-	Vector3 cubePosition = { 0.0f, 0.0f, 0.0f };
 
 	printf("\n\n\n\n\n\n Debug 3 \n\n\n\n\n\n");
 	// WaitTime(1.0f);
 
-	
+
 
 
 	// Main game loop
@@ -56,7 +54,7 @@ int main()
 			".,;:!?'°^&()[]{}<>_\"|+-/*= \\\n"
 			"éàèêëîïôûùçÉÀÈÊËÎÏÔÛÙÇ";
 
-		int codepointCount = 0;  
+		int codepointCount = 0;
 		int* codepoints = LoadCodepoints(charset, &codepointCount);
 
 		gs.assets.fonts[FONT_GRENZE_GOTISCH_B] = LoadFontEx("Assets/Fonts/GrenzeGotisch-Bold.ttf", 200, codepoints, codepointCount);
@@ -126,7 +124,7 @@ int main()
 
 			// AT THE END : ajouter un ecran de chargement
 		}
-		
+
 	}
 
 	SetMouseCursor(MOUSE_CURSOR_DEFAULT);
@@ -159,7 +157,7 @@ int main()
 	printf("\n\n\n\n Debug Window : %dx%d \n\n\n\n", screenWidth, screenHeight);
 
 
-	//Define the camera to look into our 3d world 
+	//Define the camera to look into our 3d world
 	Camera3D camera = { 0 };
 	camera.position = (Vector3){ 0.0f, 10.0f, 10.0f };  // Camera position
 	camera.target = (Vector3){ 0.0f, 0.0f, 1.0f };      // Camera looking at point

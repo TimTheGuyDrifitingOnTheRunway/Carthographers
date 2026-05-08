@@ -42,7 +42,7 @@ void exploreGroup(FeuilleCarte f, int x, int y, FeuilleCarte visited, FeuilleCar
 // Retourne le nombre de groupes trouvé
 int RecenseEveryGroups(FeuilleCarte f, InfoGroupe listeGroupes[SIZE * SIZE]);
 
-
+int NombreVoisionDeMat(FeuilleCarte f, int material, int ignoreRuins, int margin);
 
 //dessins de formes//////////////////////////////
 
@@ -58,6 +58,8 @@ int placementDefault(FeuilleCarte f, int material);
 
 int placementShape(FeuilleCarte f, const Piece shape, int material);//SP à utiliser pour placer une forme sur une feuilleCarte
 
+
+int autoPlacement(FeuilleCarte f, const Piece shape, int material);
 
 
 

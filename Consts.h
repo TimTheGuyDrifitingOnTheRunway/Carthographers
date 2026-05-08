@@ -29,7 +29,8 @@
 
 /*OPTIONS DE DEBOGAGE */
 #define cc// DEBUG_FORET : affiche la noisemap source de foret
-#define co // DEBUG_UI_FIN : permet de sauter les 3 premières saisons pour tester directement la fin de partie et le classement des joueurs
+#define cc // DEBUG_UI_FIN : permet de sauter les 3 premières saisons pour tester directement la fin de partie et le classement des joueurs
+#define VERBOSE // VERBOSE : affiche des messages de debug dans la console pour suivre le déroulement du jeu et les calculs de points
 
 
 /*****MACROS****/
@@ -81,6 +82,10 @@
 #define PLACEMENT_HEIGHT 1.0f
 #define CASE_HEIGHT 1.0f
 
+#define INDIC_FS 60
+#define INDIC_FONT gs->assets.fonts[FONT_GRENZE_GOTISCH_L]
+
+
 #define SPEEDY 5 // constantes inverse de vitesse
 #define SPEEDX 7
 
@@ -95,6 +100,8 @@
 #define SWITCHP KEY_E
 #define SWITCHMP KEY_Q
 
+#define END_NEXT_KEY KEY_E // touceh pour avancer et revnir à la fin
+#define END_PREV_KEY KEY_Q
 // keybinds camera
 
 #define UPC KEY_UP
@@ -102,10 +109,12 @@
 #define RIGHTC KEY_RIGHT
 #define LEFTC KEY_LEFT
 
-#define MAXCAMERAHEIGHT 0.8
+#define MAXCAMERAHEIGHT 0.9f
+#define MINCAMERAHEIGHT -0.07f
 
 
-// Constantes du Menu
+
+// Constantes du Menu in game
 #define SEASON_FS 40
 #define SEASON_FONT gs->assets.fonts[FONT_GRENZE_GOTISCH_B]
 
@@ -244,6 +253,9 @@
 #define MONSTER_SIZE 0.05f
 #define MONSTER_TRESHOLD 0.7f
 
+#define RUIN_SIZE 0.045f
+
+#define CAT_SIZE 1.0f
 
 /* audio*/
 #define MAX_MUSIC_INDEX 2 // numéro de la musique maximale
@@ -255,6 +267,8 @@
 #define PATH_TO_BUSH_MODEL "Assets/bush.obj"
 #define PATH_TO_HOUSE "Assets/maison.obj"
 #define PATH_TO_MONSTER "Assets/monster.obj"
+#define PATH_TO_RUIN "Assets/temple of apollo.obj"
+#define PATH_TO_CAT "Assets/Cat/scene.gltf"
 
 #define PATH_TO_HDR_SKYBOX "Assets/skybox.hdr"
 #define PATH_TO_SKYBOX "Assets/skybox2.png"
@@ -267,7 +281,7 @@
 #define SKYBOX_SHADER_PATH "Assets/shaders/glsl%i/skybox.vs"
 #define SKYBOX_SHADER_PATH2 "Assets/shaders/glsl%i/skybox.fs"
 #define SKYBOX_CUBEMAP_SHADER_PATH "Assets/shaders/glsl%i/cubemap.vs"
-#define SKYBOX_CUBEMAP_SHADER_PATH "Assets/shaders/glsl%i/cubemap.fs"
+#define SKYBOX_CUBEMAP_SHADER_PATH2 "Assets/shaders/glsl%i/cubemap.fs"
 
 #define PATH_TO_AUDIO "Assets/Sounds/music"
 
@@ -286,5 +300,5 @@
 
 
 
-
+#define SPECIAL_PLAYER_NAME "Danny"//L joeur dont le nom
 
