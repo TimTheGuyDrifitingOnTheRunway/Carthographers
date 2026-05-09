@@ -79,7 +79,7 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 				switch (getMaterialAtPos(temp, (Position) { i, j })) {
 				case EAU:
 					color = BLUE;
-					DrawModel(models.water, (Vector3) { x, y + 0.51f, z }, 1, WHITE);//dessin de la tyles avant tout 
+					DrawModel(models.water, (Vector3) { x, y + 0.51f, z }, 1, WHITE);//dessin de la tyles avant tout
 
 					break;
 				case FORET:
@@ -462,7 +462,7 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 	static float historyScrollOffset = 0.0f; // Offset de scroll pour l'historique de cartes
 	static bool openSeasonCard = 0;
 
-	Rectangle infoPanel = { 0, midY - 700 / 2, 400, 700 };
+
 	//Rectangle playerPanel = { midX * 2 - 400, 100, 400, 250 };
 
 	Rectangle editsRec = (Rectangle){ midX - 40, -60, 80, 120 };
@@ -920,8 +920,7 @@ Model generateMountain(int x, int y) {
 	for (int y = 0; y < PERLIN_SIZE; y++) {// fallof pour avoir des bords smooths
 		for (int x = 0; x < PERLIN_SIZE; x++) {
 
-			float nx = (float)x / (float)PERLIN_SIZE * 2.0f - 1.0f;
-			float ny = (float)y / (float)PERLIN_SIZE * 2.0f - 1.0f;
+
 
 			float fx = 1.0f - powf(fabsf((float)x / PERLIN_SIZE * 2.0f - 1.0f), PERLIN_MODEL_SMOOTHING);
 			float fy = 1.0f - powf(fabsf((float)y / PERLIN_SIZE * 2.0f - 1.0f), PERLIN_MODEL_SMOOTHING);
@@ -1159,7 +1158,7 @@ ModelList loadModelsFromImage(ModelImage imgs, bool troll) {
 }
 
 Model loadSkybox(bool useHDR) {
-	double start = GetTime();
+
 	Mesh cube = GenMeshCube(1.0f, 1.0f, 1.0f);
 	Model skybox = LoadModelFromMesh(cube);
 
@@ -1215,7 +1214,7 @@ Model loadSkybox(bool useHDR) {
 
 
 
-static TextureCubemap GenTextureCubemap(Shader shader, Texture2D panorama, int size, int format)//fonctions du tuto raylib
+TextureCubemap GenTextureCubemap(Shader shader, Texture2D panorama, int size, int format)//fonctions du tuto raylib
 {
 	TextureCubemap cubemap = { 0 };
 

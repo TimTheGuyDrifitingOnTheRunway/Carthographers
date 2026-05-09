@@ -5,12 +5,12 @@
 // Écran principal du menu de démarrage et gestion du chargement des assets
 ScreenID RunMenu(GameState* gs) {
 	int midX = 0;
-	int midY = 0;
+
 	int posY = GetScreenHeight() / 20 + 30 + TITLE_FS + 20;
 
 	char play[12] = "chargement";
-	
-	
+
+
 	bool addPlayer = 0;
 	//char tmppl[33] = "Limite de 100 personnes atteinte";	int tmpplSize = 70;		// tmppl = too many people
 	Button addBtn = { .color1 = SKYBLUE, .color2 = BLACK, .label = "+ Ajouter un joueur", .labelFont = MAIN_BTN_FONT, .labelColor = BLACK, .fontSize = MAIN_BUTTON_FS, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = (Rectangle){ midX - MAIN_MENU_BTN_WIDTH / 2, posY + 30, MAIN_MENU_BTN_WIDTH - 50, MAIN_BUTTON_FS + 10} };
@@ -20,7 +20,7 @@ ScreenID RunMenu(GameState* gs) {
 	Button startBtn = { .color1 = LIME, .color2 = BLACK, .label = play, .labelFont = MAIN_BTN_FONT, .labelColor = BLACK, .fontSize = MAIN_BUTTON_FS + 10, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = (Rectangle){0, 0, MAIN_MENU_BTN_WIDTH - 50, MAIN_BUTTON_FS + 25} };
 	Button stopBtn = { .color1 = RED, .color2 = BLACK, .label = "Quitter le jeu", .labelFont = MAIN_BTN_FONT, .labelColor = BLACK, .fontSize = (int)MAIN_BUTTON_FS * 0.8f, .corner = MAIN_BUTTON_CORNER, .stroke = MAIN_BUTTON_STROKE, .bounds = (Rectangle){0, 0, MAIN_MENU_BTN_WIDTH * 0.6f, MAIN_BUTTON_FS } };
 
-	
+
 
 	Rectangle* btns[] = { &addBtn.bounds, &ruleBtn.bounds, &keyBtn.bounds, &startBtn.bounds, &stopBtn.bounds };
 
@@ -30,7 +30,7 @@ ScreenID RunMenu(GameState* gs) {
 		startBtn.color1 = gs->loadCtx->avancement >= NOMBRE_TOTAL_ASSETS ? LIME : DARKGRAY;
 
 		midX = GetScreenWidth() / 2;
-		midY = GetScreenHeight() / 2;
+
 
 		addBtn.bounds.x = midX - MAIN_MENU_BTN_WIDTH / 2;
 		addBtn.bounds.y = posY + 30, MAIN_MENU_BTN_WIDTH - 50;
@@ -107,13 +107,12 @@ ScreenID RunMenu(GameState* gs) {
 // Écran d'ajout d'un nouveau joueur
 ScreenID RunAddPlayer(GameState* gs) {
 	int midX = 0;
-	int midY = 0;
+
 	int posY = GetScreenHeight() / 20 + 30 + TITLE_FS + 20;
 
 	Rectangle menuBounds = (Rectangle){ 0 };
 	char addPplLabel[] = "Ajouter un nouveau joueur !"; 	int addPplFontSize = 50;
-	Rectangle iptNameBox = (Rectangle){ 0 };
-	int d = 40; // Espacement entre les boutons
+
 
 	Button cclBtn = { .color1 = RED, .color2 = BLACK, .label = "Annuler", .labelFont = gs->assets.fonts[FONT_METAMORPHOUS], .labelColor = BLACK, .fontSize = 40, .corner = 90, .stroke = 3 };
 	Button addBtn = { .color1 = LIME, .color2 = BLACK, .label = "Ajouter", .labelFont = gs->assets.fonts[FONT_METAMORPHOUS], .labelColor = BLACK, .fontSize = 40, .corner = 90, .stroke = 3 };
@@ -126,7 +125,7 @@ ScreenID RunAddPlayer(GameState* gs) {
 
 	while (!WindowShouldClose() && !add && !cclBtn.validated) {
 		midX = GetScreenWidth() / 2;
-		midY = GetScreenHeight() / 2;
+
 
 		menuBounds = (Rectangle){ midX - ADD_MENU_WIDTH / 2, posY,  ADD_MENU_WIDTH, ADD_MENU_HEIGHT };
 
@@ -180,7 +179,7 @@ ScreenID RunAddPlayer(GameState* gs) {
 			gs->players = tmp;
 			strcpy(gs->players[gs->playerNumber++].name, nameIptBox.text);
 		}
-		
+
 	}
 
 	return SCREEN_MENU;
@@ -189,7 +188,7 @@ ScreenID RunAddPlayer(GameState* gs) {
 // Écran de visualisation des règles du jeu
 ScreenID RunRules(GameState* gs) {
 	int midX = 0;
-	int midY = 0;
+
 	int posY = GetScreenHeight() / 20 + 30 + TITLE_FS + 20;
 
 	RulePage pages[PAGE_NB] = {
@@ -210,10 +209,10 @@ ScreenID RunRules(GameState* gs) {
 	Rectangle textZone;
 
 
-	bool done = 0;
+
 	while (!WindowShouldClose() && !Exit.validated) {
 		midX = GetScreenWidth() / 2;
-		midY = GetScreenHeight() / 2;
+
 
 		textZone = (Rectangle){ midX - max(GetScreenWidth() * 3 / 4, TEXT_ZONE_WIDTH_MIN) / 2, posY + 50, max(GetScreenWidth() * 3 / 4, TEXT_ZONE_WIDTH_MIN) , GetScreenHeight() * 18 / 20 - 80 - (posY + 50) };
 
@@ -264,7 +263,7 @@ ScreenID RunRules(GameState* gs) {
 // Écran d'affichage des touches de contrôle
 ScreenID RunKeybinds(GameState* gs) {
 	int midX = 0;
-	int midY = 0;
+
 	int posY = GetScreenHeight() / 20 + 30 + TITLE_FS + 20;
 
 	Rectangle rMove = (Rectangle){ midX - MeasureTextEx(KEY_FONT, KEY_TEXT_MOVE, KEY_FS, NORMAL_SPACING).x / 2, posY + 20, MeasureTextEx(KEY_FONT, KEY_TEXT_MOVE, KEY_FS, NORMAL_SPACING).x, KEY_FS };
@@ -281,7 +280,7 @@ ScreenID RunKeybinds(GameState* gs) {
 
 	while (!WindowShouldClose() && !Exit.validated) {
 		midX = GetScreenWidth() / 2;
-		midY = GetScreenHeight() / 2;
+
 
 		rMove = (Rectangle){ midX - MeasureTextEx(KEY_FONT, KEY_TEXT_MOVE, KEY_FS, NORMAL_SPACING).x / 2, posY + 20, MeasureTextEx(KEY_FONT, KEY_TEXT_MOVE, KEY_FS, NORMAL_SPACING).x, KEY_FS };
 		SortRectangles(recTextList, 8, KEY_PAD, .5f);

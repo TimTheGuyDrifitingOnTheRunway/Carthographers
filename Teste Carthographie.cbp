@@ -89,13 +89,12 @@
 			</Target>
 		</Build>
 		<Compiler>
+			<Add option="-Wno-incompatible-pointer-types" />
 			<Add option="-Wno-format" />
 			<Add option="-Wno-switch" />
-			<Add option="-Wno-return-type" />
 			<Add option="-Wno-int-to-pointer-cast" />
 			<Add option="-Wno-pointer-to-int-cast" />
-			<Add option="-Wno-incompatible-pointer-types" />
-			<Add option="-Wno-return-mismatch" />
+			<Add option="-Wno-return-type" />
 			<Add directory="external/raylib/include" />
 		</Compiler>
 		<Linker>

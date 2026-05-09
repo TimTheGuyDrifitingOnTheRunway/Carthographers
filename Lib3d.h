@@ -39,7 +39,7 @@ ModelImage loadModelsImage();
 ModelList loadModels( bool troll);
 Model loadSkybox(bool useHDR);
 
-static TextureCubemap GenTextureCubemap(Shader shader, Texture2D panorama, int size, int format);
+TextureCubemap GenTextureCubemap(Shader shader, Texture2D panorama, int size, int format);
 
 /*G2N2RATIONS procédurale de montagnes*/
 Model generateMountain(int x, int y);
