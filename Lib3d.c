@@ -50,7 +50,7 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 					unsigned char blue = (pow((lum), WATER_POWER) + WATER_OFSET) * 255 > 254 ? 254 : ((pow((lum), WATER_POWER) + WATER_OFSET) * 255 < 50) ? 50 : (pow((lum), WATER_POWER) + WATER_OFSET) * 255;
 
 					Color c = (Color){ blue * WATER_RED_FACTOR, blue * WATER_GREEN_FACTOR, blue,  WATER_TRANSPARENCY };
-					DrawCube((Vector3) { x - 0.5f + (float)k / TREE_DIVIDER, y + 0.9 + lum / 2 +WATER_CUBE_OFSET, z - 0.5 + (float)l / TREE_DIVIDER }, 0.1f, 0.5 * lum* WATER_CUBE_HEIGHT_MULTIPLYER, 0.1f, c);
+					DrawCube((Vector3) { x - 0.5f + (float)k / TREE_DIVIDER, y + 0.9 + lum / 2 + WATER_CUBE_OFSET, z - 0.5 + (float)l / TREE_DIVIDER }, 0.1f, 0.5 * lum * WATER_CUBE_HEIGHT_MULTIPLYER, 0.1f, c);
 				}
 			}
 #endif
@@ -60,11 +60,11 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 			if (temp[i][j] >= RUINE) {
 				float x = i - (SIZE - 1) / 2.0f;
 				float z = j - (SIZE - 1) / 2.0f;
-				float y = - CASE_HEIGHT / 2.f;   // Half height so cube is under the grid
+				float y = -CASE_HEIGHT / 2.f;   // Half height so cube is under the grid
 
-				float orientation = pow(ColorToHSV(GetImageColor(s.OfsetImagex, j , i )).z+1.0f, 10.0F);
-				DrawModelEx(models.ruin, (Vector3) { x, y+ (float)(temp[i][j] > RUINE)*1.5f+ (float)(temp[i][j]!= f[i][j])/2.0f, z }, (Vector3) { 0, 1, 0 }, 47.0f * orientation, (Vector3) { RUIN_SIZE / 1.3f, RUIN_SIZE * 1.1f, RUIN_SIZE / 1.3f }, WHITE);//placement avec ajustement de hauteur
-				DrawCube((Vector3) { x, y-0.5, z }, 1.0f, 0.50f, 1.0f, DARKGRAY);
+				float orientation = pow(ColorToHSV(GetImageColor(s.OfsetImagex, j, i)).z + 1.0f, 10.0F);
+				DrawModelEx(models.ruin, (Vector3) { x, y + (float)(temp[i][j] > RUINE) * 1.5f + (float)(temp[i][j] != f[i][j]) / 2.0f, z }, (Vector3) { 0, 1, 0 }, 47.0f * orientation, (Vector3) { RUIN_SIZE / 1.3f, RUIN_SIZE * 1.1f, RUIN_SIZE / 1.3f }, WHITE);//placement avec ajustement de hauteur
+				DrawCube((Vector3) { x, y - 0.5, z }, 1.0f, 0.50f, 1.0f, DARKGRAY);
 				DrawCubeWires((Vector3) { x, y, z }, 1.0f, 1.0f, 1.0f, BLACK);
 			}
 			if (getMaterialAtPos(temp, (Position) { i, j }) != 0) {
@@ -79,7 +79,7 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 				switch (getMaterialAtPos(temp, (Position) { i, j })) {
 				case EAU:
 					color = BLUE;
-					DrawModel(models.water, (Vector3) { x, y + 0.51f, z }, 1, WHITE);//dessin de la tyles avant tout
+					DrawModel(models.water, (Vector3) { x, y + 0.51f, z }, 1, WHITE);//dessin de la tyles avant tout 
 
 					break;
 				case FORET:
@@ -97,7 +97,7 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 						Color c3 = (Color){ green, green * 0.8f ,(unsigned char)50 , 255 };//couleur de base pour les arbres
 
 						//calcul des ofset d'arbres
-						float rxOfset = (ColorToHSV(GetImageColor(s.OfsetImagex, j * 10 + l, i * 10 + k)).z-0.5f)*0.5f;
+						float rxOfset = (ColorToHSV(GetImageColor(s.OfsetImagex, j * 10 + l, i * 10 + k)).z - 0.5f) * 0.5f;
 						float rzOfset = (ColorToHSV(GetImageColor(s.OfsetImagey, j * 10 + l, i * 10 + k)).z - 0.5f) * 0.5f;
 
 						clamp(rxOfset, -0.1f, 0.1f);
@@ -162,7 +162,7 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 						clamp(rzOfset, -0.1f, 0.1f);
 						if ((-0.5f + (float)k / HOUSE_DIVIDER + rxOfset < FOREST_BORDER) && (-0.5f + (float)k / HOUSE_DIVIDER + rxOfset) > -FOREST_BORDER && (-0.5 + (float)l / HOUSE_DIVIDER + rzOfset) < FOREST_BORDER && (-0.5 + (float)l / HOUSE_DIVIDER + rzOfset) > -FOREST_BORDER) {
 
-							if (lum > MONSTER_TRESHOLD) DrawModelEx(models.monster, (Vector3) { x - 0.5f + (float)k / HOUSE_DIVIDER + rxOfset, y + 0.53f, z - 0.5 + (float)l / HOUSE_DIVIDER + rzOfset }, (Vector3) { 0, 1, 0 }, (k+l)*30, (Vector3) { MONSTER_SIZE, MONSTER_SIZE, MONSTER_SIZE}, DARKPURPLE);
+							if (lum > MONSTER_TRESHOLD) DrawModelEx(models.monster, (Vector3) { x - 0.5f + (float)k / HOUSE_DIVIDER + rxOfset, y + 0.53f, z - 0.5 + (float)l / HOUSE_DIVIDER + rzOfset }, (Vector3) { 0, 1, 0 }, (k + l) * 30, (Vector3) { MONSTER_SIZE, MONSTER_SIZE, MONSTER_SIZE }, DARKPURPLE);
 
 						}
 					}
@@ -181,7 +181,7 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 				default:
 					color = WHITE;
 				}
-				if(drawcube)DrawCube((Vector3) { x, y, z }, 1.0f, CASE_HEIGHT, 1.0f, color);
+				if (drawcube)DrawCube((Vector3) { x, y, z }, 1.0f, CASE_HEIGHT, 1.0f, color);
 				DrawCubeWires((Vector3) { x, y, z }, 1.0f, CASE_HEIGHT, 1.0f, BLACK);
 			}
 		}
@@ -195,13 +195,13 @@ void GUIdisplayFinal(GameState gs, int mountainSeed[2], Seed s, ModelList models
 	int i = 0;
 
 
-    while (i < gs.playerNumber) {
+	while (i < gs.playerNumber) {
 
 
 		gs.playerIndex = i;
 		PlayerState* ps = &gs.players[i];
 
-		int pointsParEdit[5] = { 0, 0, 0, 0 , 0};
+		int pointsParEdit[5] = { 0, 0, 0, 0 , 0 };
 		for (int i = 0; i < 4; i++) {
 			if (gs.edits[i]) pointsParEdit[i] = (gs.edits[i]->fctCaluls)(ps->map);
 		}
@@ -217,8 +217,8 @@ void GUIdisplayFinal(GameState gs, int mountainSeed[2], Seed s, ModelList models
 		FeuilleCarte tempMap;
 		copyFeuilleCarte(ps->map, tempMap);
 
-        /* Render loop for this player's final view. Break on SPACE. */
-      /* Debug: print non-empty cell count to verify map content */
+		/* Render loop for this player's final view. Break on SPACE. */
+	  /* Debug: print non-empty cell count to verify map content */
 		int nonEmpty = SIZE * SIZE - getEmptySpots(ps->map);
 		printf("[GUIdisplayFinal] Player %s non-empty cells = %d\n", ps->name, nonEmpty);
 		while (!WindowShouldClose()) {
@@ -245,7 +245,7 @@ void GUIdisplayFinal(GameState gs, int mountainSeed[2], Seed s, ModelList models
 				break;
 			}
 			if (IsKeyPressed(END_NEXT_KEY)) {
-				i = i <gs.playerNumber-1 ? i + 1 : i;
+				i = i < gs.playerNumber - 1 ? i + 1 : i;
 				break;
 			}
 			if (IsKeyPressed(KEY_SPACE)) {
@@ -273,7 +273,8 @@ int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D
 		pos.y = 6;
 		int drawable = 0;
 		FeuilleCarte feuilleVide, temp;
-
+		float accX = (float)pos.x;
+		float accY = (float)pos.y;
 
 		int done = 0;
 		Position* mountainPos = getPositionsOfMaterial(f, MONTAGNE);//envoi la positions des montagnes pour avancer si un conflit à lieu entre une montagne et autre
@@ -335,7 +336,7 @@ int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D
 
 
 // Affiche l'interface de placement d'une carte avec deux formes et matériaux possibles
-int GUIPlacementCard(GameState* gs, FeuilleCarte f, const ExploreCard* card, int score, int isRuin, int* coinCount, Camera3D *camera, Model mountains[NOMBREMONTAGNE], Seed s, ModelList models) {
+int GUIPlacementCard(GameState* gs, FeuilleCarte f, const ExploreCard* card, int score, int isRuin, int* coinCount, Camera3D* camera, Model mountains[NOMBREMONTAGNE], Seed s, ModelList models) {
 
 	// Vérification placabilité
 	int canFitA = isRuin ? checkShapeOnRuin(f, card->pieceA) : checkShape(f, card->pieceA);
@@ -381,7 +382,7 @@ void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera) {
 		state->pos, state->rotation, state->material);
 	tryDraw(f, state->feuilleVide, state->temp);
 
-	state->drawable = state->drawable && (state->isRuin ? coversRuin(f, state->feuilleVide) :1) && isDrawable(f, state->feuilleVide);
+	state->drawable = state->drawable && (state->isRuin ? coversRuin(f, state->feuilleVide) : 1) && isDrawable(f, state->feuilleVide);
 
 	Vector3 forward = { camera.target.x - camera.position.x, 0, camera.target.z - camera.position.z };
 	normalize(&forward);
@@ -461,7 +462,7 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 	static float historyScrollOffset = 0.0f; // Offset de scroll pour l'historique de cartes
 	static bool openSeasonCard = 0;
 
-
+	Rectangle infoPanel = { 0, midY - 700 / 2, 400, 700 };
 	//Rectangle playerPanel = { midX * 2 - 400, 100, 400, 250 };
 
 	Rectangle editsRec = (Rectangle){ midX - 40, -60, 80, 120 };
@@ -503,7 +504,8 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 			hoverTime[i] += GetFrameTime();
 			hoverTime[4] = hoverTime[4] > 0 ? 4 * .4f : hoverTime[4] + 4 * GetFrameTime();				// délai de 1 seconde avant de désafficher / réafficher (on multiplie par 4, car le temps est modifié 4 fois par frame, lors des vérifications des autres Edits)
 			//printf("\nSet Hover Delta Time = %.4f", hoverTime[4] / 4);
-		} else {
+		}
+		else {
 			hoverTime[i] = 0.f;
 			hoverTime[4] -= GetFrameTime();
 			hoverTime[4] = max(hoverTime[4], -.4f);
@@ -716,7 +718,7 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 	//DrawText(TextFormat("Score : %d", score), playerPanel.x + 5, y2, 30, BLACK); y2 += 35;
 	//DrawText(TextFormat("Coins : %d", gs->players[gs->playerIndex].coinCount), playerPanel.x + 5, y2, 30, BLACK); y2 += 35;
 	DrawRectangleRoundedStrokeEx(playerPanel, .1f, 10, 3, LIGHTGRAY, DARKBROWN);
-	DrawStrokeTextEx(PLAYER_PANEL_FONT, gs->players[gs->playerIndex].name, playerPanel.x + 10, playerPanel.y + 5 , PLAYER_PANEL_FS + 10, NORMAL_SPACING, WHITE, BLACK, 1);
+	DrawStrokeTextEx(PLAYER_PANEL_FONT, gs->players[gs->playerIndex].name, playerPanel.x + 10, playerPanel.y + 5, PLAYER_PANEL_FS + 10, NORMAL_SPACING, WHITE, BLACK, 1);
 	DrawStrokeTextEx(PLAYER_PANEL_FONT, TextFormat("SCORE  %d", score), playerPanel.x + 10, playerPanel.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, NORMAL_SPACING, WHITE, BLACK, 1);										y2 += PLAYER_PANEL_FS + 10;
 	DrawStrokeTextEx(PLAYER_PANEL_FONT, TextFormat("PIECES  %d", gs->players[gs->playerIndex].coinCount), playerPanel.x + 10, playerPanel.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, NORMAL_SPACING, WHITE, BLACK, 1);		y2 += PLAYER_PANEL_FS + 10;
 	//if (gs->isOnline) { DrawText(TextFormat("COINS  %d", gs->players[gs->playerIndex].coinCount), playerPanel.x + 10, playerPanel.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, BLACK); }
@@ -808,7 +810,7 @@ int GUIplacementDefault(FeuilleCarte f, int  material, Camera3D camera, Model mo
 }
 
 // Place un point unique si aucune autre forme de carte n'est possible
-int GUIplacementDefaultCard(GameState* gs, FeuilleCarte f, const ExploreCard* card, int score, int isRuin, int* coinCount, Camera3D *camera, Model mountains[NOMBREMONTAGNE], Seed s, ModelList models) {
+int GUIplacementDefaultCard(GameState* gs, FeuilleCarte f, const ExploreCard* card, int score, int isRuin, int* coinCount, Camera3D* camera, Model mountains[NOMBREMONTAGNE], Seed s, ModelList models) {
 	if (getEmptySpots(f) == 0) return 0;
 	ExploreCard def = *card;
 	def.pieceA = &POINT;
@@ -918,8 +920,8 @@ Model generateMountain(int x, int y) {
 	for (int y = 0; y < PERLIN_SIZE; y++) {// fallof pour avoir des bords smooths
 		for (int x = 0; x < PERLIN_SIZE; x++) {
 
-
-
+			float nx = (float)x / (float)PERLIN_SIZE * 2.0f - 1.0f;
+			float ny = (float)y / (float)PERLIN_SIZE * 2.0f - 1.0f;
 
 			float fx = 1.0f - powf(fabsf((float)x / PERLIN_SIZE * 2.0f - 1.0f), PERLIN_MODEL_SMOOTHING);
 			float fy = 1.0f - powf(fabsf((float)y / PERLIN_SIZE * 2.0f - 1.0f), PERLIN_MODEL_SMOOTHING);
@@ -966,7 +968,7 @@ Model generateMountain(int x, int y) {
 
 // Génére les modèles 3D de toutes les montagnes présentes sur la carte
 void generateMountainsModels(Model mountains[NOMBREMONTAGNE], FeuilleCarte f, int mountainSeed[2]) {
-    Position* pos = getPositionsOfMaterial(f, MONTAGNE);
+	Position* pos = getPositionsOfMaterial(f, MONTAGNE);
 	int count = getOccurencesOf(f, MONTAGNE);
 	if (pos == NULL || count == 0) return;
 
@@ -1000,7 +1002,8 @@ ModelImage loadModelsImage() {
 void* ModelLoaderThread(void* arg) {//thread de chargemetn des textues dans la ram pour ganger du temps au lancement du jeu, pour éviter les freezes pendant le chargement des modèles
 	ModelImage* imgs = NULL;
 	LoadContext* ctx = (LoadContext*)arg;
-	while(imgs ==NULL)imgs = (ModelImage*)malloc(sizeof(ModelImage));
+	imgs = (ModelImage*)malloc(sizeof(ModelImage));
+	if (imgs == NULL) { printf("[ERROR] Failed to allocate memory fo model Loading"); abort(); }
 	//Sleep(15000);
 	pthread_mutex_lock(&ctx->mutex);
 	*imgs = loadModelsImage();
@@ -1156,7 +1159,7 @@ ModelList loadModelsFromImage(ModelImage imgs, bool troll) {
 }
 
 Model loadSkybox(bool useHDR) {
-
+	double start = GetTime();
 	Mesh cube = GenMeshCube(1.0f, 1.0f, 1.0f);
 	Model skybox = LoadModelFromMesh(cube);
 
@@ -1310,20 +1313,23 @@ Image generateOffsetImage(int x, int y) {
 
 }
 
-void *generateRandomOfsetImagesThread(void* arg) {
+void* generateRandomOfsetImagesThread(void* arg) {
 	Image* img;
 	srand(time(NULL));//besoin de re-initialiser le génératuer random parce que thread séparé
-	do {
-		img = malloc(sizeof(Image));
-		*img = generateOffsetImage(randInt(0, 100) * 10, randInt(0, 100) * 10);
-	} while (img == NULL);
+	img = malloc(sizeof(Image));
+	*img = generateOffsetImage(randInt(0, 100) * 10, randInt(0, 100) * 10);
+	if (img == NULL) {
+		printf("[ERROR] Failed to allocate memory for offset image\n");
+		abort();
+	}
+
 	return img;
 }
 
 Seed generateSeed(int mountainSeed[2]) {//génère une seed aléatoire pour les montagnes et les images d'offset, en utilisant un thread pour générer les images d'offset en parallèle
 	Seed s;
 	pthread_t thread1, thread2, thread3;
-	Image* pResult1, *pResult2, *pResult3;
+	Image* pResult1, * pResult2, * pResult3;
 	pthread_create(&thread1, NULL, generateRandomOfsetImagesThread, NULL);
 	pthread_create(&thread2, NULL, generateRandomOfsetImagesThread, NULL);
 	pthread_create(&thread3, NULL, generateRandomVilageImagesThread, NULL);
@@ -1351,6 +1357,10 @@ Seed generateSeed(int mountainSeed[2]) {//génère une seed aléatoire pour les 
 void* generateSeedThread(void* arg) {
 	int* mountainSeed = (int*)arg;
 	Seed* s = malloc(sizeof(Seed));
+	if (s == NULL) {
+		printf("[ERROR] Failed to allocate memory for seed\n");
+		abort();
+	}
 	*s = generateSeed(mountainSeed);
 	return s;
 }
@@ -1371,10 +1381,13 @@ Image generateVillageImage(int x, int y) {
 void* generateRandomVilageImagesThread(void* arg) {
 	Image* img;
 	srand(time(NULL));//besoin de re-initialiser le génératuer random parce que thread séparé
-	do {
-		img = malloc(sizeof(Image));
-		*img = generateVillageImage(randInt(0, 100) * 10, randInt(0, 100) * 10);
-	} while (img == NULL);
+	img = malloc(sizeof(Image));
+	if (img == NULL) {
+		printf("[ERROR] Failed to allocate memory for village image\n");
+		abort();
+	}
+	*img = generateVillageImage(randInt(0, 100) * 10, randInt(0, 100) * 10);
+
 	return img;
 }
 
@@ -1427,7 +1440,7 @@ void* SoundThread(void* args) {		//thread de gestion de l'audio séparé afin d'
 	SetMusicVolume(music, volume);
 
 
-	while (*keep==1) {
+	while (*keep == 1) {
 		UpdateMusicStream(music);
 		timePlayed = GetMusicTimePlayed(music) / GetMusicTimeLength(music);
 		//printf("time played : %.3f \n", timePlayed);
@@ -1436,10 +1449,10 @@ void* SoundThread(void* args) {		//thread de gestion de l'audio séparé afin d'
 			UnloadMusicStream(music);
 
 			int new_index;
-				do {
-					new_index = randInt(0, MAX_MUSIC_INDEX);
-					Sleep(MIN_MUSIC_DELAY);//attends un temps aléatoire et choisit une nouvelle musique différente de l'actuelle
-				} while (musicIndex == new_index);
+			do {
+				new_index = randInt(0, MAX_MUSIC_INDEX);
+				Sleep(MIN_MUSIC_DELAY);//attends un temps aléatoire et choisit une nouvelle musique différente de l'actuelle
+			} while (musicIndex == new_index);
 
 
 			musicIndex = new_index;
@@ -1459,7 +1472,7 @@ void* SoundThread(void* args) {		//thread de gestion de l'audio séparé afin d'
 
 #define TEMPS_TRANSITION 3.0f
 
-void GUIDisplayNewSeason(Camera3D* camera, GameState *gs) {
+void GUIDisplayNewSeason(Camera3D* camera, GameState* gs) {
 	double startTime = GetTime();
 	double DisplayRime = GetTime() - startTime;
 
@@ -1489,7 +1502,7 @@ void GUIDisplayNewSeason(Camera3D* camera, GameState *gs) {
 			DrawTextureEx(gs->assets.seasonImages[gs->currentSeason + 1], (Vector2) { midX, midY - 125 }, 0, 0.5f, ColorAlpha(WHITE, 1 - alpha));
 			DrawTextureEx(gs->assets.seasonImages[gs->currentSeason], (Vector2) { midX - 2.5f * 125, midY - 125 }, 0, 0.5f, ColorAlpha(WHITE, alpha));
 		}
-		else DrawTextureEx(gs->assets.seasonImages[gs->currentSeason], (Vector2) { midX -  125, midY - 125 }, 0, 0.5f, ColorAlpha(WHITE, alpha));
+		else DrawTextureEx(gs->assets.seasonImages[gs->currentSeason], (Vector2) { midX - 125, midY - 125 }, 0, 0.5f, ColorAlpha(WHITE, alpha));
 		DrawStrokeTextEx(gs->assets.fonts[FONT_GRENZE_GOTISCH_L], "Fin de Saison", editRects.x, editRects.y, EDITS_FS * 2, NORMAL_SPACING, GOLD, BLACK, 1);
 		EndDrawing();
 	}

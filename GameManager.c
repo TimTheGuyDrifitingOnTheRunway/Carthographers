@@ -287,6 +287,7 @@ void Season2(GameState* gs, Camera3D camera, ModelList models, Seed s, int mount
 	pthread_join(thread, (void**)&s2);
 	Seed S2 = *s2;
 	free(s2);
+	s2 = NULL;
 	NextSeason(gs, camera, models, S2, mountainSeed2);
 }
 

@@ -55,7 +55,7 @@ void* generateSeedThread(void* arg);//génération parallèle de la seed
 void* generateRandomVilageImagesThread(void* arg);
 Image generateVillageImage(int x, int y);
 
-/*fonctions de décharge*/
+/*fonctions de décharge (non nécéssaire car raylib le fait automatiquement en fin de program)*/
 void UnloadSeed(Seed* s);
 void UnloadModels(ModelList* models);
 
