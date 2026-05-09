@@ -181,6 +181,8 @@ int main()
 	Seed s = *s_ptr;
 	free(s_ptr);// récupération de la seed et libération de la mémoire
 
+	s_ptr = NULL;
+	models_ptr = NULL;
 	StartGame(&gs, camera, models, s, mountainSeed);
 
 	//printf("\n\n\n\n Debug ASG \n\n\n\n");
