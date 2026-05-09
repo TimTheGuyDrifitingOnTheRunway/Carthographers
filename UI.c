@@ -2,6 +2,7 @@
 
 
 
+// Écran principal du menu de démarrage et gestion du chargement des assets
 ScreenID RunMenu(GameState* gs) {
 	int midX = 0;
 	int midY = 0;
@@ -103,6 +104,7 @@ ScreenID RunMenu(GameState* gs) {
 	return SCREEN_EXIT;
 }
 
+// Écran d'ajout d'un nouveau joueur
 ScreenID RunAddPlayer(GameState* gs) {
 	int midX = 0;
 	int midY = 0;
@@ -184,6 +186,7 @@ ScreenID RunAddPlayer(GameState* gs) {
 	return SCREEN_MENU;
 }
 
+// Écran de visualisation des règles du jeu
 ScreenID RunRules(GameState* gs) {
 	int midX = 0;
 	int midY = 0;
@@ -258,6 +261,7 @@ ScreenID RunRules(GameState* gs) {
 
 
 
+// Écran d'affichage des touches de contrôle
 ScreenID RunKeybinds(GameState* gs) {
 	int midX = 0;
 	int midY = 0;
@@ -327,6 +331,7 @@ ScreenID RunKeybinds(GameState* gs) {
 	return SCREEN_MENU;
 }
 
+// Affiche le titre principal du jeu et retourne sa position Y
 int DrawTitle(GameState* gs) {
 	int posY = 0;
 	DrawStrokeTextEx(gs->assets.fonts[FONT_GRENZE_GOTISCH_B], C_TITLE, (GetScreenWidth() - MeasureTextEx(gs->assets.fonts[FONT_GRENZE_GOTISCH_B], C_TITLE, TITLE_FS, NORMAL_SPACING).x) / 2, posY, TITLE_FS, TITLE_SPACING, GOLD, BLACK, 2);
@@ -337,6 +342,7 @@ int DrawTitle(GameState* gs) {
 //	DrawStrokeTextEx(gs->assets.fonts[FONT_GRENZE_GOTISCH_B], C_TITLE, r.x + (r.width - MeasureText(C_TITLE, TITLE_FS)) / 2, r.y, TITLE_FS, GOLD, BLACK, 2);
 //}
 
+// Dessine le fond du menu (actuellement non utilisé)
 void DrawBackgroudMenu(Rectangle r) {
 	//DrawRectangleRoundedStrokeEx(r, .2f, 10, 3, BLACK, RED);
 	//DrawRectangleRoundedLinesEx(r, .2f, 10, 3, YELLOW);
@@ -345,11 +351,13 @@ void DrawBackgroudMenu(Rectangle r) {
 	//DrawTitleEx(tr);
 }
 
+// Mesure la taille d'un texte avec retour à la ligne
 Vector2 MeasureTextWrapped(const char* text, Rectangle r, int fs) {
 	return MeasureTextWrappedEx(GetFontDefault(), text, r, fs);
 }
 
-Vector2 MeasureTextWrappedEx(Font font, const char* text, Rectangle r, int fs) {	// Permet de mesurer la place que va prendre le texte avant de le dessiner. Si modif, penser à mofifier le Draw
+// Mesure la taille d'un texte avec retour à la ligne et police personnalisée
+Vector2 MeasureTextWrappedEx(Font font, const char* text, Rectangle r, int fs) {
 	float curX = r.x;									// Curseur en X
 	float curY = r.y;									// Curseur en Y
 	float maxX = r.x + r.width;							// Taille max à ne pas dépasser
@@ -392,10 +400,12 @@ Vector2 MeasureTextWrappedEx(Font font, const char* text, Rectangle r, int fs) {
 }
 
 
-Vector2 DrawTextWrapped(const char* text, Rectangle r, int fs, Color textColor) {			// Permet d'écrire du texte dans un espace contraint (Il ne s'occupe que de la limite de droite, pas de celle du bas. Si modif, penser à mofifier le Measure
+// Dessine du texte avec retour à la ligne automatique dans une zone
+Vector2 DrawTextWrapped(const char* text, Rectangle r, int fs, Color textColor) {
 	return DrawTextWrappedEx(GetFontDefault(), text, r, fs, 0, textColor, BLANK);
 }
 
+// Dessine du texte avec retour à la ligne, police et contour personnalisés
 Vector2 DrawTextWrappedEx(Font font, const char* text, Rectangle r, int fs, int stroke, Color textColor, Color strokeColor) {
 	float curX = r.x;									// Curseur en X
 	float curY = r.y;									// Curseur en Y
@@ -438,6 +448,7 @@ Vector2 DrawTextWrappedEx(Font font, const char* text, Rectangle r, int fs, int 
 
 }
 
+// Trie et place des rectangles verticalement avec espacement
 void SortRectangles(Rectangle** rlist, int listLen, int pad, float anchorPoint) {
 	int delta = 0;
 	for (int i = 0; i < listLen; i++) {
@@ -453,6 +464,7 @@ void SortRectangles(Rectangle** rlist, int listLen, int pad, float anchorPoint) 
 //	DrawButtonEx(btn, GetFontDefault());
 //}
 
+// Dessine un bouton avec hover et interactions à la souris
 void DrawButton(Button* btn) {
 	Vector2 mouse = GetMousePosition();
 	bool pressed = btn->hovered && IsMouseButtonDown(MOUSE_BUTTON_LEFT);
@@ -599,13 +611,16 @@ void DrawRectangleStroke(Rectangle rec, float lineThick, Color rectColor, Color 
 	DrawRectangleLinesEx(rec, lineThick, strokeColor);
 }
 
+// Multiplie les composantes RGB d'une couleur par un facteur
 Color multiplyColor(Color color, float factor) {
 	return (Color) { fminf(color.r * factor, 255), fminf(color.g * factor, 255), fminf(color.b * factor, 255), color.a };
 }
 
 
+// Arrondit les coins d'une image avec un ratio
 void ImageRoundedCorner(Image* image, float roundness) { ImageRoundCorner(image, (float)(roundness * min(image->width, image->height))); }
 
+// Arrondit les coins d'une image avec un rayon fixe
 void ImageRoundCorner(Image* image, float radius) {
 	ImageFormat(image, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
 
@@ -648,6 +663,7 @@ void ImageRoundCorner(Image* image, float radius) {
 }
 
 
+// Thread de chargement des cartes d'exploration, saisons et édits en mémoire RAM
 void* LoadAssetsWorker(void* arg) {
 	LoadContext* ctx = (LoadContext*)arg;
 	double start = GetTime();
@@ -689,6 +705,7 @@ void* LoadAssetsWorker(void* arg) {
 	return NULL;
 }
 
+// Tranfère progressivement les assets de la RAM à la VRAM du GPU
 void LoadAssetToVRAM(GameState* gs) {
 	//printf("\nLoadAssetToVRAM appelé, %d %d cards", gs->loadCtx->cardsLoadedRAM, gs->loadCtx->cardsLoadedVRAM);
 	pthread_mutex_lock(&gs->loadCtx->mutex);
@@ -724,6 +741,7 @@ void LoadAssetToVRAM(GameState* gs) {
 
 }
 
+// Écran de debug pour visualiser les cartes, saisons et édits chargés
 void DebugAssetViewer(GameState* gs) {
 	int currentTab = 0; // 0 = Cartes, 1 = Saisons, 2 = Edits
 	int scrollY = 0;
@@ -805,6 +823,7 @@ void DebugAssetViewer(GameState* gs) {
 	}
 }
 
+// Affiche l'interface finale avec scores du joueur courant
 void drawFinalUi(GameState *gs, int pparedit[5]) {
 	int y2 = 20;
 	//printf("\nPosition : %d,%d", state->pos.x, state->pos.y);

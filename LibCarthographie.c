@@ -41,6 +41,7 @@ const Piece B_Z = { {0,0,1},{1,1,1},{1,0,0} };
 
 /******************************FONCTIONS SOUS PROGRAMMES************************/
 // Initialise une carte vide, optionnellement avec des montagnes (déprécié)
+// Initialise une carte vide, optionnellement avec des montagnes (déprécié)
 void initCarte(FeuilleCarte f, int montagneActive) {
 
 	for (int i = 0; i < SIZE; i++) {
@@ -60,6 +61,7 @@ void initCarte(FeuilleCarte f, int montagneActive) {
 
 }
 
+// Initialise une carte vide avec optionnellement des montagnes et des ruines
 // Initialise une carte vide avec optionnellement des montagnes et des ruines
 void initCarte2(FeuilleCarte f, int montagneActive, int ruinsActive) {
 
@@ -91,6 +93,7 @@ void initCarte2(FeuilleCarte f, int montagneActive, int ruinsActive) {
 }
 
 
+// Génère les positions aléatoires des montagnes en respectant la distance minimale
 // Génère les positions aléatoires des montagnes en respectant la distance minimale
 void setupMontagnePosition(int posMontage[NOMBREMONTAGNE][2]) {
 	Position* op = emptyPositionList(NOMBREMONTAGNE);
@@ -124,6 +127,7 @@ void setupMontagnePosition(int posMontage[NOMBREMONTAGNE][2]) {
 }
 
 // Inverse horizontalement une pièce (effet miroir)
+// Inverse horizontalement une pièce (effet miroir)
 void flipShape(Piece shape) {
 	for (int i = 0; i < PIECESIZE; i++) {
 		for (int j = 0; j < PIECESIZE / 2; j++) {
@@ -135,6 +139,7 @@ void flipShape(Piece shape) {
 
 }
 
+// Génère les positions aléatoires des ruines en respectant la distance minimale et sans chevaucher les montagnes
 // Génère les positions aléatoires des ruines en respectant la distance minimale et sans chevaucher les montagnes
 void setupRuinsPosition(FeuilleCarte f, int posRuins[NOMBRERUINE][2]) {
 	Position* op = emptyPositionList(NOMBRERUINE);
@@ -174,6 +179,7 @@ void setupRuinsPosition(FeuilleCarte f, int posRuins[NOMBRERUINE][2]) {
 
 
 // Affiche la carte en mode texte (débogage)
+// Affiche la carte en mode texte (débogage)
 void displayCarte(FeuilleCarte f) {
 	for (int i = 0; i < SIZE; i++) {
 		for (int j = 0; j < SIZE; j++) {
@@ -185,10 +191,12 @@ void displayCarte(FeuilleCarte f) {
 }
 
 // Génère un nombre aléatoire entre min et max (inclus)
+// Génère un nombre aléatoire entre min et max (inclus)
 int randInt(int min, int max) {
 	return (rand() % (max + 1 - min)) + min;
 }
 
+// Calcule la distance euclidienne entre deux positions
 // Calcule la distance euclidienne entre deux positions
 float distPos(Position a, Position b) {
 
@@ -198,17 +206,20 @@ float distPos(Position a, Position b) {
 
 
 // Vérifie si une position est dans les limites de la carte
+// Vérifie si une position est dans les limites de la carte
 int isPositionInCarte(Position pos) {
 	if ((pos.x < SIZE) && (pos.x >= 0) && (pos.y < SIZE) && (pos.y >= 0)) return 1;
 	return 0;
 }
 
 // Vérifie si des coordonnées sont dans les limites de la carte
+// Vérifie si des coordonnées sont dans les limites de la carte
 int isInCarte(int x, int y) {
 	if ((x < SIZE) && (x >= 0) && (y < SIZE) && (y >= 0)) return 1;
 	return 0;
 }
 
+// Copie une pièce vers une autre
 // Copie une pièce vers une autre
 void copyPiece(const Piece pieceFrom, Piece pieceTo) {
 	for (int i = 0; i < PIECESIZE; i++) {
@@ -220,6 +231,7 @@ void copyPiece(const Piece pieceFrom, Piece pieceTo) {
 }
 
 // Copie une feuille de carte vers une autre
+// Copie une feuille de carte vers une autre
 void copyCarte(FeuilleCarte Ffrom, FeuilleCarte Fto) {
 	for (int i = 0; i < SIZE; i++) {
 		for (int j = 0; j < SIZE; j++) {
@@ -229,11 +241,13 @@ void copyCarte(FeuilleCarte Ffrom, FeuilleCarte Fto) {
 }
 
 // Récupère le matériau à une position donnée (ignorant les ruines)
+// Récupère le matériau à une position donnée (ignorant les ruines)
 int getMaterialAtPos(FeuilleCarte f, Position pos) {
 	if (isInCarte(pos.x, pos.y)) { return (f[pos.x][pos.y] % RUINE); }
 	return OUTOFBOUND;
 }
 
+// Récupère le matériau aux coordonnées données
 // Récupère le matériau aux coordonnées données
 int getMaterialAt(FeuilleCarte f, int x, int y) {
 	if (isInCarte(x, y)) { return (f[x][y] % RUINE); }
@@ -242,10 +256,12 @@ int getMaterialAt(FeuilleCarte f, int x, int y) {
 
 
 // Vérifie si une position contient un matériau spécifique
+// Vérifie si une position contient un matériau spécifique
 int isPosMaterial(FeuilleCarte f, Position pos, int material) {
 	return getMaterialAtPos(f, pos) == material;
 }
 
+// Récupère les voisins adjacents d'une position ayant un matériau spécifique
 // Récupère les voisins adjacents d'une position ayant un matériau spécifique
 void getVoisinMaterialPos(FeuilleCarte f, Position pos, int material, Position listeVoisins[4]) {
 	Position posCible;
@@ -275,6 +291,7 @@ void getVoisinMaterialPos(FeuilleCarte f, Position pos, int material, Position l
 }
 
 // Compte le nombre de cases vides dans la carte
+// Compte le nombre de cases vides dans la carte
 int getEmptySpots(FeuilleCarte f) {
 	int count = 0;
 	for (int i = 0; i < SIZE; i++) {
@@ -286,6 +303,7 @@ int getEmptySpots(FeuilleCarte f) {
 }
 
 // Compte le nombre de cases contenant un matériau spécifique
+// Compte le nombre de cases contenant un matériau spécifique
 int getOccurencesOf(FeuilleCarte f, int material) {
 	int count = 0;
 	for (int i = 0; i < SIZE; i++) {
@@ -296,6 +314,7 @@ int getOccurencesOf(FeuilleCarte f, int material) {
 	return count;
 }
 
+// Retourne array des positions contenant un matériau spécifique
 // Retourne array des positions contenant un matériau spécifique
 Position* getPositionsOfMaterial(FeuilleCarte f, int material) {
 	int occurences = getOccurencesOf(f, material);
@@ -318,6 +337,7 @@ Position* getPositionsOfMaterial(FeuilleCarte f, int material) {
 }
 
 // Copie une feuille de carte vers une autre
+// Copie une feuille de carte vers une autre
 void copyFeuilleCarte(FeuilleCarte Ffrom, FeuilleCarte Fto) {
 
 	for (int i = 0; i < SIZE; i++) {
@@ -328,6 +348,7 @@ void copyFeuilleCarte(FeuilleCarte Ffrom, FeuilleCarte Fto) {
 }
 
 
+// Crée et initialise une liste vide de positions
 // Crée et initialise une liste vide de positions
 Position* emptyPositionList(int size) {
 	Position* pos = malloc(sizeof(Position) * size);
@@ -341,6 +362,7 @@ Position* emptyPositionList(int size) {
 	return pos;
 }
 
+// Vérifie si un groupe est adjacent à un matériau spécifique ou à la bordure
 // Vérifie si un groupe est adjacent à un matériau spécifique ou à la bordure
 int isGroupAtPosNeighborWithMaterial(FeuilleCarte f, Position pos, int material, int includeBorder) {
 	FeuilleCarte temp;
@@ -367,6 +389,7 @@ int isGroupAtPosNeighborWithMaterial(FeuilleCarte f, Position pos, int material,
 
 }
 
+// Étape récursive du calcul d'adjacence de groupe
 // Étape récursive du calcul d'adjacence de groupe
 int GroupNextStep(FeuilleCarte temp, int material, int materialToAvoid, int includeBorder) {
 	int retour = 0;
@@ -399,6 +422,7 @@ int GroupNextStep(FeuilleCarte temp, int material, int materialToAvoid, int incl
 }
 
 // Vérifie si toutes les positions d'un groupe ont été traitées
+// Vérifie si toutes les positions d'un groupe ont été traitées
 int isAllProcessed(FeuilleCarte f) {
 	for (int i = 0; i < SIZE; i++) {
 		for (int j = 0; j < SIZE; j++) {
@@ -409,6 +433,7 @@ int isAllProcessed(FeuilleCarte f) {
 }
 
 
+// Explore récursivement un groupe connecté de terrains pour calculer ses statistiques
 // Explore récursivement un groupe connecté de terrains pour calculer ses statistiques
 void exploreGroup(FeuilleCarte f, int x, int y, FeuilleCarte visited, FeuilleCarte voisinsVisited, InfoGroupe* info) {
 	int material = getMaterialAt(f, x, y);
@@ -437,6 +462,7 @@ void exploreGroup(FeuilleCarte f, int x, int y, FeuilleCarte visited, FeuilleCar
 	exploreGroup(f, x, y - 1, visited, voisinsVisited, info);
 }
 
+// Récense tous les groupes de terrains connectés dans la carte
 int RecenseEveryGroups(FeuilleCarte f, InfoGroupe listeGroupes[SIZE * SIZE]) {
 	int start = clock();
 	FeuilleCarte visited;
@@ -470,6 +496,7 @@ int RecenseEveryGroups(FeuilleCarte f, InfoGroupe listeGroupes[SIZE * SIZE]) {
 	return nbGroupes;
 }
 
+// Compare deux pièces et retourne 1 si elles sont identiques
 int compareShape(Piece shape1, Piece shape2) {// compare 2 shape et renvoi 1 si c'est les m$êmes
 
 	for (int i = 0; i < PIECESIZE; i++) for (int j = 0; j < PIECESIZE; j++) if (shape1[i][j] != shape2[i][j]) return 0;
@@ -479,6 +506,7 @@ int compareShape(Piece shape1, Piece shape2) {// compare 2 shape et renvoi 1 si 
 
 /*********************************FONCTIONS DE DESSIN DE FEUILLE********************************/
 
+// Vérifie si une forme peut être dessinée sans chevaucher les éléments existants
 int isDrawable(FeuilleCarte f, FeuilleCarte feuilleVide) {
 	for (int i = 0; i < SIZE; i++) {
 		for (int j = 0; j < SIZE; j++) {
@@ -489,6 +517,7 @@ int isDrawable(FeuilleCarte f, FeuilleCarte feuilleVide) {
 }
 
 
+// Fusionne deux cartes : fusion de f et feuilleVide dans sortie
 void draw(FeuilleCarte f, FeuilleCarte feuilleVide) {
 	for (int i = 0; i < SIZE; i++) {
 		for (int j = 0; j < SIZE; j++) {
@@ -502,6 +531,7 @@ void draw(FeuilleCarte f, FeuilleCarte feuilleVide) {
 }
 
 
+// Fusionne deux cartes en marquant les conflits comme valeur spéciale
 void tryDraw(FeuilleCarte f, FeuilleCarte feuilleVide, FeuilleCarte sortie) {// remplie la grille sortie en fusionant les valeurs de f et feuillevide. si 2 valeurs sont au même endroit : ecrit COnflictValue à la place
 	initCarte(sortie, FALSE);
 	for (int i = 0; i < SIZE; i++) {
@@ -525,6 +555,7 @@ void tryDraw(FeuilleCarte f, FeuilleCarte feuilleVide, FeuilleCarte sortie) {// 
 
 /*********************************FONCTIONS DE DESSIN DE FORMES*********************************/
 
+// Dessine la forme U à une position donnée avec rotation et matériau
 int drawU(FeuilleCarte f, Position pos, int rotation, int material) {
 	int rot = rotation % 4;
 	if (!(isInCarte(pos.x, pos.y))) return 0;
@@ -572,6 +603,7 @@ int drawU(FeuilleCarte f, Position pos, int rotation, int material) {
 	return 0;
 }
 
+// Dessine une forme arbitraire à une position donnée avec rotation et matériau
 int drawShape(FeuilleCarte f, Piece piece, Position pos, int rotation, int material) {
 	FeuilleCarte buff;
 	Piece pieceOrientee;
@@ -596,6 +628,7 @@ int drawShape(FeuilleCarte f, Piece piece, Position pos, int rotation, int mater
 
 }
 
+// Effectue une rotation 90° répétée d'une pièce
 void rotateShape(Piece piece, int rotation) {
 	for (int k = 0; k < rotation % 4; k++) {
 		int buff[PIECESIZE][PIECESIZE] = { {0,0} };
@@ -618,6 +651,7 @@ void rotateShape(Piece piece, int rotation) {
 
 /*********************************FONCTIONS DE PLACEMENT DE FORMES*********************************/
 
+// Interface de placement manuel d'une forme U
 int placementU(FeuilleCarte f, int material) {
 	if (checkU(f)) {
 		Position pos;
@@ -653,6 +687,7 @@ int placementU(FeuilleCarte f, int material) {
 }
 
 
+// Place un point unique si aucune autre forme n'est possible
 int placementDefault(FeuilleCarte f, int  material) {
 	if (getEmptySpots(f) == 0) return 0;
 	placementShape(f, POINT, material);
@@ -660,6 +695,7 @@ int placementDefault(FeuilleCarte f, int  material) {
 
 }
 
+// Interface de placement manuel d'une forme quelconque
 int placementShape(FeuilleCarte f, const Piece shape, int material) {
 	if (checkShape(f, shape)) {
 		Piece shapeCopy;
@@ -700,6 +736,7 @@ int placementShape(FeuilleCarte f, const Piece shape, int material) {
 }
 
 
+// Place automatiquement une forme à la meilleure position optimale
 int autoPlacement(FeuilleCarte f, const Piece shape, int material) {
 	if (checkShape(f, shape)) {
 		Position pos, maxpos;
@@ -766,6 +803,7 @@ int autoPlacement(FeuilleCarte f, const Piece shape, int material) {
 
 /**************************FONCTIONS DE VERIFICATION DE SOLUTION***************************/
 
+// Vérifie s'il y a de la place pour placer une forme U
 int checkU(FeuilleCarte f) {
 	/// vérifie si il y a la place de placer un u quelque part sur la carte, et retourne 1 si c'est le cas, 0 sinon
 	FeuilleCarte feuilleVide, temp;
@@ -797,6 +835,7 @@ int checkU(FeuilleCarte f) {
 	return 0;
 }
 
+// Vérifie s'il y a de la place pour placer une forme quelconque
 int checkShape(FeuilleCarte f, const Piece shape) {/// vérifie si il y a la place de placer une piece quelque part sur la carte, et retourne 1 si c'est le cas, 0 sinon
 	FeuilleCarte feuilleVide, temp;
 	int drawable = 0;
@@ -826,6 +865,7 @@ int checkShape(FeuilleCarte f, const Piece shape) {/// vérifie si il y a la pla
 	return 0;
 }
 
+// Vérifie si une forme couvre au moins une ruine
 int coversRuin(FeuilleCarte f, FeuilleCarte feuilleVide) {
 	for (int i = 0; i < SIZE; i++) {
 		for (int j = 0; j < SIZE; j++) {
@@ -838,6 +878,7 @@ int coversRuin(FeuilleCarte f, FeuilleCarte feuilleVide) {
 	return 0;
 }
 
+// Vérifie s'il y a de la place pour placer une forme uniquement sur des ruines
 int checkShapeOnRuin(FeuilleCarte f, const Piece shape) {
 	FeuilleCarte feuilleVide, temp;
 	int drawable = 0;
@@ -877,6 +918,7 @@ int checkShapeOnRuin(FeuilleCarte f, const Piece shape) {
 
 
 /*******FORESTIERE********/
+// Calcule les points de la carte 'Sentinel Wood' : forêt en bordure
 int calcSentinelWood(FeuilleCarte f) {
 	int somme = 0;
 	for (int i = 0; i < SIZE - 1; i++) if (f[0][i] == FORET) somme++;
@@ -887,6 +929,7 @@ int calcSentinelWood(FeuilleCarte f) {
 
 }
 
+// Calcule les points de la carte 'Tree Tower' : forêt entourée par tous côtés
 int calcTreeTower(FeuilleCarte f) {
 	int somme = 0;
 	int valid = 0;
@@ -906,6 +949,7 @@ int calcTreeTower(FeuilleCarte f) {
 
 }
 
+// Calcule les points de la carte 'Green Bough' : forêt dans chaque ligne et colonne
 int calcGreenBough(FeuilleCarte f) {
 	int somme = 0;
 	for (int i = 0; i < SIZE; i++) {
@@ -929,6 +973,7 @@ int calcGreenBough(FeuilleCarte f) {
 }
 
 ///Calcul des chemins etc...
+// Calcule les points de la carte 'Stone Side Quest' : montagne connectées par forêt
 int calcStoneSideQuest(FeuilleCarte f) {
 	int mountainCount = getOccurencesOf(f, MONTAGNE);
 	if (mountainCount == 0) return 0;
@@ -962,6 +1007,7 @@ int calcStoneSideQuest(FeuilleCarte f) {
 }
 
 
+// Étape suivante d'exploration de chemin forêt-montagne
 int nextForestStep(FeuilleCarte f) {
 	int total = 0;
 	int nbO = 0;

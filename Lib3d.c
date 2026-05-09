@@ -3,6 +3,7 @@
 
 /**************************************************Fontions jeux******************************************/
 
+// Affiche la feuille de carte en 3D avec terrains, montagnes, arbres et bâtiments
 void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Position moutainPos[NOMBREMONTAGNE], Seed s, ModelList models) {
 	Image treeImage = s.treeImage;
 	int nb = 0;
@@ -189,6 +190,7 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 
 
 
+// Affiche l'écran final avec les cartes des joueurs et leurs scores
 void GUIdisplayFinal(GameState gs, int mountainSeed[2], Seed s, ModelList models, Camera3D camera) {
 	int i = 0;
 	
@@ -260,6 +262,7 @@ void GUIdisplayFinal(GameState gs, int mountainSeed[2], Seed s, ModelList models
 	}
 }
 
+// Interface de placement d'une forme avec aperçu et contrôles
 int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D camera, Model mountains[NOMBREMONTAGNE], Seed s, ModelList models) {
 	if (checkShape(f, shape)) {
 		Piece shapeCopy;
@@ -332,6 +335,7 @@ int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D
 }
 
 
+// Affiche l'interface de placement d'une carte avec deux formes et matériaux possibles
 int GUIPlacementCard(GameState* gs, FeuilleCarte f, const ExploreCard* card, int score, int isRuin, int* coinCount, Camera3D *camera, Model mountains[NOMBREMONTAGNE], Seed s, ModelList models) {
 
 	// Vérification placabilité
@@ -369,6 +373,7 @@ int GUIPlacementCard(GameState* gs, FeuilleCarte f, const ExploreCard* card, int
 	return 1;
 }
 
+// Met à jour l'état du placement : position, rotation, matériau selon les entrées utilisateur
 void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera) {
 
 	// Recalcul de la preview
@@ -447,6 +452,7 @@ void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera) {
 	//if (OOB) { state->pos.x = 5; state->pos.y = 5; }// reset si hors limite (se produit rarement, mais peut arriver lors de switch de forme si les 2 formes ne peuvent pas être placées au même endroit)
 }
 
+// Affiche l'interface 2D du placement : cartes, infos saison, édits et tooltips
 void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state, int score, Camera3D camera, Model mountain[NOMBREMONTAGNE], Position mountainPos[NOMBREMONTAGNE], Seed s, ModelList models) {
 	//printf("\nPosition : %d,%d", state->pos.x, state->pos.y);
 	int midX = GetScreenWidth() / 2;
@@ -772,6 +778,7 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 	for (int i = 0; i < 4; i++) free(editLabels[i]);
 }
 
+// Finalise le placement en appliquant la forme et en calculant les bonus de pièces
 void ApplyPlacement(FeuilleCarte f, PlacementState* state, int* coinCount) {
 	int mountainBefore = countSurroundedMountains(f);
 	draw(f, state->feuilleVide);
@@ -781,6 +788,7 @@ void ApplyPlacement(FeuilleCarte f, PlacementState* state, int* coinCount) {
 		(*coinCount)++;
 }
 
+// Dessine une grille 3D en lignes
 void DrawMapGrid(int slices, float spacing) {
 	float halfSize = (slices * spacing) / 2.0f;
 	Color gridColor = LIGHTGRAY; // Couleur par défaut pour rester cohérent
@@ -793,12 +801,14 @@ void DrawMapGrid(int slices, float spacing) {
 	}
 }
 
+// Place un point unique si aucune autre forme n'est possible
 int GUIplacementDefault(FeuilleCarte f, int  material, Camera3D camera, Model mountains[NOMBREMONTAGNE], Seed s, ModelList models) {
 	if (getEmptySpots(f) == 0) return 0;
 	GUIplacementShape(f, POINT, material, camera, mountains, s, models);
 	return 1;
 }
 
+// Place un point unique si aucune autre forme de carte n'est possible
 int GUIplacementDefaultCard(GameState* gs, FeuilleCarte f, const ExploreCard* card, int score, int isRuin, int* coinCount, Camera3D *camera, Model mountains[NOMBREMONTAGNE], Seed s, ModelList models) {
 	if (getEmptySpots(f) == 0) return 0;
 	ExploreCard def = *card;
@@ -809,6 +819,7 @@ int GUIplacementDefaultCard(GameState* gs, FeuilleCarte f, const ExploreCard* ca
 	return 1;
 }
 
+// Dessine la grille 3D du plateau de jeu
 void GUIdrawGrille() {
 	for (int i = -SIZE / 2 - 1; i <= SIZE / 2; i++) {
 		DrawLine3D((Vector3) { (float)i + 0.5f, 0.0f, (float)-SIZE / 2 }, (Vector3) { (float)i + 0.5f, 0.0f, (float)SIZE / 2 }, GRIDCOLOR);
@@ -816,6 +827,7 @@ void GUIdrawGrille() {
 	}
 }
 
+// Gère les mouvements de la caméra selon les entrées utilisateur
 void GUIUpdateCustomCamera(Camera3D* camera) {
 	// vers le haut/bas
 
@@ -868,6 +880,7 @@ void GUIUpdateCustomCamera(Camera3D* camera) {
 
 /****************************************Opérations de vecteurs**************************/
 
+// Normalise un vecteur 3D à la longueur 1
 void normalize(Vector3* vector) {//normalise un vecteur
 	double rho = sqrt(pow(vector->x, 2) + pow(vector->y, 2) + pow(vector->z, 2));
 	vector->x /= rho;
@@ -875,15 +888,18 @@ void normalize(Vector3* vector) {//normalise un vecteur
 	vector->z /= rho;
 }
 
+// Additionne deux vecteurs 3D
 Vector3 addVectors(Vector3 vectora, Vector3 vectorb) {
 	return (Vector3) { vectora.x + vectorb.x, vectora.y + vectorb.y, vectora.z + vectorb.z };
 
 }
 
+// Calcule le produit vectoriel de deux vecteurs 3D
 Vector3 crossProduct(Vector3 vectora, Vector3 vectorb) {
 	return (Vector3) { vectora.y* vectorb.z - vectora.z * vectorb.y, vectora.z* vectorb.x - vectora.x * vectorb.z, vectora.x* vectorb.y - vectora.y * vectorb.x };
 
 }
+// Multiplie un vecteur 3D par un scalaire
 void multiplyVector(Vector3* vector, double a) {
 	vector->x *= (float)a;
 	vector->y *= (float)a;
@@ -894,6 +910,7 @@ void multiplyVector(Vector3* vector, double a) {
 /*****************génération de heighmap et models ***/
 
 
+// Génére un modèle de montagne précédéale unique en fonction des coordonnées
 Model generateMountain(int x, int y) {
 	// pour éviter d'avoir toujours la même montagne au lancement du jeu
 	Image perlinNoise = GenImagePerlinNoise(PERLIN_SIZE, PERLIN_SIZE, x * 100, y * 100, PERLIN_SCALE);
@@ -948,6 +965,7 @@ Model generateMountain(int x, int y) {
 
 }
 
+// Génére les modèles 3D de toutes les montagnes présentes sur la carte
 void generateMountainsModels(Model mountains[NOMBREMONTAGNE], FeuilleCarte f, int mountainSeed[2]) {
     Position* pos = getPositionsOfMaterial(f, MONTAGNE);
 	int count = getOccurencesOf(f, MONTAGNE);
@@ -959,6 +977,7 @@ void generateMountainsModels(Model mountains[NOMBREMONTAGNE], FeuilleCarte f, in
 	free(pos);
 }
 
+// Génère une image bruit de Perlin pour les détails de forêt
 Image generateForestImage(int x, int y) {
 	Image perlinNoise = GenImagePerlinNoise(FORET_SIZE, FORET_SIZE, x * 100, y * 100, FORET_SCALE);
 
@@ -967,6 +986,7 @@ Image generateForestImage(int x, int y) {
 }
 
 
+// Charge les images de textures pour les terrains
 ModelImage loadModelsImage() {
 	ModelImage imgs;
 	imgs.fieldImage = LoadImage(PATH_TO_CHAMPS_TEXTURE);
@@ -977,6 +997,7 @@ ModelImage loadModelsImage() {
 	return imgs;
 }
 
+// Thread de chargement des textures en mémoire RAM en parallèle
 void* ModelLoaderThread(void* arg) {//thread de chargemetn des textues dans la ram pour ganger du temps au lancement du jeu, pour éviter les freezes pendant le chargement des modèles
 	ModelImage* imgs = NULL;
 	LoadContext* ctx = (LoadContext*)arg;
@@ -989,6 +1010,7 @@ void* ModelLoaderThread(void* arg) {//thread de chargemetn des textues dans la r
 }
 
 
+// Charge tous les modèles 3D (arbres, buissons, maisons, monstres, etc.)
 ModelList loadModels(bool troll) {
 	ModelList models;
 	printf("Loading models \n");

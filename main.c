@@ -6,6 +6,7 @@
 #include "UI.h"
 
 
+// Point d'entrée principal du programme
 int main()
 {
 	srand(time(NULL));
@@ -306,6 +307,7 @@ int main()
 
 
 
+// Libère les ressources et ferme le programme proprement
 void EndProgram(GameState* gs) {
 	for (int i = 0; i < FONT_COUNT; i++) {
 		UnloadFont(gs->assets.fonts[i]);
