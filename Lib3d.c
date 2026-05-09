@@ -969,7 +969,7 @@ void generateMountainsModels(Model mountains[NOMBREMONTAGNE], FeuilleCarte f, in
     Position* pos = getPositionsOfMaterial(f, MONTAGNE);
 	int count = getOccurencesOf(f, MONTAGNE);
 	if (pos == NULL || count == 0) return;
-	
+
 	for (int i = 0; i < count && i < NOMBREMONTAGNE; i++) {
 		mountains[i] = generateMountain(pos[i].x + mountainSeed[1], pos[i].y + mountainSeed[0]);
 	}
@@ -1002,9 +1002,9 @@ void* ModelLoaderThread(void* arg) {//thread de chargemetn des textues dans la r
 	LoadContext* ctx = (LoadContext*)arg;
 	while(imgs ==NULL)imgs = (ModelImage*)malloc(sizeof(ModelImage));
 	//Sleep(15000);
-	//pthread_mutex_lock(&ctx->mutex);
+	pthread_mutex_lock(&ctx->mutex);
 	*imgs = loadModelsImage();
-	//pthread_mutex_unlock(&ctx->mutex);
+	pthread_mutex_unlock(&ctx->mutex);
 	return imgs;
 }
 
@@ -1462,7 +1462,7 @@ void* SoundThread(void* args) {		//thread de gestion de l'audio séparé afin d'
 void GUIDisplayNewSeason(Camera3D* camera, GameState *gs) {
 	double startTime = GetTime();
 	double DisplayRime = GetTime() - startTime;
-	
+
 	int midX = GetScreenWidth() / 2;
 	int midY = GetScreenHeight() / 2;
 
@@ -1484,10 +1484,10 @@ void GUIDisplayNewSeason(Camera3D* camera, GameState *gs) {
 		BeginDrawing();
 		ClearBackground(BLACK);
 
-		
+
 		if (gs->currentSeason < NUM_SEASONS - 1) {
 			DrawTextureEx(gs->assets.seasonImages[gs->currentSeason + 1], (Vector2) { midX, midY - 125 }, 0, 0.5f, ColorAlpha(WHITE, 1 - alpha));
-			DrawTextureEx(gs->assets.seasonImages[gs->currentSeason], (Vector2) { midX - 2.5f * 125, midY - 125 }, 0, 0.5f, ColorAlpha(WHITE, alpha)); 
+			DrawTextureEx(gs->assets.seasonImages[gs->currentSeason], (Vector2) { midX - 2.5f * 125, midY - 125 }, 0, 0.5f, ColorAlpha(WHITE, alpha));
 		}
 		else DrawTextureEx(gs->assets.seasonImages[gs->currentSeason], (Vector2) { midX -  125, midY - 125 }, 0, 0.5f, ColorAlpha(WHITE, alpha));
 		DrawStrokeTextEx(gs->assets.fonts[FONT_GRENZE_GOTISCH_L], "Fin de Saison", editRects.x, editRects.y, EDITS_FS * 2, NORMAL_SPACING, GOLD, BLACK, 1);
