@@ -117,7 +117,7 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 					break;
 				case VILLAGE:
 					color = BROWN;
-					DrawModel(models.vilageTile, (Vector3) { x, y + 0.51f, z }, 1, WHITE);
+					DrawModel(models.villageTile, (Vector3) { x, y + 0.51f, z }, 1, WHITE);
 
 					for (int k = 0; k < HOUSE_DIVIDER + 1; k++) for (int l = 0; l < HOUSE_DIVIDER + 1; l++) {
 						float lum = ColorToHSV(GetImageColor(s.villageImage, j * 10 + l, i * 10 + k)).z;
@@ -208,7 +208,7 @@ void GUIdisplayFinal(GameState gs, int mountainSeed[2], Seed s, ModelList models
 		pointsParEdit[4] = calcEnenmyPoints(ps->map);
 		Model mountains[NOMBREMONTAGNE];
 
-		/* Get mountain positions (malloc'd) and generate models once. */
+		/* Get mountain positions (malloc'd) and generate m once. */
 		Position* mountainPos = getPositionsOfMaterial(ps->map, MONTAGNE);
 		generateMountainsModels(mountains, ps->map, mountainSeed);
 
@@ -233,7 +233,7 @@ void GUIdisplayFinal(GameState gs, int mountainSeed[2], Seed s, ModelList models
 			for (int mi = 0; mi < NOMBREMONTAGNE; mi++) { emptyMountainPos[mi].x = -100; emptyMountainPos[mi].y = -100; }
 			GUIDrawFeuille(ps->map, tempMap, mountains, mountainPos ? mountainPos : emptyMountainPos, s, models);
 
-			GUIdrawGrille();
+			GUIdrawGrille(models);
 
 			EndMode3D();
 
@@ -293,7 +293,7 @@ int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D
 					if (temp[i][j] != f[i][j])
 						DrawCubeWires((Vector3) { (float)i - SIZE / 2, PLACEMENT_HEIGHT, (float)j - SIZE / 2 }, 1.0f, 1.0f, 1.0f, BORDERCOLOR);
 
-			GUIdrawGrille();
+			GUIdrawGrille(models);
 
 			// DrawMapGrid(SIZE, 1.0f);
 			EndMode3D();
@@ -538,7 +538,7 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 				DrawCubeWires((Vector3) { (float)i - SIZE / 2, PLACEMENT_HEIGHT, (float)j - SIZE / 2 }, 1.0f, 1.0f, 1.0f, BORDERCOLOR);
 
 
-	GUIdrawGrille();
+	GUIdrawGrille(models);
 	EndMode3D();
 
 	/**************************************************************** Affichage 2D ****************************************************************/
@@ -821,11 +821,28 @@ int GUIplacementDefaultCard(GameState* gs, FeuilleCarte f, const ExploreCard* ca
 }
 
 // Dessine la grille 3D du plateau de jeu
-void GUIdrawGrille() {
+void GUIdrawGrille(ModelList m) {
 	for (int i = -SIZE / 2 - 1; i <= SIZE / 2; i++) {
 		DrawLine3D((Vector3) { (float)i + 0.5f, 0.0f, (float)-SIZE / 2 }, (Vector3) { (float)i + 0.5f, 0.0f, (float)SIZE / 2 }, GRIDCOLOR);
 		DrawLine3D((Vector3) { (float)-SIZE / 2, 0.0f, (float)i + 0.5f }, (Vector3) { (float)SIZE / 2, 0.0f, (float)i + 0.5f }, GRIDCOLOR);
 	}
+
+	float offset = (SIZE / 2.0f) + 1.2f;
+	float yHeight = 0.01f;
+	// Calcul de l'échelle pour respecter le ratio (largeur / hauteur) du texte
+	Vector3 scaleNord = { -(float)m.textNord.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture.width / 100.0f, 1.0f, (float)m.textNord.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture.height / 100.0f };
+	Vector3 scaleSud = { -(float)m.textSud.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture.width / 100.0f, 1.0f, 1.0f };
+	Vector3 scaleEst = { -(float)m.textEst.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture.width / 100.0f, 1.0f, 1.0f };
+	Vector3 scaleOuest = { -(float)m.textOuest.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture.width / 100.0f, 1.0f, 1.0f };
+
+	rlDisableBackfaceCulling();
+
+	DrawModelEx(m.textNord, (Vector3) { 0.0f, yHeight, -offset }, (Vector3) { 0, 1, 0 }, 180.0f, scaleNord, WHITE);
+	DrawModelEx(m.textSud, (Vector3) { 0.0f, yHeight, offset }, (Vector3) { 0, 1, 0 }, 0.0f, scaleSud, WHITE);
+	DrawModelEx(m.textEst, (Vector3) { offset, yHeight, 0.0f }, (Vector3) { 0, 1, 0 }, 90.0f, scaleEst, WHITE);
+	DrawModelEx(m.textOuest, (Vector3) { -offset, yHeight, 0.0f }, (Vector3) { 0, 1, 0 }, -90.0f, scaleOuest, WHITE);
+
+	rlEnableBackfaceCulling();
 }
 
 // Gère les mouvements de la caméra selon les entrées utilisateur
@@ -842,7 +859,7 @@ void GUIUpdateCustomCamera(Camera3D* camera) {
 
 	normalize(&newPos);//normalise le vecteur de position
 
-	if (newPos.y > MINCAMERAHEIGHT && newPos.y < (float)MAXCAMERAHEIGHT) {	// évite les postions négatives
+	if (newPos.y > MINCAMERAHEIGHT && newPos.y < MAXCAMERAHEIGHT) {	// évite les postions négatives
 		camera->position.x = newPos.x * rhoCam;// replace la caméra à son écart cible
 		camera->position.y = newPos.y * rhoCam;
 		camera->position.z = newPos.z * rhoCam;
@@ -869,12 +886,33 @@ void GUIUpdateCustomCamera(Camera3D* camera) {
 	camera->position.y = newPos.y * rhoCam;
 	camera->position.z = newPos.z * rhoCam;
 
-
-
-
 }
 
+// Crée un modèle 3D plat (plan) contenant un texte généré dynamiquement
+Model createTextModel(Font font, const char* text) {
+	float fontSize = 100.0f;
 
+	// 1. Calculer la taille exacte requise pour le mot
+	Vector2 textSize = MeasureTextEx(font, text, fontSize, NORMAL_SPACING);
+
+	// 2. Créer la RenderTexture (la "toile" en mémoire)
+	RenderTexture2D target = LoadRenderTexture((int)textSize.x, (int)textSize.y);
+
+	// 3. Dessiner sur la toile
+	BeginTextureMode(target);
+	ClearBackground(BLANK);
+	DrawStrokeTextEx(font, text, 0, 0, fontSize, NORMAL_SPACING, LIGHTGRAY, BLACK, 2);
+	EndTextureMode();
+
+	// 4. Créer le plan 3D (1x1 par défaut)
+	Mesh plane = GenMeshPlane(1.0f, 1.0f, 1, 1);
+	Model model = LoadModelFromMesh(plane);
+
+	// 5. Assigner la texture générée au matériau du modèle
+	model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = target.texture;
+
+	return model;
+}
 
 
 
@@ -908,7 +946,7 @@ void multiplyVector(Vector3* vector, double a) {
 }
 
 
-/*****************génération de heighmap et models ***/
+/*****************génération de heighmap et m ***/
 
 
 // Génére un modèle de montagne précédéale unique en fonction des coordonnées
@@ -1066,10 +1104,10 @@ ModelList loadModels(bool troll) {
 	{
 
 		Texture2D texture = LoadTexture(PATH_TO_VILLAGE_TEXTURE);
-		models.vilageTile = LoadModelFromMesh(plane);
+		models.villageTile = LoadModelFromMesh(plane);
 		SetTextureWrap(texture, TEXTURE_WRAP_CLAMP);
 		SetTextureFilter(texture, TEXTURE_FILTER_POINT);
-		models.vilageTile.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture;
+		models.villageTile.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture;
 	}
 
 
@@ -1080,12 +1118,9 @@ ModelList loadModels(bool troll) {
 
 	printf("models succesfully laoded\n");
 
-
-
-
 	return models;
 }
-ModelList loadModelsFromImage(ModelImage imgs, bool troll) {
+ModelList loadModelsFromImage(ModelImage imgs, bool troll, Font font) {
 	ModelList models;
 	printf("Loading models \n");
 	models.tree = LoadModel(PATH_TO_TREE_MODEL);
@@ -1138,10 +1173,10 @@ ModelList loadModelsFromImage(ModelImage imgs, bool troll) {
 	{
 
 		Texture2D texture = LoadTextureFromImage(imgs.villageImage);
-		models.vilageTile = LoadModelFromMesh(plane);
+		models.villageTile = LoadModelFromMesh(plane);
 		SetTextureWrap(texture, TEXTURE_WRAP_CLAMP);
 		SetTextureFilter(texture, TEXTURE_FILTER_POINT);
-		models.vilageTile.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture;
+		models.villageTile.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture;
 	}
 
 
@@ -1149,10 +1184,13 @@ ModelList loadModelsFromImage(ModelImage imgs, bool troll) {
 		models.cat = LoadModel(PATH_TO_CAT);
 	}
 
+	models.textNord = createTextModel(font, "NORD");
+	models.textSud = createTextModel(font, "SUD");
+	models.textEst = createTextModel(font, "EST");
+	models.textOuest = createTextModel(font, "OUEST");
 
-	printf("models succesfully laoded\n");
 
-
+	printf("models succesfully laoded 2\n");
 
 
 	return models;
@@ -1399,7 +1437,7 @@ void UnloadSeed(Seed* s) {
 	s->isGenerated = 0;
 	printf("[INFO] seed unloaded \n");
 }
-void UnloadModels(ModelList* models) {//décharge manuellement les models meme si raylib le fait automatiquement
+void UnloadModels(ModelList* models) {//décharge manuellement les modèles meme si raylib le fait automatiquement
 	UnloadModel(models->tree);
 	UnloadModel(models->buisson);
 	UnloadModel(models->skybox);
@@ -1409,7 +1447,14 @@ void UnloadModels(ModelList* models) {//décharge manuellement les models meme s
 	UnloadModel(models->water);
 	UnloadModel(models->monsterTile);
 	UnloadModel(models->forestTile);
-	UnloadModel(models->vilageTile);
+	UnloadModel(models->villageTile);
+	UnloadModel(models->ruin);
+	UnloadModel(models->cat);
+	UnloadModel(models->textNord);
+	UnloadModel(models->textSud);
+	UnloadModel(models->textEst);
+	UnloadModel(models->textOuest);
+
 	printf("[INFO] models unloaded \n");
 }
 
