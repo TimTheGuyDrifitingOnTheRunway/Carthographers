@@ -1,0 +1,41 @@
+à faire :
+Vu par Math : 
+Afficher les cartes qui suit la souris quand on passe sa souris dessus
+Afficher les règles du jeu dans le menu
+
+Clamp les pièces dans la carte pour éviter de dépasser des bordures
+
+Vu par Tim : 
+bug de violation de mémoire dans certains cas lors de l'accèes a une liste de ruine : ligne 242 dans game manager
+
+
+
+En cours par Math : 
+Améliorer l'affichage et l'expérience utilisateur
+
+En cours par Tim : 
+ 
+
+
+
+Fini par Math (à Tim d'effacer) : 
+Multijoueur local
+Ajout de classes pour le placement et le multijoueur
+Ajout de l'affichage dynamique pour le placement des cartes (Ruines & Riftlands)
+
+Changement de la structure du projet : Consts.h -> Structs.h -> Data.h -> vrais fichier headers .h -> fichiers sources .c
+
+Ajout d'un menu fonctionnel
+Ajout de fonction de dessin basiques : un Rectangle arrondi avec du Stroke, ou du Texte avec du stroke, en 2 verions : de base et experte avec plus de contrôle
+Ajout de fonction de dessin plus avancées comme dessiner un bouton ou un emplacement de saisie utilisateur
+Ajout d'un bouton pour : Ajouter un joueur, lancer la partie, quitter la partie
+Lorsqu'on ajoute un joueur, un menu d'ajout de joueur s'ouvre
+
+Ajout de fichiers UI.c et UI.h pour séparer le Jeu du Menu
+
+
+Fini par Tim (à Math d'effacer) : 
+
+
+
+
