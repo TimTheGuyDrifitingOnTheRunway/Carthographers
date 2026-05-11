@@ -142,7 +142,7 @@ typedef struct PlacementState {
 	FeuilleCarte temp;          // f + feuilleVide fusionnés pour rendu
 	const ExploreCard* card;
 	int status;                 // 0 = En placement, 1 = placé
-	
+	int soundState;
 } PlacementState;
 
 
