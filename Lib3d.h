@@ -34,8 +34,9 @@ void multiplyVector(Vector3* vector, double a);
 
 /*chargements des modeles et génération de textures*/
 void* ModelLoaderThread(void* arg);
-ModelList loadModelsFromImage(ModelImage imgs, bool troll);
+ModelList loadModelsFromImage(ModelImage imgs, bool troll, Font font);
 ModelImage loadModelsImage();
+Model createTextModel(Font font, const char* text);
 ModelList loadModels( bool troll);
 Model loadSkybox(bool useHDR);
 

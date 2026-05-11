@@ -199,10 +199,15 @@ typedef struct {
     Model monster;
     Model monsterTile;
     Model forestTile;
-	Model vilageTile;
+	Model villageTile;
 	Model ruin;
 	Model cat;
-}ModelList;
+
+	Model textNord;
+	Model textSud;
+	Model textEst;
+	Model textOuest;
+} ModelList;
 
 typedef struct  {
 	Image forestImage;

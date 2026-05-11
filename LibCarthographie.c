@@ -740,6 +740,8 @@ int placementShape(FeuilleCarte f, const Piece shape, int material) {
 int autoPlacement(FeuilleCarte f, const Piece shape, int material) {
 	if (checkShape(f, shape)) {
 		Position pos, maxpos;
+		maxpos.x = -1; 
+		maxpos.y = -1;
 		pos.x = 0;
 		pos.y = 0;
 
@@ -785,7 +787,7 @@ int autoPlacement(FeuilleCarte f, const Piece shape, int material) {
 		printf(" [PLACEMENT AUTO]position optimale trouvée : (%d , %d ) avec un malus de %d \n", maxpos.x, maxpos.y, malusmax); 
 
 #endif
-		if (drawShape(feuilleVide, shape, maxpos, rotation, material) && isDrawable(f, feuilleVide)) {
+		if ((maxpos.x != - 1 && maxpos.y != -1) && drawShape(feuilleVide, shape, maxpos, rotation, material) && isDrawable(f, feuilleVide) ) {
 			pos = maxpos;
 		}
 		else {
