@@ -1,4 +1,9 @@
-//#include <windows.h>
+//#########################################################################################
+
+//Carthographers implementation by @FerannexCode and @TimTheGuyDrifitingOnTheRunway (original game by Jordy Adan )
+//check out : https://github.com/TimTheGuyDrifitingOnTheRunway/Carthographers.git for more details
+
+//#########################################################################################
 
 #include "LibCarthographie.h"
 #include "Lib3d.h"
@@ -218,7 +223,7 @@ int main()
 
 	pthread_join(soundThread, NULL);	//arret du thread son
 	pthread_join(zarbiThread, NULL);	//arret du thread zarbi
-	
+
 
 	printf("\n\n\n\n\n\n Debug de fin de partie \n\n\n\n\n\n");
 
