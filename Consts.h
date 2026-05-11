@@ -304,5 +304,5 @@ void Sleep(int n);
 
 
 
-#define SPECIAL_PLAYER_NAME "Danny"//L joeur dont le nom
+#define SPECIAL_PLAYER_NAME "Dany"  //L joeur dont le nom
 

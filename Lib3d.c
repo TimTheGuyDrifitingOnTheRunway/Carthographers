@@ -722,10 +722,16 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 	DrawStrokeTextEx(PLAYER_PANEL_FONT, gs->players[gs->playerIndex].name, playerPanel.x + 10, playerPanel.y + 5, PLAYER_PANEL_FS + 10, NORMAL_SPACING, WHITE, BLACK, 1);
 	DrawStrokeTextEx(PLAYER_PANEL_FONT, TextFormat("SCORE  %d", score), playerPanel.x + 10, playerPanel.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, NORMAL_SPACING, WHITE, BLACK, 1);										y2 += PLAYER_PANEL_FS + 10;
 	DrawStrokeTextEx(PLAYER_PANEL_FONT, TextFormat("PIECES  %d", gs->players[gs->playerIndex].coinCount), playerPanel.x + 10, playerPanel.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, NORMAL_SPACING, WHITE, BLACK, 1);		y2 += PLAYER_PANEL_FS + 10;
+	if (state->card->isEnemy) {
+        DrawStrokeTextEx(PLAYER_PANEL_FONT, "Placement sur :", playerPanel.x + 10, playerPanel.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, NORMAL_SPACING, WHITE, BLACK, 1);		y2 += PLAYER_PANEL_FS + 2;
+        DrawStrokeTextEx(PLAYER_PANEL_FONT, TextFormat("%s", gs->players[(gs->playerIndex + state->card->rotation + gs->playerNumber) % gs->playerNumber].name), playerPanel.x + 15, playerPanel.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, NORMAL_SPACING, WHITE, BLACK, 1);		y2 += PLAYER_PANEL_FS + 10;
+	}
 	//if (gs->isOnline) { DrawText(TextFormat("COINS  %d", gs->players[gs->playerIndex].coinCount), playerPanel.x + 10, playerPanel.y + PLAYER_PANEL_FS + y2, PLAYER_PANEL_FS, BLACK); }
 
 	// Affichage des saisons
 	//DrawRectangleRoundedStrokeEx(seasonRec, 1.f, 10, 2, BGCOLOR, GREEN);
+
+
 
 	Texture2D seasonTex = gs->assets.seasonImages[gs->currentSeason];
 
