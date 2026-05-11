@@ -10,7 +10,6 @@
 int main()
 {
 	srand(time(NULL));
-
 	// Création d'un thread pour charger les images (et les modèles 3D après)
 
 
@@ -27,7 +26,7 @@ int main()
 
 	SetTargetFPS(60);
 
-	
+
 
 	//ToggleBorderlessWindowed();
 	
@@ -44,7 +43,7 @@ int main()
 	// Main game loop
 
 	FeuilleCarte f;
-	
+
 	printf("\n\n\n\n\n\n Debug 4 \n\n\n\n\n\n");
 	GameState gs = { 0 };
 
@@ -67,15 +66,15 @@ int main()
 	}
 	printf("%f", MeasureTextEx(gs.assets.fonts[FONT_GRENZE_GOTISCH_B], "Printemps  0/8", EDITS_FS, NORMAL_SPACING).x);
 
-	
+
 
 	LoadContext imgCtx = { 0 };
 	pthread_mutex_init(&imgCtx.mutex, NULL);
 
 	gs.loadCtx = &imgCtx;
 
- 
-	
+
+
 	pthread_t assetWorkerThread, soundThread, modelThread, SeedThread;
 	int keep = 1;// variable qui dit au thread de son de continuer à jouer ou pas et de joier UUIAA
 	gs.soundCtrl = &keep;
