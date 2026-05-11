@@ -268,7 +268,7 @@ void Sleep(int n);
 #define CAT_SIZE 1.0f
 
 /* audio*/
-#define MAX_MUSIC_INDEX 2 // numéro de la musique maximale
+#define MAX_MUSIC_INDEX 5 // numéro de la musique maximale
 #define MIN_MUSIC_DELAY 1000 // temps d'attente minimum entre 2 musiques
 
 /**********Chemin des models 3d et assets**************/
