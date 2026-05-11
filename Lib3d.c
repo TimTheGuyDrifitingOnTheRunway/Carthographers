@@ -168,6 +168,7 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 					}
 					break;
 				case CONFLICTVALUE:
+					
 					color = RED;
 					if (troll)  DrawModelEx(models.cat, (Vector3) { x, y + 0.73f + (float)rot / 600.0f, z }, (Vector3) { 0, 1, 0 }, rot, (Vector3) { CAT_SIZE * 2, CAT_SIZE * 2, CAT_SIZE * 2 }, WHITE);
 
@@ -365,6 +366,8 @@ int GUIPlacementCard(GameState* gs, FeuilleCarte f, const ExploreCard* card, int
 		RenderPlacement(gs, f, &state, score, *camera, mountains, mountainPos, s, models);
 		GUIUpdateCustomCamera(camera);
 		camera->target = (Vector3){ 0.0f, 0.0f, 0.0f };
+		if ((!state.drawable) && strcmp(gs->players[0].name, SPECIAL_PLAYER_NAME) == 0) *(gs->soundCtrl) = 2;//change la valeur du son si faut qu'il joue
+		else *(gs->soundCtrl) = 1;
 	}
 
 	if (WindowShouldClose()) { EndProgram(gs); exit(1); }
@@ -383,6 +386,8 @@ void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera) {
 	tryDraw(f, state->feuilleVide, state->temp);
 
 	state->drawable = state->drawable && (state->isRuin ? coversRuin(f, state->feuilleVide) : 1) && isDrawable(f, state->feuilleVide);
+
+	
 
 	Vector3 forward = { camera.target.x - camera.position.x, 0, camera.target.z - camera.position.z };
 	normalize(&forward);
@@ -1475,9 +1480,10 @@ void* SoundThread(void* args) {		//thread de gestion de l'audio séparé afin d'
 	char musicPath[256];
 	sprintf(musicPath, "%s%d.mp3", PATH_TO_AUDIO, musicIndex);
 	Music music = LoadMusicStream(musicPath);
+	Music uiia = LoadMusicStream(PATH_TO_OIIA);
 
 	PlayMusicStream(music);
-
+	PlayMusicStream(uiia);
 	float timePlayed = 0.0f;        // Time played normalized [0.0f..1.0f]
 	float pan = 0.0f;               // Default audio pan center [-1.0f..1.0f]
 	SetMusicPan(music, pan);
@@ -1486,28 +1492,42 @@ void* SoundThread(void* args) {		//thread de gestion de l'audio séparé afin d'
 	SetMusicVolume(music, volume);
 
 
-	while (*keep == 1) {
-		UpdateMusicStream(music);
-		timePlayed = GetMusicTimePlayed(music) / GetMusicTimeLength(music);
-		//printf("time played : %.3f \n", timePlayed);
-		if (timePlayed > 0.999f) {		// 3 chiffres après la virgule parce que le temps entre .99 et .999 est de plus d'1s, ce qui peut couper la musique avant la fin si elle est trop longue
-			timePlayed = 0.0f;
-			UnloadMusicStream(music);
-
-			int new_index;
-			do {
-				new_index = randInt(0, MAX_MUSIC_INDEX);
-				Sleep(MIN_MUSIC_DELAY);//attends un temps aléatoire et choisit une nouvelle musique différente de l'actuelle
-			} while (musicIndex == new_index);
+	while (*keep != 0) {
+		if (*keep == 1) {
+			UpdateMusicStream(music);
+			timePlayed = GetMusicTimePlayed(music) / GetMusicTimeLength(music);
 
 
-			musicIndex = new_index;
-			sprintf(musicPath, "%s%d.mp3", PATH_TO_AUDIO, musicIndex);
-			music = LoadMusicStream(musicPath);
+			if (timePlayed > 0.999f) {		// 3 chiffres après la virgule parce que le temps entre .99 et .999 est de plus d'1s, ce qui peut couper la musique avant la fin si elle est trop longue
+				timePlayed = 0.0f;
+				UnloadMusicStream(music);
 
-			SetMusicPan(music, pan);
-			SetMusicVolume(music, volume);
-			PlayMusicStream(music);
+				int new_index;
+				do {
+					new_index = randInt(0, MAX_MUSIC_INDEX);
+					Sleep(MIN_MUSIC_DELAY);//attends un temps aléatoire et choisit une nouvelle musique différente de l'actuelle
+				} while (musicIndex == new_index);
+
+
+				musicIndex = new_index;
+				sprintf(musicPath, "%s%d.mp3", PATH_TO_AUDIO, musicIndex);
+				music = LoadMusicStream(musicPath);
+
+				SetMusicPan(music, pan);
+				SetMusicVolume(music, volume);
+				PlayMusicStream(music);
+			}
+		}
+		else {
+			
+			UpdateMusicStream(uiia); 
+			timePlayed = GetMusicTimePlayed(uiia) / GetMusicTimeLength(uiia);
+			if (timePlayed > 0.99f) { 
+				SetMusicPitch(uiia, (float)randInt(10, 15)/10.0f);
+				timePlayed = 0.0f;
+			
+			}
+
 		}
 	}
 	UnloadMusicStream(music);   // Unload music stream buffers from RAM
