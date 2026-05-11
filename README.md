@@ -7,3 +7,7 @@ We have also started implementing Online functionalities, check them out in the 
 We hope you'll enjoy it.
 
 Github link : https://github.com/TimTheGuyDrifitingOnTheRunway/Carthographers.git
+
+Bigh thanks to Arthur gava for the music. 
+
+Please check out license.txt for more details.
