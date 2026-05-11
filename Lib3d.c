@@ -5,6 +5,7 @@
 
 // Affiche la feuille de carte en 3D avec terrains, montagnes, arbres et bâtiments
 void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Position moutainPos[NOMBREMONTAGNE], Seed s, ModelList models) {
+
 	Image treeImage = s.treeImage;
 	int nb = 0;
 	bool troll = IsModelValid(models.cat);
@@ -23,7 +24,6 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 	DrawModel(models.skybox, (Vector3) { 0, 0, 0 }, 1.0f, WHITE);
 	rlEnableBackfaceCulling();
 	rlEnableDepthMask();
-
 
 	for (int i = 0; i < SIZE; i++) {
 		for (int j = 0; j < SIZE; j++) {
@@ -117,6 +117,7 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 					break;
 				case VILLAGE:
 					color = BROWN;
+
 					DrawModel(models.villageTile, (Vector3) { x, y + 0.51f, z }, 1, WHITE);
 
 					for (int k = 0; k < HOUSE_DIVIDER + 1; k++) for (int l = 0; l < HOUSE_DIVIDER + 1; l++) {
@@ -359,12 +360,15 @@ int GUIPlacementCard(GameState* gs, FeuilleCarte f, const ExploreCard* card, int
 
 	copyPiece(canFitA ? *card->pieceA : *card->pieceB, state.shapeCopy);
 	Position* mountainPos = getPositionsOfMaterial(f, MONTAGNE);//envoi la positions des montagnes pour avancer si un conflit à lieu entre une montagne et autre
+
 	// Boucle principale — logique et rendu séparés
 	while (state.status == 0 && !WindowShouldClose()) {
 		UpdatePlacement(f, &state, *camera);
 		RenderPlacement(gs, f, &state, score, *camera, mountains, mountainPos, s, models);
 		GUIUpdateCustomCamera(camera);
+
 		camera->target = (Vector3){ 0.0f, 0.0f, 0.0f };
+
 	}
 
 	if (WindowShouldClose()) { EndProgram(gs); exit(1); }
@@ -1182,7 +1186,7 @@ ModelList loadModelsFromImage(ModelImage imgs, bool troll, Font font) {
 	if (troll) {
 		models.cat = LoadModel(PATH_TO_CAT);
 	}
-
+    else models.cat = (Model) {0};
 	models.textNord = createTextModel(font, "NORD");
 	models.textSud = createTextModel(font, "SUD");
 	models.textEst = createTextModel(font, "EST");
