@@ -1114,6 +1114,7 @@ ModelList loadModels(bool troll) {
 	if (troll) {
 		models.cat = LoadModel(PATH_TO_CAT);
 	}
+	 else models.cat = (Model) {0};
 
 
 	printf("models succesfully laoded\n");
@@ -1183,6 +1184,7 @@ ModelList loadModelsFromImage(ModelImage imgs, bool troll, Font font) {
 	if (troll) {
 		models.cat = LoadModel(PATH_TO_CAT);
 	}
+	 else models.cat = (Model) {0};
 
 	models.textNord = createTextModel(font, "NORD");
 	models.textSud = createTextModel(font, "SUD");
