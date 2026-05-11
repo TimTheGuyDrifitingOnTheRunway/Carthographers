@@ -387,3 +387,14 @@ void sort_players_by_score(GameState* gs) {
 		arr[j] = key;
 	}
 }
+
+// Libère les ressources et ferme le programme proprement
+void EndProgram(GameState* gs) {
+	for (int i = 0; i < FONT_COUNT; i++) {
+		UnloadFont(gs->assets.fonts[i]);
+	}
+	CloseWindow();
+	free(gs->players);
+}
+
+

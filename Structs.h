@@ -23,12 +23,13 @@ typedef struct InfoGroupe {
 }InfoGroupe;
 
 typedef enum {
-	FONT_GRENZE_GOTISCH_B,   // Police d'écriture GrenzeGotish Bold
+	FONT_GRENZE_GOTISCH_B,	// Police d'écriture GrenzeGotish Bold
 	FONT_GRENZE_GOTISCH_L,	// Police d'écriture GrenzeGotish Light
-	FONT_PIRATA_ONE,        // Police d'écriture PirataOne
+	FONT_PIRATA_ONE,		// Police d'écriture PirataOne
 	FONT_FREDOKA_SB,		// Police d'écriture Fredoka en Semi Bold
-	FONT_FREDOKA_CM,        // Police d'écriture Fredoka en Compressed et Medium
+	FONT_FREDOKA_CM,		// Police d'écriture Fredoka en Compressed et Medium
 	FONT_METAMORPHOUS,		// Police d'écriture Metamorphous
+	FONT_ZARBI,				// Police d'écriture Zarbi
 	FONT_COUNT				// Nombre de Polices d'écriture
 } FontNames;
 
@@ -95,7 +96,7 @@ typedef struct PlayerState {
 	FeuilleCarte map;
 	int coinCount;
 	int score;
-	char name[20];
+	char name[MAX_NAME_LENGTH];
 } PlayerState;
 
 typedef struct AssetBank {
@@ -116,7 +117,7 @@ typedef struct GameState {
 	int exploreIndex;			// Index de la carte actuelle
 	int deckSize;				// Taille actuelle du deck
 
-	bool isOnline;
+	bool zarbi;
 
 	AssetBank assets;
 	LoadContext* loadCtx;

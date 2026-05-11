@@ -31,17 +31,16 @@ ScreenID RunMenu(GameState* gs) {
 
 		midX = GetScreenWidth() / 2;
 
-
 		addBtn.bounds.x = midX - MAIN_MENU_BTN_WIDTH / 2;
 		addBtn.bounds.y = posY + 30;
 
 		SortRectangles(btns, 5, BUTTON_DELTA, 0.5f);
 
-		addBtn.hovered = CheckCollisionPointRec(GetMousePosition(), addBtn.bounds);
-		ruleBtn.hovered = CheckCollisionPointRec(GetMousePosition(), ruleBtn.bounds);
-		keyBtn.hovered = CheckCollisionPointRec(GetMousePosition(), keyBtn.bounds);
-		startBtn.hovered = CheckCollisionPointRec(GetMousePosition(), startBtn.bounds)&&(gs->loadCtx->avancement >= NOMBRE_TOTAL_ASSETS);
-		stopBtn.hovered = CheckCollisionPointRec(GetMousePosition(), stopBtn.bounds);
+		addBtn.hovered = CheckCollisionPointRec(GetMousePosition(), addBtn.bounds);			addBtn.labelFont = MAIN_BTN_FONT;
+		ruleBtn.hovered = CheckCollisionPointRec(GetMousePosition(), ruleBtn.bounds);		ruleBtn.labelFont = MAIN_BTN_FONT;
+		keyBtn.hovered = CheckCollisionPointRec(GetMousePosition(), keyBtn.bounds);			keyBtn.labelFont = MAIN_BTN_FONT;
+		startBtn.hovered = CheckCollisionPointRec(GetMousePosition(), startBtn.bounds)&&(gs->loadCtx->avancement >= NOMBRE_TOTAL_ASSETS);	startBtn.labelFont = MAIN_BTN_FONT;
+		stopBtn.hovered = CheckCollisionPointRec(GetMousePosition(), stopBtn.bounds);		stopBtn.labelFont = MAIN_BTN_FONT;
 
 		if (startBtn.hovered || addBtn.hovered || stopBtn.hovered || ruleBtn.hovered || keyBtn.hovered) {
 			SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
@@ -66,7 +65,7 @@ ScreenID RunMenu(GameState* gs) {
 		if (addBtn.validated) addPlayer = 1;
 
 		// afficher le nombre de joueurs
-		DrawStrokeTextEx(gs->assets.fonts[FONT_FREDOKA_CM], TextFormat("Il y a %s%d joueur%c", gs->playerNumber > 10 ? "déjà " : "", gs->playerNumber, gs->playerNumber > 1 ? 's' : ' '), addBtn.bounds.x, addBtn.bounds.y + addBtn.bounds.height + 5, 20,NORMAL_SPACING, WHITE, BLACK, 1);
+		DrawStrokeTextEx(gs->zarbi ? gs->assets.fonts[FONT_ZARBI] : gs->assets.fonts[FONT_FREDOKA_CM], TextFormat("Il y a %s%d joueur%c", gs->playerNumber > 10 ? "déjà " : "", gs->playerNumber, gs->playerNumber > 1 ? 's' : ' '), addBtn.bounds.x, addBtn.bounds.y + addBtn.bounds.height + 5, 20,NORMAL_SPACING, WHITE, BLACK, 1);
 
 		// Ajoute un bouton pour quitter le Jeu
 		DrawButton(&stopBtn);
@@ -114,10 +113,10 @@ ScreenID RunAddPlayer(GameState* gs) {
 	char addPplLabel[] = "Ajouter un nouveau joueur !"; 	int addPplFontSize = 50;
 
 
-	Button cclBtn = { .color1 = RED, .color2 = BLACK, .label = "Annuler", .labelFont = gs->assets.fonts[FONT_METAMORPHOUS], .labelColor = BLACK, .fontSize = 40, .corner = 90, .stroke = 3 };
-	Button addBtn = { .color1 = LIME, .color2 = BLACK, .label = "Ajouter", .labelFont = gs->assets.fonts[FONT_METAMORPHOUS], .labelColor = BLACK, .fontSize = 40, .corner = 90, .stroke = 3 };
+	Button cclBtn = { .color1 = RED, .color2 = BLACK, .label = "Annuler", .labelFont = ADD_BUTTON_FONT, .labelColor = BLACK, .fontSize = 40, .corner = 90, .stroke = 3 };
+	Button addBtn = { .color1 = LIME, .color2 = BLACK, .label = "Ajouter", .labelFont = ADD_BUTTON_FONT, .labelColor = BLACK, .fontSize = 40, .corner = 90, .stroke = 3 };
 
-	InputBox nameIptBox = { .maxLength = MAX_NAME_LENGTH,.dx = 5, .text = "", .length = 0, .fontSize = 30, .textFont = gs->assets.fonts[FONT_FREDOKA_CM], .active = 1, .validated = 0 };
+	InputBox nameIptBox = { .maxLength = MAX_NAME_LENGTH,.dx = 5, .text = "", .length = 0, .fontSize = 30, .textFont = gs->zarbi ? gs->assets.fonts[FONT_ZARBI] : gs->assets.fonts[FONT_FREDOKA_CM], .active = 1, .validated = 0 };
 	char addLabel[] = "Nom du nouveau joueur ";
 	int addLabelFontSize = 32;
 
@@ -131,14 +130,16 @@ ScreenID RunAddPlayer(GameState* gs) {
 
 		cclBtn.bounds = (Rectangle){ menuBounds.x + 5, menuBounds.y + menuBounds.height - (cclBtn.fontSize + 30) - 10, menuBounds.width / 2 - 10, cclBtn.fontSize + 30 };
 		cclBtn.hovered = CheckCollisionPointRec(GetMousePosition(), cclBtn.bounds);
+		cclBtn.labelFont = ADD_BUTTON_FONT;
 
 		addBtn.bounds = (Rectangle){ midX + 5, menuBounds.y + menuBounds.height - (addBtn.fontSize + 30) - 10, menuBounds.width / 2 - 10, addBtn.fontSize + 30 };
 		addBtn.hovered = CheckCollisionPointRec(GetMousePosition(), addBtn.bounds);
+		addBtn.labelFont = ADD_BUTTON_FONT;
 
 		int addPplw = MeasureTextEx(nameIptBox.textFont, addLabel, addLabelFontSize, NORMAL_SPACING).x;
 		nameIptBox.bounds = (Rectangle){ menuBounds.x + 5 + addPplw + 5 + 2, menuBounds.y + addPplFontSize + 30 + 10, menuBounds.width - (5 + addPplw + 5) - 15, nameIptBox.fontSize + 8 };
 		nameIptBox.hovered = CheckCollisionPointRec(GetMousePosition(), nameIptBox.bounds);
-
+		nameIptBox.textFont = gs->zarbi ? gs->assets.fonts[FONT_ZARBI] : gs->assets.fonts[FONT_FREDOKA_CM];
 
 		// Mise à jour du curseur
 		if (nameIptBox.hovered) {
@@ -157,7 +158,7 @@ ScreenID RunAddPlayer(GameState* gs) {
 		posY = DrawTitle(gs);
 
 		// Afficher le menu d'ajout
-		DrawTextEx(gs->assets.fonts[FONT_PIRATA_ONE], addPplLabel, (Vector2) { midX - MeasureTextEx(gs->assets.fonts[FONT_PIRATA_ONE], addPplLabel, addPplFontSize, NORMAL_SPACING).x / 2, menuBounds.y + 3 }, addPplFontSize, NORMAL_SPACING, WHITE);	// Affiche le titre du menu
+		DrawTextEx(gs->zarbi ? gs->assets.fonts[FONT_ZARBI] : gs->assets.fonts[FONT_PIRATA_ONE], addPplLabel, (Vector2) { midX - MeasureTextEx(gs->zarbi ? gs->assets.fonts[FONT_ZARBI] : gs->assets.fonts[FONT_PIRATA_ONE], addPplLabel, addPplFontSize, NORMAL_SPACING).x / 2, menuBounds.y + 3 }, addPplFontSize, NORMAL_SPACING, WHITE);	// Affiche le titre du menu
 
 		DrawTextEx(nameIptBox.textFont, addLabel, (Vector2) { menuBounds.x + 5, nameIptBox.bounds.y + (nameIptBox.bounds.height - addLabelFontSize) / 2 }, addLabelFontSize, NORMAL_SPACING, WHITE);
 		DrawFullInputBoxEx(&nameIptBox, 2, GRAY, LIGHTGRAY);
@@ -204,7 +205,7 @@ ScreenID RunRules(GameState* gs) {
 
 	Button Next = (Button){ .label = ">", .fontSize = 30, .labelColor = BLACK, .labelFont = GetFontDefault(), .corner = 90, .stroke = 3, .color1 = DARKGRAY, .color2 = LIME };
 	Button Previous = (Button){ .label = "<", .fontSize = 30, .labelColor = BLACK, .labelFont = GetFontDefault(), .corner = 90, .stroke = 3, .color1 = DARKGRAY, .color2 = RED };
-	Button Exit = (Button){ .label = "OK", .fontSize = 30, .labelColor = BLACK, .labelFont = gs->assets.fonts[FONT_FREDOKA_SB], .corner = 80, .stroke = 3, .color1 = DARKGRAY, .color2 = BLUE };
+	Button Exit = (Button){ .label = "OK", .fontSize = 30, .labelColor = BLACK, .labelFont = gs->zarbi ? gs->assets.fonts[FONT_ZARBI] : gs->assets.fonts[FONT_FREDOKA_SB], .corner = 80, .stroke = 3, .color1 = DARKGRAY, .color2 = BLUE };
 
 	Rectangle textZone;
 
@@ -221,6 +222,7 @@ ScreenID RunRules(GameState* gs) {
 
 		Exit.bounds = (Rectangle){ midX - textZone.width / (4 * 2), Previous.bounds.y + Previous.bounds.height, textZone.width / 4, Exit.fontSize + 20 };
 		Exit.hovered = CheckCollisionPointRec(GetMousePosition(), Exit.bounds);
+		Exit.labelFont = gs->zarbi ? gs->assets.fonts[FONT_ZARBI] : gs->assets.fonts[FONT_FREDOKA_SB];
 
 		Next.bounds = (Rectangle){ textZone.x + textZone.width * 2 / 3 + 10, Previous.bounds.y, textZone.width / 3 - 10, Next.fontSize + 20 };
 		Next.hovered = CheckCollisionPointRec(GetMousePosition(), Next.bounds);
@@ -238,7 +240,7 @@ ScreenID RunRules(GameState* gs) {
 		posY = DrawTitle(gs);
 		DrawTextWrappedEx(PAGE_FONT, pages[currentPage].Text, textZone, PAGE_FS, 1, WHITE, BLACK);
 
-		DrawStrokeTextEx(gs->assets.fonts[FONT_METAMORPHOUS], TextFormat("  %s", pages[currentPage].Title), textZone.x + 10, posY, 35, NORMAL_SPACING, BLACK, GOLD, 1);
+		DrawStrokeTextEx(gs->zarbi ? gs->assets.fonts[FONT_ZARBI] : gs->assets.fonts[FONT_METAMORPHOUS], TextFormat("  %s", pages[currentPage].Title), textZone.x + 10, posY, 35, NORMAL_SPACING, BLACK, GOLD, 1);
 
 		DrawRectangleRoundedLinesEx((Rectangle) { textZone.x - TEXT_ZONE_PADDING, textZone.y - TEXT_ZONE_PADDING, textZone.width + 2 * TEXT_ZONE_PADDING, textZone.height + 2 * TEXT_ZONE_PADDING, }, .05, 10, 2, multiplyColor(BROWN, 1.2f));
 
@@ -274,7 +276,7 @@ ScreenID RunKeybinds(GameState* gs) {
 	Rectangle rCamera = (Rectangle){ 0, 0, MeasureTextEx(KEY_FONT, KEY_TEXT_CAMERA, KEY_FS, NORMAL_SPACING).x, KEY_FS };
 	Rectangle rPlace = (Rectangle){ 0, 0, MeasureTextEx(KEY_FONT, KEY_TEXT_PLACE, KEY_FS, NORMAL_SPACING).x, KEY_FS };
 
-	Button Exit = (Button){ .label = "OK", .fontSize = 30, .labelColor = BLACK, .labelFont = gs->assets.fonts[FONT_METAMORPHOUS], .corner = 80, .stroke = 3, .color1 = DARKGRAY, .color2 = BLUE, .bounds = (Rectangle){0, 0, 300, 0} };
+	Button Exit = (Button){ .label = "OK", .fontSize = 30, .labelColor = BLACK, .labelFont = MAIN_BTN_FONT, .corner = 80, .stroke = 3, .color1 = DARKGRAY, .color2 = BLUE, .bounds = (Rectangle){0, 0, 300, 0} };
 
 	Rectangle* recTextList[] = { &rMove, &rColorSwitch, &rShapeSwitch, &rRotate, &rFlip, &rCamera, &rPlace, &Exit.bounds };
 
@@ -283,7 +285,15 @@ ScreenID RunKeybinds(GameState* gs) {
 
 
 		rMove = (Rectangle){ midX - MeasureTextEx(KEY_FONT, KEY_TEXT_MOVE, KEY_FS, NORMAL_SPACING).x / 2, posY + 20, MeasureTextEx(KEY_FONT, KEY_TEXT_MOVE, KEY_FS, NORMAL_SPACING).x, KEY_FS };
-		SortRectangles(recTextList, 8, KEY_PAD, .5f);
+		// Ajustements pour le zarbi
+		rColorSwitch.width = MeasureTextEx(KEY_FONT, KEY_TEXT_COLOR_SWITCH, KEY_FS, NORMAL_SPACING).x;
+		rShapeSwitch.width = MeasureTextEx(KEY_FONT, KEY_TEXT_SHAPE_SWITCH, KEY_FS, NORMAL_SPACING).x;
+		rRotate.width = MeasureTextEx(KEY_FONT, KEY_TEXT_ROTATE, KEY_FS, NORMAL_SPACING).x;
+		rFlip.width = MeasureTextEx(KEY_FONT, KEY_TEXT_FLIP, KEY_FS, NORMAL_SPACING).x;
+		rCamera.width = MeasureTextEx(KEY_FONT, KEY_TEXT_CAMERA, KEY_FS, NORMAL_SPACING).x;
+		rPlace.width = MeasureTextEx(KEY_FONT, KEY_TEXT_PLACE, KEY_FS, NORMAL_SPACING).x;
+
+		SortRectangles(recTextList, 8, KEY_PAD, 0.5f);
 		Exit.bounds = (Rectangle){ Exit.bounds.x, Exit.bounds.y + KEY_PAD + 30, 300, Exit.fontSize + 20 };
 		Exit.hovered = CheckCollisionPointRec(GetMousePosition(), Exit.bounds);
 
@@ -333,7 +343,7 @@ ScreenID RunKeybinds(GameState* gs) {
 // Affiche le titre principal du jeu et retourne sa position Y
 int DrawTitle(GameState* gs) {
 	int posY = 0;
-	DrawStrokeTextEx(gs->assets.fonts[FONT_GRENZE_GOTISCH_B], C_TITLE, (GetScreenWidth() - MeasureTextEx(gs->assets.fonts[FONT_GRENZE_GOTISCH_B], C_TITLE, TITLE_FS, NORMAL_SPACING).x) / 2, posY, TITLE_FS, TITLE_SPACING, GOLD, BLACK, 2);
+	DrawStrokeTextEx(TITLE_FONT, C_TITLE, (GetScreenWidth() - MeasureTextEx(TITLE_FONT, C_TITLE, TITLE_FS, NORMAL_SPACING).x) / 2, posY, TITLE_FS, TITLE_SPACING, GOLD, BLACK, 2);
 	return posY + TITLE_FS - 10;
 }
 
@@ -534,7 +544,7 @@ void UpdateInputBox(InputBox* box) {
 		printf("entré appuyé 1\n");
 		box->validated = true;
 	}
-	else	box->validated = false;
+	else box->validated = false;
 
 
 	int key = GetCharPressed();
@@ -860,17 +870,43 @@ void drawFinalUi(GameState *gs, int pparedit[5]) {
 		DrawStrokeTextEx(PLAYER_PANEL_FONT, TextFormat("SCORE Final : %d", gs->players[gs->playerIndex].score), playerPanel.x + 8, playerPanel.y + PLAYER_PANEL_FS * 6 + y2, PLAYER_PANEL_FS, NORMAL_SPACING, YELLOW, BLACK, 1);
 		DrawStrokeTextEx(PLAYER_PANEL_FONT, TextFormat(gs->playerIndex + 1 == 1 ? "CLASSEMENT :  %d er" : "CLASSEMENT :  %d eme", gs->playerIndex + 1), playerPanel.x + 8, playerPanel.y + PLAYER_PANEL_FS * 8 + y2, PLAYER_PANEL_FS, NORMAL_SPACING, gs->playerIndex + 1 == 1 ? GOLD : WHITE, BLACK, 1);
 		DrawRectangleRoundedStrokeEx(editsRec, 1.f, 10, 2, BGCOLOR, GOLD);
-		DrawStrokeTextEx(gs->assets.fonts[FONT_GRENZE_GOTISCH_L], "FIN DU JEUX", editRects.x, editRects.y, EDITS_FS * 2, NORMAL_SPACING, GOLD, BLACK, 1);
+		DrawStrokeTextEx(gs->zarbi ? gs->assets.fonts[FONT_ZARBI] : gs->assets.fonts[FONT_GRENZE_GOTISCH_L], "FIN DU JEU", editRects.x, editRects.y, EDITS_FS * 2, NORMAL_SPACING, GOLD, BLACK, 1);
 		Color c = WHITE;
 		c.a = 25;
 		DrawStrokeTextEx(TOOLTIP_FONT, gs->playerIndex < gs->playerNumber-1 ? "Suivant (E) --> " : "Fin (Space)", midX + GetScreenWidth() / 10, GetScreenHeight() - 120, 60, NORMAL_SPACING, c, c, 1);
 		if (gs->playerIndex > 0 ) DrawStrokeTextEx(TOOLTIP_FONT, " <-- (A)Précédent  ", midX - GetScreenWidth() / 10- 300, GetScreenHeight() - 120, 60, NORMAL_SPACING, c, c, 1);
 	}
 
-
-
-
-
-
-
 }
+
+void* ZarbiThread(void* arg) {
+	GameState* gs = (GameState*)arg;
+	int advancement = 0;
+	while (!WindowShouldClose()) {
+		int key = GetKeyPressed();	// Utilisation de GetKeyPressed au lieu de GetCharPressed, car c'est 2 files d'attente différentes (pas viable si il y a une suite, il faudrait faire un manager de touches et ajouter ça en paramètre, mais trop long pour la blague)
+		while (key > 0) {
+			printf("key reçue : %d\n", key);
+			if ((advancement == 0 && (key == KEY_Z || key == KEY_W)) ||
+				(advancement == 1 && (key == KEY_A || key == KEY_Q)) ||
+				(advancement == 2 && key == KEY_R) ||
+				(advancement == 3 && key == KEY_B) ||
+				(advancement == 4 && key == KEY_I)) {
+
+				advancement++;
+			}
+			else {
+				advancement = 0;
+			}
+
+			if (advancement == 5) {
+				gs->zarbi = !gs->zarbi;
+				printf(gs->zarbi ? "ZARBI MODE ACTIVATED\n" : "ZARBI MODE UNACTIVATED\n");
+				advancement = 0;
+			}
+
+			key = GetKeyPressed();
+		}
+	}
+	return NULL;
+}
+

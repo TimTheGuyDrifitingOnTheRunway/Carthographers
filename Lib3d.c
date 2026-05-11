@@ -751,7 +751,7 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 	// Edits & Saison
 	DrawRectangleRoundedStrokeEx(editsRec, 1.f, 10, 2, BGCOLOR, GOLD);
 	for (int i = 0; i < 4; i++) {
-		DrawStrokeTextEx(gs->assets.fonts[FONT_GRENZE_GOTISCH_L], editLabels[i], editRects[i].x, editRects[i].y + 10 - EDITS_FS / 5, EDITS_FS, NORMAL_SPACING, GOLD, BLACK, 1);
+		DrawStrokeTextEx(EDITS_FONT, editLabels[i], editRects[i].x, editRects[i].y + 10 - EDITS_FS / 5, EDITS_FS, NORMAL_SPACING, GOLD, BLACK, 1);
 		if (i == gs->currentSeason || i == (gs->currentSeason + 1) % NUM_SEASONS) {
 			Texture2D letterScrollTex = gs->assets.letterScrollsImage[i];
 			DrawTextureEx(letterScrollTex, (Vector2) { editRects[i].x, editRects[i].y + 10 - EDITS_FS / 5 }, 0, (float)EDITS_FS / (float)letterScrollTex.height * 1.2f, WHITE);
@@ -1537,7 +1537,6 @@ void* SoundThread(void* args) {		//thread de gestion de l'audio séparé afin d'
 	return NULL;
 }
 
-#define TEMPS_TRANSITION 3.0f
 
 void GUIDisplayNewSeason(Camera3D* camera, GameState* gs) {
 	double startTime = GetTime();
@@ -1549,7 +1548,7 @@ void GUIDisplayNewSeason(Camera3D* camera, GameState* gs) {
 	Rectangle editsRec = (Rectangle){ midX - 40, -60, 80, 180 };
 
 	Rectangle editRects;
-	printf(" validité de la font : %d\n", IsFontValid(gs->assets.fonts[FONT_GRENZE_GOTISCH_L]));
+	printf(" validité de la font : %d\n", IsFontValid(TRANSITION_FONT));
 
 
 	editRects.width = MeasureTextEx(EDITS_FONT, "Fin de Saison", EDITS_FS * 2, NORMAL_SPACING).x;
@@ -1570,10 +1569,8 @@ void GUIDisplayNewSeason(Camera3D* camera, GameState* gs) {
 			DrawTextureEx(gs->assets.seasonImages[gs->currentSeason], (Vector2) { midX - 2.5f * 125, midY - 125 }, 0, 0.5f, ColorAlpha(WHITE, alpha));
 		}
 		else DrawTextureEx(gs->assets.seasonImages[gs->currentSeason], (Vector2) { midX - 125, midY - 125 }, 0, 0.5f, ColorAlpha(WHITE, alpha));
-		DrawStrokeTextEx(gs->assets.fonts[FONT_GRENZE_GOTISCH_L], "Fin de Saison", editRects.x, editRects.y, EDITS_FS * 2, NORMAL_SPACING, GOLD, BLACK, 1);
+		DrawStrokeTextEx(TRANSITION_FONT, "Fin de Saison", editRects.x, editRects.y, EDITS_FS * 2, NORMAL_SPACING, GOLD, BLACK, 1);
 		EndDrawing();
 	}
-
-
 
 }

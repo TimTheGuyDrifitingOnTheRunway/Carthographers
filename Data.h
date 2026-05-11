@@ -108,8 +108,3 @@ extern const ExploreCard RiftLands;
 
 extern const ExploreCard* expCards[21];
 
-
-
-
-// Fonction pour terminer le programme, décharger tout ce qui doit être déchargé et tout
-void EndProgram(GameState* gs);

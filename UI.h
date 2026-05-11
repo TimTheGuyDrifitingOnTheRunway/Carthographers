@@ -45,6 +45,9 @@ void DrawRectangleStroke(Rectangle rec, float lineThick, Color rectColor, Color 
 
 Color multiplyColor(Color color, float factor);
 
+void* ZarbiThread(void* arg);
+
+
 
 
 

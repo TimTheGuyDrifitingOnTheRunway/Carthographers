@@ -59,10 +59,11 @@ int main()
 		gs.assets.fonts[FONT_FREDOKA_CM] = LoadFontEx("Assets/Fonts/Fredoka_Condensed-Medium.ttf", 200, codepoints, codepointCount);
 		gs.assets.fonts[FONT_FREDOKA_SB] = LoadFontEx("Assets/Fonts/Fredoka-SemiBold.ttf", 200, codepoints, codepointCount);
 		gs.assets.fonts[FONT_METAMORPHOUS] = LoadFontEx("Assets/Fonts/Metamorphous.ttf", 200, codepoints, codepointCount);
+		gs.assets.fonts[FONT_ZARBI] = LoadFontEx("Assets/Fonts/Unown.ttf", 200, codepoints, codepointCount);
 
 		UnloadCodepoints(codepoints);
 	}
-	printf("%f", MeasureTextEx(gs.assets.fonts[FONT_GRENZE_GOTISCH_B], "Printemps  0/8", EDITS_FS, NORMAL_SPACING).x);
+	//printf("%f", MeasureTextEx(gs.assets.fonts[FONT_GRENZE_GOTISCH_B], "Printemps  0/8", EDITS_FS, NORMAL_SPACING).x);
 
 
 
@@ -73,7 +74,7 @@ int main()
 
 
 
-	pthread_t assetWorkerThread, soundThread, modelThread, SeedThread;
+	pthread_t assetWorkerThread, soundThread, modelThread, SeedThread, zarbiThread;
 	int keep = 1;// variable qui dit au thread de son de continuer à jouer ou pas et de joier UUIAA
 	gs.soundCtrl = &keep;
 	pthread_create(&soundThread, NULL, SoundThread, &keep);
@@ -81,6 +82,7 @@ int main()
 	pthread_create(&SeedThread, NULL, generateSeedThread, mountainSeed);
 	pthread_create(&assetWorkerThread, NULL, LoadAssetsWorker, &imgCtx);
 	pthread_create(&modelThread, NULL, ModelLoaderThread, &imgCtx);
+	pthread_create(&zarbiThread, NULL, ZarbiThread, &gs);
 
 	//gs.playerNumber = 98;
 	ScreenID current = SCREEN_MENU;
@@ -214,7 +216,9 @@ int main()
 
 	keep = 0;//forece la fin du thread
 
-	pthread_join(soundThread, NULL);//arret du thread son
+	pthread_join(soundThread, NULL);	//arret du thread son
+	pthread_join(zarbiThread, NULL);	//arret du thread zarbi
+	
 
 	printf("\n\n\n\n\n\n Debug de fin de partie \n\n\n\n\n\n");
 
@@ -284,21 +288,7 @@ int main()
 	}
 
 	calcEnenmyPoints(test);
-
-
-
 	return 0;
 
-}
-
-
-
-// Libère les ressources et ferme le programme proprement
-void EndProgram(GameState* gs) {
-	for (int i = 0; i < FONT_COUNT; i++) {
-		UnloadFont(gs->assets.fonts[i]);
-	}
-	CloseWindow();
-	free(gs->players);
 }
 
