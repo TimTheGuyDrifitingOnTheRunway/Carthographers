@@ -221,3 +221,74 @@
 1778516832 source:c:\users\250259\downloads\carthographers-codeblocks\carthographers-codeblocks\ui.c
 	"UI.h"
 
+1778531603 source:c:\users\mathb\source\repos\timtheguydrifitingontherunway\carthographers\lib3d.c
+	"Lib3d.h"
+
+1778525160 c:\users\mathb\source\repos\timtheguydrifitingontherunway\carthographers\lib3d.h
+	"Data.h"
+	"LibCarthographie.h"
+	"UI.h"
+
+1778532842 c:\users\mathb\source\repos\timtheguydrifitingontherunway\carthographers\data.h
+	"Structs.h"
+
+1778531514 c:\users\mathb\source\repos\timtheguydrifitingontherunway\carthographers\structs.h
+	"Consts.h"
+
+1778532963 c:\users\mathb\source\repos\timtheguydrifitingontherunway\carthographers\consts.h
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+	<math.h>
+	<string.h>
+	<raylib.h>
+	<rlgl.h>
+	<raymath.h>
+	<pthread.h>
+
+1778505285 c:\users\mathb\source\repos\timtheguydrifitingontherunway\carthographers\external\raylib\include\raylib.h
+	<stdarg.h>
+	<stdbool.h>
+
+1778505285 c:\users\mathb\source\repos\timtheguydrifitingontherunway\carthographers\external\raylib\include\rlgl.h
+	<stdbool.h>
+	<OpenGL/gl.h>
+	<OpenGL/glext.h>
+	<GL/gl.h>
+	"external/glad.h"
+	<GLES3/gl3.h>
+	<GLES2/gl2ext.h>
+	"external/glad_gles2.h"
+	<GLES2/gl2.h>
+	<GLES2/gl2ext.h>
+	<stdlib.h>
+	<string.h>
+	<math.h>
+
+1778505285 c:\users\mathb\source\repos\timtheguydrifitingontherunway\carthographers\external\raylib\include\raymath.h
+	<math.h>
+
+1778505285 c:\users\mathb\source\repos\timtheguydrifitingontherunway\carthographers\libcarthographie.h
+	"Data.h"
+
+1778532973 c:\users\mathb\source\repos\timtheguydrifitingontherunway\carthographers\ui.h
+	"Data.h"
+
+1778525160 source:c:\users\mathb\source\repos\timtheguydrifitingontherunway\carthographers\libcarthographie.c
+	"LibCarthographie.h"
+
+1778528685 source:c:\users\mathb\source\repos\timtheguydrifitingontherunway\carthographers\main.c
+	"LibCarthographie.h"
+	"Lib3d.h"
+	"GameManager.h"
+	"UI.h"
+
+1778532844 c:\users\mathb\source\repos\timtheguydrifitingontherunway\carthographers\gamemanager.h
+	"Data.h"
+	"LibCarthographie.h"
+	"Lib3d.h"
+	"UI.h"
+
+1778532121 source:c:\users\mathb\source\repos\timtheguydrifitingontherunway\carthographers\ui.c
+	"UI.h"
+

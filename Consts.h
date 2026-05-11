@@ -115,7 +115,7 @@ void Sleep(int n);
 #define MAXCAMERAHEIGHT 0.9f
 #define MINCAMERAHEIGHT 0.07f
 
-#define INDIC_FONT gs->zarbi ? gs->assets.fonts[FONT_ZARBI] : gs->assets.fonts[FONT_PIRATA_ONE]
+#define COMPASS_FONT gs->zarbi ? gs->assets.fonts[FONT_ZARBI] : gs->assets.fonts[FONT_PIRATA_ONE]
 
 // Constantes du Menu in game
 #define SEASON_FS 40

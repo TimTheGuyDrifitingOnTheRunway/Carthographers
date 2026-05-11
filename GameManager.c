@@ -240,7 +240,7 @@ void InitScoringCards(GameState* gs) {
 // Lance le jeu en démarrant la première saison
 void StartGame(GameState* gs, Camera3D camera, ModelImage modelsImage, Seed s, int seed[2]) {
 	printf("seed : (%d, %d)\n", seed[0], seed[1]);
-	ModelList models = loadModelsFromImage(modelsImage,strcmp(gs->players[0].name, SPECIAL_PLAYER_NAME) == 0, INDIC_FONT);
+	ModelList models = loadModelsFromImage(modelsImage,strcmp(gs->players[0].name, SPECIAL_PLAYER_NAME) == 0, COMPASS_FONT);
 	printf("\n\n\n\nLancement du jeu !\n\n\n\n");
 	Season2(gs, camera, models, s, seed);
 }
