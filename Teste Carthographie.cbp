@@ -16,12 +16,6 @@
 				<Compiler>
 					<Add option="-Wall" />
 					<Add option="-g" />
-					<Add option="-Wno-format" />
-					<Add option="-Wno-switch" />
-					<Add option="-Wno-return-type" />
-					<Add option="-Wno-int-to-pointer-cast" />
-					<Add option="-Wno-pointer-to-int-cast" />
-					<Add option="-Wno-incompatible-pointer-types" />
 					<Add option="-DWIN32" />
 					<Add option="-D_DEBUG" />
 					<Add option="-D_CONSOLE" />
@@ -66,8 +60,6 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-Wall" />
-					<Add option="-Wno-unused-variable" />
-					<Add option="-Wno-unused-but-set-variable" />
 					<Add option="-DNDEBUG" />
 					<Add option="-D_CONSOLE" />
 				</Compiler>
@@ -80,8 +72,6 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-Wall" />
-					<Add option="-Wno-unused-variable" />
-					<Add option="-Wno-unused-but-set-variable" />
 					<Add option="-DWIN32" />
 					<Add option="-DNDEBUG" />
 					<Add option="-D_CONSOLE" />
@@ -89,12 +79,9 @@
 			</Target>
 		</Build>
 		<Compiler>
+			<Add option="-Wno-discarded-array-qualifiers" />
+			<Add option="-Wno-discarded-qualifiers" />
 			<Add option="-Wno-incompatible-pointer-types" />
-			<Add option="-Wno-format" />
-			<Add option="-Wno-switch" />
-			<Add option="-Wno-int-to-pointer-cast" />
-			<Add option="-Wno-pointer-to-int-cast" />
-			<Add option="-Wno-return-type" />
 			<Add directory="external/raylib/include" />
 		</Compiler>
 		<Linker>
