@@ -352,6 +352,7 @@ int GUIPlacementCard(GameState* gs, FeuilleCarte f, const ExploreCard* card, int
 	state.material = card->isEnemy ? MONSTRE : card->terrainA;
 	state.pos = (Position){ 6, 6 };
 	state.status = 0;
+	state.soundState = 0;
 
 	copyPiece(canFitA ? *card->pieceA : *card->pieceB, state.shapeCopy);
 	Position* mountainPos = getPositionsOfMaterial(f, MONTAGNE);//envoi la positions des montagnes pour avancer si un conflit à lieu entre une montagne et autre
@@ -361,7 +362,8 @@ int GUIPlacementCard(GameState* gs, FeuilleCarte f, const ExploreCard* card, int
 		RenderPlacement(gs, f, &state, score, *camera, mountains, mountainPos, s, models);
 		GUIUpdateCustomCamera(camera);
 		camera->target = (Vector3){ 0.0f, 0.0f, 0.0f };
-		if ((!state.drawable) && strcmp(gs->players[0].name, SPECIAL_PLAYER_NAME) == 0) *(gs->soundCtrl) = 2;//change la valeur du son si faut qu'il joue
+
+		if ((state.soundState) && strcmp(gs->players[0].name, SPECIAL_PLAYER_NAME) == 0) *(gs->soundCtrl) = 2;//change la valeur du son si faut qu'il joue
 		else *(gs->soundCtrl) = 1;
 	}
 
@@ -379,7 +381,7 @@ void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera) {
 	state->drawable = drawShape(state->feuilleVide, state->shapeCopy,
 		state->pos, state->rotation, state->material);
 	tryDraw(f, state->feuilleVide, state->temp);
-
+state->soundState = !(state->drawable&& isDrawable(f, state->feuilleVide));
 	state->drawable = state->drawable && (state->isRuin ? coversRuin(f, state->feuilleVide) : 1) && isDrawable(f, state->feuilleVide);
 
 
