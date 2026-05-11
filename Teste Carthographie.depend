@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1778339231 source:e:\pc\documents\carthographers\gamemanager.c
+1778492278 source:e:\pc\documents\carthographers\gamemanager.c
 	"GameManager.h"
 
 1778337187 e:\pc\documents\carthographers\gamemanager.h
@@ -11,10 +11,10 @@
 1778337187 e:\pc\documents\carthographers\data.h
 	"Structs.h"
 
-1778337187 e:\pc\documents\carthographers\structs.h
+1778492278 e:\pc\documents\carthographers\structs.h
 	"Consts.h"
 
-1778339228 e:\pc\documents\carthographers\consts.h
+1778492451 e:\pc\documents\carthographers\consts.h
 	<stdio.h>
 	<stdlib.h>
 	<time.h>
@@ -25,14 +25,14 @@
 	<raymath.h>
 	<pthread.h>
 
-1778339228 e:\pc\documents\carthographers\external\raylib\include\raylib.h
+1778492276 e:\pc\documents\carthographers\external\raylib\include\raylib.h
 	<stdarg.h>
 	<stdbool.h>
 
-1778339228 e:\pc\documents\carthographers\libcarthographie.h
+1778492276 e:\pc\documents\carthographers\libcarthographie.h
 	"Data.h"
 
-1778339555 e:\pc\documents\carthographers\lib3d.h
+1778492278 e:\pc\documents\carthographers\lib3d.h
 	"Data.h"
 	"LibCarthographie.h"
 	"UI.h"
@@ -40,22 +40,22 @@
 1778337187 e:\pc\documents\carthographers\ui.h
 	"Data.h"
 
-1778339755 source:e:\pc\documents\carthographers\lib3d.c
+1778492278 source:e:\pc\documents\carthographers\lib3d.c
 	"Lib3d.h"
 
-1778339611 source:e:\pc\documents\carthographers\ui.c
+1778492276 source:e:\pc\documents\carthographers\ui.c
 	"UI.h"
 
-1778339632 source:e:\pc\documents\carthographers\libcarthographie.c
+1778492276 source:e:\pc\documents\carthographers\libcarthographie.c
 	"LibCarthographie.h"
 
-1778339231 source:e:\pc\documents\carthographers\main.c
+1778492276 source:e:\pc\documents\carthographers\main.c
 	"LibCarthographie.h"
 	"Lib3d.h"
 	"GameManager.h"
 	"UI.h"
 
-1778339228 e:\pc\documents\carthographers\external\raylib\include\rlgl.h
+1778492276 e:\pc\documents\carthographers\external\raylib\include\rlgl.h
 	<stdbool.h>
 	<OpenGL/gl.h>
 	<OpenGL/glext.h>
@@ -70,6 +70,6 @@
 	<string.h>
 	<math.h>
 
-1778339228 e:\pc\documents\carthographers\external\raylib\include\raymath.h
+1778492276 e:\pc\documents\carthographers\external\raylib\include\raymath.h
 	<math.h>
 
