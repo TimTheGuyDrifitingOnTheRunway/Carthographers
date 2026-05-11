@@ -1254,8 +1254,7 @@ Model loadSkybox(bool useHDR) {
 }
 
 
-
-static TextureCubemap GenTextureCubemap(Shader shader, Texture2D panorama, int size, int format)//fonctions du tuto raylib
+TextureCubemap GenTextureCubemap(Shader shader, Texture2D panorama, int size, int format)//fonctions du tuto raylib
 {
 	TextureCubemap cubemap = { 0 };
 
