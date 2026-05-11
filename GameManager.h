@@ -33,7 +33,5 @@ void DebugGameStats(GameState* gs);
 int CalcPointsFromCards(FeuilleCarte f, ScoringCard* cards, int numberOfCards);
 
 
-// Fonction pour terminer le programme, décharger tout ce qui doit être déchargé et tout
-void EndProgram(GameState* gs);
 
 
