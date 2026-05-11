@@ -392,11 +392,11 @@ int isGroupAtPosNeighborWithMaterial(FeuilleCarte f, Position pos, int material,
 // Étape récursive du calcul d'adjacence de groupe
 // Étape récursive du calcul d'adjacence de groupe
 int GroupNextStep(FeuilleCarte temp, int material, int materialToAvoid, int includeBorder) {
-	int retour = 0;
+
 	for (int i = 0; i < SIZE; i++) {
 		for (int j = 0; j < SIZE; j++) {
 			if (getMaterialAt(temp, i, j) == ACTUAL) {
-				retour = 1;
+
 				temp[i][j] = 0;
 				for (int k = -1; k < 2; k++) {
 
@@ -740,7 +740,7 @@ int placementShape(FeuilleCarte f, const Piece shape, int material) {
 int autoPlacement(FeuilleCarte f, const Piece shape, int material) {
 	if (checkShape(f, shape)) {
 		Position pos, maxpos;
-		maxpos.x = -1; 
+		maxpos.x = -1;
 		maxpos.y = -1;
 		pos.x = 0;
 		pos.y = 0;

@@ -73,3 +73,77 @@
 1778492276 e:\pc\documents\carthographers\external\raylib\include\raymath.h
 	<math.h>
 
+1778512840 source:c:\users\250259\downloads\carthographers-codeblocks(1)\carthographers-codeblocks\gamemanager.c
+	"GameManager.h"
+
+1778512840 c:\users\250259\downloads\carthographers-codeblocks(1)\carthographers-codeblocks\gamemanager.h
+	"Data.h"
+	"LibCarthographie.h"
+	"Lib3d.h"
+	"UI.h"
+
+1778512840 c:\users\250259\downloads\carthographers-codeblocks(1)\carthographers-codeblocks\data.h
+	"Structs.h"
+
+1778512840 c:\users\250259\downloads\carthographers-codeblocks(1)\carthographers-codeblocks\structs.h
+	"Consts.h"
+
+1778515123 c:\users\250259\downloads\carthographers-codeblocks(1)\carthographers-codeblocks\consts.h
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+	<math.h>
+	<string.h>
+	<raylib.h>
+	<rlgl.h>
+	<raymath.h>
+	<pthread.h>
+
+1778512845 c:\users\250259\downloads\carthographers-codeblocks(1)\carthographers-codeblocks\external\raylib\include\raylib.h
+	<stdarg.h>
+	<stdbool.h>
+
+1778512845 c:\users\250259\downloads\carthographers-codeblocks(1)\carthographers-codeblocks\external\raylib\include\rlgl.h
+	<stdbool.h>
+	<OpenGL/gl.h>
+	<OpenGL/glext.h>
+	<GL/gl.h>
+	"external/glad.h"
+	<GLES3/gl3.h>
+	<GLES2/gl2ext.h>
+	"external/glad_gles2.h"
+	<GLES2/gl2.h>
+	<GLES2/gl2ext.h>
+	<stdlib.h>
+	<string.h>
+	<math.h>
+
+1778512845 c:\users\250259\downloads\carthographers-codeblocks(1)\carthographers-codeblocks\external\raylib\include\raymath.h
+	<math.h>
+
+1778512840 c:\users\250259\downloads\carthographers-codeblocks(1)\carthographers-codeblocks\libcarthographie.h
+	"Data.h"
+
+1778512840 c:\users\250259\downloads\carthographers-codeblocks(1)\carthographers-codeblocks\lib3d.h
+	"Data.h"
+	"LibCarthographie.h"
+	"UI.h"
+
+1778512840 c:\users\250259\downloads\carthographers-codeblocks(1)\carthographers-codeblocks\ui.h
+	"Data.h"
+
+1778514878 source:c:\users\250259\downloads\carthographers-codeblocks(1)\carthographers-codeblocks\main.c
+	"LibCarthographie.h"
+	"Lib3d.h"
+	"GameManager.h"
+	"UI.h"
+
+1778515144 source:c:\users\250259\downloads\carthographers-codeblocks(1)\carthographers-codeblocks\lib3d.c
+	"Lib3d.h"
+
+1778513126 source:c:\users\250259\downloads\carthographers-codeblocks(1)\carthographers-codeblocks\libcarthographie.c
+	"LibCarthographie.h"
+
+1778513155 source:c:\users\250259\downloads\carthographers-codeblocks(1)\carthographers-codeblocks\ui.c
+	"UI.h"
+

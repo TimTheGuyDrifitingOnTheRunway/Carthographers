@@ -6,10 +6,11 @@
 
 //compatibilité code blocks
 
-#define Sleep _sleep
+//#define Sleep _sleep
+void Sleep(int n);
 
-#define max(x, y) (x > y ? x :y)
-#define min(x,y) (x<y ? x : y)
+#define max(x,y) (x > y ? x : y)
+#define min(x,y) (x < y ? x : y)
 
 
 
@@ -37,7 +38,7 @@
 
 /*****MACROS****/
 
-#define clamp(x, min, max) ((x < min) ? min : (x > max) ? max : x)
+
 
 /******************************** LibCartographie.h ********************************/
 

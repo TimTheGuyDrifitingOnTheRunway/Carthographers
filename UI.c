@@ -33,7 +33,7 @@ ScreenID RunMenu(GameState* gs) {
 
 
 		addBtn.bounds.x = midX - MAIN_MENU_BTN_WIDTH / 2;
-		addBtn.bounds.y = posY + 30, MAIN_MENU_BTN_WIDTH - 50;
+		addBtn.bounds.y = posY + 30;
 
 		SortRectangles(btns, 5, BUTTON_DELTA, 0.5f);
 
@@ -465,7 +465,7 @@ void SortRectangles(Rectangle** rlist, int listLen, int pad, float anchorPoint) 
 
 // Dessine un bouton avec hover et interactions à la souris
 void DrawButton(Button* btn) {
-	Vector2 mouse = GetMousePosition();
+
 	bool pressed = btn->hovered && IsMouseButtonDown(MOUSE_BUTTON_LEFT);
 	bool clicked = btn->hovered && IsMouseButtonReleased(MOUSE_BUTTON_LEFT);
 

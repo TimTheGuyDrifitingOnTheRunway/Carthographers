@@ -79,7 +79,7 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 				switch (getMaterialAtPos(temp, (Position) { i, j })) {
 				case EAU:
 					color = BLUE;
-					DrawModel(models.water, (Vector3) { x, y + 0.51f, z }, 1, WHITE);//dessin de la tyles avant tout 
+					DrawModel(models.water, (Vector3) { x, y + 0.51f, z }, 1, WHITE);//dessin de la tyles avant tout
 
 					break;
 				case FORET:
@@ -100,8 +100,6 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 						float rxOfset = (ColorToHSV(GetImageColor(s.OfsetImagex, j * 10 + l, i * 10 + k)).z - 0.5f) * 0.5f;
 						float rzOfset = (ColorToHSV(GetImageColor(s.OfsetImagey, j * 10 + l, i * 10 + k)).z - 0.5f) * 0.5f;
 
-						clamp(rxOfset, -0.1f, 0.1f);
-						clamp(rzOfset, -0.1f, 0.1f);
 
 
 						//choix du type de model à dessiner
@@ -125,8 +123,7 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 						float rxOfset = (ColorToHSV(GetImageColor(s.OfsetImagex, j * 10 + l, i * 10 + k)).z - 0.5f) * 0.5f;
 						float rzOfset = (ColorToHSV(GetImageColor(s.OfsetImagey, j * 10 + l, i * 10 + k)).z - 0.5f) * 0.5f;
 
-						clamp(rxOfset, -0.1f, 0.1f);
-						clamp(rzOfset, -0.1f, 0.1f);
+
 						if ((-0.5f + (float)k / HOUSE_DIVIDER + rxOfset < FOREST_BORDER) && (-0.5f + (float)k / HOUSE_DIVIDER + rxOfset) > -FOREST_BORDER && (-0.5 + (float)l / HOUSE_DIVIDER + rzOfset) < FOREST_BORDER && (-0.5 + (float)l / HOUSE_DIVIDER + rzOfset) > -FOREST_BORDER) {
 
 
@@ -158,8 +155,7 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 						float rxOfset = (ColorToHSV(GetImageColor(s.OfsetImagex, j * 10 + l, i * 10 + k)).z - 0.5f) * 0.5f;
 						float rzOfset = (ColorToHSV(GetImageColor(s.OfsetImagey, j * 10 + l, i * 10 + k)).z - 0.5f) * 0.5f;
 
-						clamp(rxOfset, -0.1f, 0.1f);
-						clamp(rzOfset, -0.1f, 0.1f);
+
 						if ((-0.5f + (float)k / HOUSE_DIVIDER + rxOfset < FOREST_BORDER) && (-0.5f + (float)k / HOUSE_DIVIDER + rxOfset) > -FOREST_BORDER && (-0.5 + (float)l / HOUSE_DIVIDER + rzOfset) < FOREST_BORDER && (-0.5 + (float)l / HOUSE_DIVIDER + rzOfset) > -FOREST_BORDER) {
 
 							if (lum > MONSTER_TRESHOLD) DrawModelEx(models.monster, (Vector3) { x - 0.5f + (float)k / HOUSE_DIVIDER + rxOfset, y + 0.53f, z - 0.5 + (float)l / HOUSE_DIVIDER + rzOfset }, (Vector3) { 0, 1, 0 }, (k + l) * 30, (Vector3) { MONSTER_SIZE, MONSTER_SIZE, MONSTER_SIZE }, DARKPURPLE);
@@ -168,7 +164,7 @@ void GUIDrawFeuille(FeuilleCarte f, FeuilleCarte temp, Model mountains[], Positi
 					}
 					break;
 				case CONFLICTVALUE:
-					
+
 					color = RED;
 					if (troll)  DrawModelEx(models.cat, (Vector3) { x, y + 0.73f + (float)rot / 600.0f, z }, (Vector3) { 0, 1, 0 }, rot, (Vector3) { CAT_SIZE * 2, CAT_SIZE * 2, CAT_SIZE * 2 }, WHITE);
 
@@ -274,8 +270,7 @@ int GUIplacementShape(FeuilleCarte f, const Piece* shape, int material, Camera3D
 		pos.y = 6;
 		int drawable = 0;
 		FeuilleCarte feuilleVide, temp;
-		float accX = (float)pos.x;
-		float accY = (float)pos.y;
+
 
 		int done = 0;
 		Position* mountainPos = getPositionsOfMaterial(f, MONTAGNE);//envoi la positions des montagnes pour avancer si un conflit à lieu entre une montagne et autre
@@ -387,7 +382,7 @@ void UpdatePlacement(FeuilleCarte f, PlacementState* state, Camera camera) {
 
 	state->drawable = state->drawable && (state->isRuin ? coversRuin(f, state->feuilleVide) : 1) && isDrawable(f, state->feuilleVide);
 
-	
+
 
 	Vector3 forward = { camera.target.x - camera.position.x, 0, camera.target.z - camera.position.z };
 	normalize(&forward);
@@ -467,8 +462,7 @@ void RenderPlacement(GameState* gs, FeuilleCarte f, const PlacementState* state,
 	static float historyScrollOffset = 0.0f; // Offset de scroll pour l'historique de cartes
 	static bool openSeasonCard = 0;
 
-	Rectangle infoPanel = { 0, midY - 700 / 2, 400, 700 };
-	//Rectangle playerPanel = { midX * 2 - 400, 100, 400, 250 };
+
 
 	Rectangle editsRec = (Rectangle){ midX - 40, -60, 80, 120 };
 
@@ -963,8 +957,7 @@ Model generateMountain(int x, int y) {
 	for (int y = 0; y < PERLIN_SIZE; y++) {// fallof pour avoir des bords smooths
 		for (int x = 0; x < PERLIN_SIZE; x++) {
 
-			float nx = (float)x / (float)PERLIN_SIZE * 2.0f - 1.0f;
-			float ny = (float)y / (float)PERLIN_SIZE * 2.0f - 1.0f;
+
 
 			float fx = 1.0f - powf(fabsf((float)x / PERLIN_SIZE * 2.0f - 1.0f), PERLIN_MODEL_SMOOTHING);
 			float fy = 1.0f - powf(fabsf((float)y / PERLIN_SIZE * 2.0f - 1.0f), PERLIN_MODEL_SMOOTHING);
@@ -1204,7 +1197,7 @@ ModelList loadModelsFromImage(ModelImage imgs, bool troll, Font font) {
 }
 
 Model loadSkybox(bool useHDR) {
-	double start = GetTime();
+
 	Mesh cube = GenMeshCube(1.0f, 1.0f, 1.0f);
 	Model skybox = LoadModelFromMesh(cube);
 
@@ -1519,13 +1512,13 @@ void* SoundThread(void* args) {		//thread de gestion de l'audio séparé afin d'
 			}
 		}
 		else {
-			
-			UpdateMusicStream(uiia); 
+
+			UpdateMusicStream(uiia);
 			timePlayed = GetMusicTimePlayed(uiia) / GetMusicTimeLength(uiia);
-			if (timePlayed > 0.99f) { 
+			if (timePlayed > 0.99f) {
 				SetMusicPitch(uiia, (float)randInt(10, 15)/10.0f);
 				timePlayed = 0.0f;
-			
+
 			}
 
 		}
