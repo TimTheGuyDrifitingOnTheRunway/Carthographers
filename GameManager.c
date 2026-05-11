@@ -83,14 +83,14 @@ const ExploreCard TempleRuins = { .name = "Temple Ruins", .isRuin = 1 };
 const ExploreCard RiftLands = { .pieceA = &POINT, .terrainA = FORET, .name = "Rift Lands", .isRiftLands = 1 };
 
 // Cartes Ennemis
-const ExploreCard GoblinAttack = { .name = "Goblin Attack", .isEnemy = 1, .rotation = -1, .pieceA = &DIAG,  };
-const ExploreCard BugbearAssault = { .name = "Bugbear Assault", .isEnemy = 1, .rotation = 1, .pieceA = &RECT_WITH_HOLE };
-const ExploreCard KoboldOnslaught = { .name = "Kobold Onslaught", .isEnemy = 1, .rotation = 1, .pieceA = &L_T };
-const ExploreCard GnollRaid = { .name = "Gnoll Raid", .isEnemy = 1, .rotation = -1, .pieceA = &U };
-const ExploreCard OgreCharge = { .name = "Ogre Charge", .isEnemy = 1, .rotation = -1, .pieceA = &CUBE };
-const ExploreCard InsectoidInvasion = { .name = "Insectoid Invasion", .isEnemy = 1, .rotation = 1, .pieceA = &Z };
-const ExploreCard RatmanStrike = { .name = "Ratman Strike", .isEnemy = 1, .rotation = 1, .pieceA = &LINE };
-const ExploreCard FlayerIncursion = { .name = "Flayer Incursion", .isEnemy = 1, .rotation = -1, .pieceA = &L_L };
+const ExploreCard GoblinAttack = { .name = "Goblin Attack", .isEnemy = 1, .rotation = 1, .pieceA = &DIAG,  };
+const ExploreCard BugbearAssault = { .name = "Bugbear Assault", .isEnemy = 1, .rotation = -1, .pieceA = &RECT_WITH_HOLE };
+const ExploreCard KoboldOnslaught = { .name = "Kobold Onslaught", .isEnemy = 1, .rotation = -1, .pieceA = &L_T };
+const ExploreCard GnollRaid = { .name = "Gnoll Raid", .isEnemy = 1, .rotation = 1, .pieceA = &U };
+const ExploreCard OgreCharge = { .name = "Ogre Charge", .isEnemy = 1, .rotation = 1, .pieceA = &CUBE };
+const ExploreCard InsectoidInvasion = { .name = "Insectoid Invasion", .isEnemy = 1, .rotation = -1, .pieceA = &Z };
+const ExploreCard RatmanStrike = { .name = "Ratman Strike", .isEnemy = 1, .rotation = -1, .pieceA = &LINE };
+const ExploreCard FlayerIncursion = { .name = "Flayer Incursion", .isEnemy = 1, .rotation = 1, .pieceA = &L_L };
 
 const ExploreCard* expCards[NUM_CARDS] = { &FarmLands, &ForgottenForest, &Hamlet, &GreatRiver, &HinterlandStream, &Homestead, &Orchard, &Marshlands, &TreetopVillage, &FishingVillage, &OutpostRuins, &TempleRuins, &RiftLands, &GoblinAttack, &BugbearAssault, &KoboldOnslaught, &GnollRaid, &OgreCharge, &InsectoidInvasion, &RatmanStrike, &FlayerIncursion };
 
@@ -333,7 +333,7 @@ void NextSeason(GameState *gs, Camera3D camera, ModelList models, Seed s2, int m
 const ExploreCard* Turn(GameState* gs, int* isRuin, Camera3D *camera, int mountainSeed[2], ModelList models, Seed s) {
 	const ExploreCard* card = NextExploreCard(gs, isRuin);
 	gs->currentTime += card->time;
-	
+
 	for (int p = 0; p < gs->playerNumber; p++) {
 		gs->playerIndex = p;
 		PlayerState* ps = &gs->players[p];
