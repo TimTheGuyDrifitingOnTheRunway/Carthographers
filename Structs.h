@@ -67,7 +67,7 @@ typedef struct ExploreCard {
 	int fontSize;
 } ExploreCard;
 
-typedef struct ScoringCard {
+typedef struct {
 	int type;
 	int (*fctCaluls)(FeuilleCarte f);
 	char name[20];
@@ -120,6 +120,7 @@ typedef struct GameState {
 
 	AssetBank assets;
 	LoadContext* loadCtx;
+	int* soundCtrl;
 } GameState;
 
 
@@ -141,6 +142,7 @@ typedef struct PlacementState {
 	FeuilleCarte temp;          // f + feuilleVide fusionnés pour rendu
 	const ExploreCard* card;
 	int status;                 // 0 = En placement, 1 = placé
+	
 } PlacementState;
 
 

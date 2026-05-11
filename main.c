@@ -27,11 +27,7 @@ int main()
 
 	SetTargetFPS(60);
 
-	pthread_t soundThread, modelThread, SeedThread;
-	int keep = 1;
-	pthread_create(&soundThread, NULL, SoundThread, &keep);
-	int mountainSeed[2] = { randInt(0, 100), randInt(0, 100) };
-	pthread_create(&SeedThread, NULL, generateSeedThread, mountainSeed);
+	
 
 	//ToggleBorderlessWindowed();
 	
@@ -48,9 +44,7 @@ int main()
 	// Main game loop
 
 	FeuilleCarte f;
-	/*const ScoringCard* edits[4];
-	const ExploreCard* exploreDeck[17];
-	int deckSize = 14;*/
+	
 	printf("\n\n\n\n\n\n Debug 4 \n\n\n\n\n\n");
 	GameState gs = { 0 };
 
@@ -73,28 +67,21 @@ int main()
 	}
 	printf("%f", MeasureTextEx(gs.assets.fonts[FONT_GRENZE_GOTISCH_B], "Printemps  0/8", EDITS_FS, NORMAL_SPACING).x);
 
-	//for (int i = 0; i < FONT_COUNT; i++) {
-	//	printf("(%.5f,%.5f) ; ", MeasureTextEx(gs.assets.fonts[i], " ", 30, 2).x, MeasureTextEx(gs.assets.fonts[i], " ", 30, 2).y);
-	//	printf("(%.5f,%.5f)\n", MeasureTextEx(gs.assets.fonts[i], "    \n   \n     ", 30, 2).x, MeasureTextEx(gs.assets.fonts[i], "    \n   \n     ", 30, 2).y);
-	//}
-	//printf("\n");
-	//BeginDrawing();
-	//ClearBackground(WHITE);
-	//DrawTextWrappedEx(gs.assets.fonts[FONT_PIRATA_ONE], "Juste pour tester", (Rectangle) { 200, 100, 600, 800 }, 40, 1, GRAY, BLACK);
-	//EndDrawing();
-	//system("pause");
-	//BeginDrawing();
-	//ClearBackground(WHITE);
-	//DrawTextWrappedEx(gs.assets.fonts[FONT_PIRATA_ONE], "Juste pour tester", (Rectangle) { 200, 100, 600, 800 }, 40, 1, GRAY, BLACK);
-	//EndDrawing();
-	//system("pause");
+	
 
 	LoadContext imgCtx = { 0 };
 	pthread_mutex_init(&imgCtx.mutex, NULL);
 
 	gs.loadCtx = &imgCtx;
 
-	pthread_t assetWorkerThread;
+ 
+	
+	pthread_t assetWorkerThread, soundThread, modelThread, SeedThread;
+	int keep = 1;// variable qui dit au thread de son de continuer à jouer ou pas et de joier UUIAA
+	gs.soundCtrl = &keep;
+	pthread_create(&soundThread, NULL, SoundThread, &keep);
+	int mountainSeed[2] = { randInt(0, 100), randInt(0, 100) };
+	pthread_create(&SeedThread, NULL, generateSeedThread, mountainSeed);
 	pthread_create(&assetWorkerThread, NULL, LoadAssetsWorker, &imgCtx);
 	pthread_create(&modelThread, NULL, ModelLoaderThread, &imgCtx);
 
@@ -228,7 +215,7 @@ int main()
 	//GUIplacementDefault(f, 5, camera);
 	Sleep(1000);
 
-	keep = 0;
+	keep = 0;//forece la fin du thread
 
 	pthread_join(soundThread, NULL);//arret du thread son
 
@@ -315,5 +302,6 @@ void EndProgram(GameState* gs) {
 		UnloadFont(gs->assets.fonts[i]);
 	}
 	CloseWindow();
+	free(gs->players);
 }
 
