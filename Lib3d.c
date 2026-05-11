@@ -1117,6 +1117,7 @@ ModelList loadModels(bool troll) {
 	if (troll) {
 		models.cat = LoadModel(PATH_TO_CAT);
 	}
+	 else models.cat = (Model) {0};
 
 
 	printf("models succesfully laoded\n");
