@@ -105,9 +105,9 @@
 #define LEFTC KEY_LEFT
 
 #define MAXCAMERAHEIGHT 0.9f
-#define MINCAMERAHEIGHT -0.07f
+#define MINCAMERAHEIGHT 0.07f
 
-
+#define INDIC_FONT gs->assets.fonts[FONT_GRENZE_GOTISCH_L]
 
 // Constantes du Menu in game
 #define SEASON_FS 40
@@ -215,7 +215,7 @@
 #define FOREST_TRESHOLD 0.45f
 #define FOREST_END_TRESHOLD 0.85f
 #define TREE_DIVIDER 7
-#define  TREE_Y_OFSET 0.55f
+#define TREE_Y_OFSET 0.55f
 #define FOREST_BORDER 0.5f
 
 #define BUSH_TRESHOLD 0.66f
@@ -238,7 +238,7 @@
 
 
 #define VILLAGE_IMAGE_SIZE 1000
-#define  VILLAGE_IMAGE_SCALE 100
+#define VILLAGE_IMAGE_SCALE 100
 #define HOUSE_TRESHOLD 0.7f 
 #define HOUSE_DIVIDER 5
 #define HOUSE_SIZE 0.05f
